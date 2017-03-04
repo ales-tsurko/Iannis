@@ -10,9 +10,10 @@ thisProcess.recompile;
 
 
 w = Window.new;
-w.front;
 a = ATProbabilisticSequencerView(\sequencer, 16);
 w.layout = HLayout(a)
+
+w.front;
 
 (
 //
