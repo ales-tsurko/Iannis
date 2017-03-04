@@ -6,7 +6,7 @@ ATProbabilisticSequencerStepView : CompositeView {
 	}
 
 	init {arg name;
-		var pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+		var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
 
 		probabilitySlider = Slider().orientation_(\vertical).fixedWidth_(21);
 		pitchPopUp = PopUpMenu.new;
