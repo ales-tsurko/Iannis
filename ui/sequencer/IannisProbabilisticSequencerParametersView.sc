@@ -1,18 +1,18 @@
 IannisProbabilisticSequencerParametersView : CompositeView {
-		var numberOfStepsField, setAllProbabilitiesField, transpositionField,
-	playStopButton, resetButton, updateButton, randomizeStepsProbsButton;
+	var numberOfStepsField, setAllPitchesProbabilitiesField,
+	setAllRhythmProbabilitiesField, transpositionField,
+	playStopButton, resetButton, updateButton,
+	randomizeStepsProbsButton, randomizeRhythmProbsButton;
 
-	*new {arg numberOfSteps, stepsView;
-		^super.new.init(numberOfSteps, stepsView);
+	*new {arg numberOfSteps;
+		^super.new.init(numberOfSteps);
 	}
 
-	init {arg numberOfSteps, stepsView;
-		var setAllProbsLabel = StaticText.new;
+	init {arg numberOfSteps;
+		var setAllPitchesProbsLabel = StaticText.new;
+		var setAllRhythmProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
-
-		// parameters panel initialization
-		this.fixedHeight = 100;
 
 		// number of steps field
 		stepsNumberLabel.string = "Number of steps:";
@@ -25,9 +25,9 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 			var stepsNum = field.value.asInt.clip(2, 128);
 			numberOfStepsField.value = stepsNum;
 
-			stepsView.updateData();
-			stepsView.removeAll;
-			stepsView.updateSteps(stepsNum);
+			this.parent.stepsView.updateData();
+			this.parent.stepsView.removeAll;
+			this.parent.stepsView.updateSteps(stepsNum);
 		};
 
 
@@ -42,20 +42,39 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		transpositionField.valueAction = 0;
 
-		// set all probabilities field
-		setAllProbsLabel.string = "Set all probabilities to:";
-		setAllProbabilitiesField = TextField.new;
-		setAllProbabilitiesField.fixedWidth = 50;
+		// set all ptiches probabilities field
+		setAllPitchesProbsLabel.string = "Set all pitches probabilities to:";
+		setAllPitchesProbabilitiesField = TextField.new;
+		setAllPitchesProbabilitiesField.fixedWidth = 50;
 
-		setAllProbabilitiesField.action = {arg field;
+		setAllPitchesProbabilitiesField.value = 0;
+
+		setAllPitchesProbabilitiesField.action = {arg field;
 			var newValue = field.value.asFloat.clip(0, 1);
-			setAllProbabilitiesField.value = newValue;
+			setAllPitchesProbabilitiesField.value = newValue;
 
 			// update all the probabilies slider with a new value
-			stepsView.canvas.children.do({arg item;
+			this.parent.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					item.probabilitySlider.valueAction = newValue;
 				});
+			});
+		};
+
+		// set all rhythm probabilities field
+		setAllRhythmProbsLabel.string = "Set all rhythm probabilities to:";
+		setAllRhythmProbabilitiesField = TextField.new;
+		setAllRhythmProbabilitiesField.fixedWidth = 50;
+
+		setAllRhythmProbabilitiesField.value = 0;
+
+		setAllRhythmProbabilitiesField.action = {arg field;
+			var newValue = field.value.asFloat.clip(0, 1);
+			setAllRhythmProbabilitiesField.value = newValue;
+
+			// update all the probabilies knobs with a new value
+			this.parent.rhythmView.knobs.do({arg item;
+				item.probabilityKnob.valueAction = newValue;
 			});
 		};
 
@@ -76,16 +95,28 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		// randomize steps button
 		randomizeStepsProbsButton = Button.new;
-		randomizeStepsProbsButton.states = [["Randomize Probabilities"]];
+		randomizeStepsProbsButton.states = [["Randomize Pitches Probs"]];
 		randomizeStepsProbsButton.fixedWidth = 200;
 
 		randomizeStepsProbsButton.action = {arg button;
-			stepsView.canvas.children.do({arg item;
+			this.parent.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					item.probabilitySlider.valueAction = 1.0.rand;
 				});
 			});
 		};
+
+		// randomize rhythm button
+		randomizeRhythmProbsButton = Button.new;
+		randomizeRhythmProbsButton.states = [["Randomize Rhythm Probs"]];
+		randomizeRhythmProbsButton.fixedWidth = 200;
+
+		randomizeRhythmProbsButton.action = {arg button;
+			this.parent.rhythmView.knobs.do({arg item;
+					item.probabilityKnob.valueAction = 1.0.rand;
+			});
+		};
+
 
 		this.layout = VLayout(
 			// buttons
@@ -94,7 +125,9 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 				resetButton,
 				nil,
 				updateButton,
-				randomizeStepsProbsButton),
+				randomizeStepsProbsButton,
+				randomizeRhythmProbsButton
+			),
 
 			HLayout(
 				nil,
@@ -103,7 +136,16 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 				// transpose
 				transpositionLabel, transpositionField,
 				// set all probs
-				setAllProbsLabel, setAllProbabilitiesField)
+				setAllPitchesProbsLabel, setAllPitchesProbabilitiesField
+			),
+
+			HLayout(
+				nil,
+				setAllRhythmProbsLabel,
+				setAllRhythmProbabilitiesField
+			)
 		);
+
+		this.fixedHeight = 150;
 	}
 }

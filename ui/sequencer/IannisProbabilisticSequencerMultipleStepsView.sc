@@ -7,7 +7,6 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 
 	init {arg numberOfSteps;
 		this.canvas = CompositeView();
-		this.canvas.minHeight = 135;
 
 		this.hasHorizontalScroller = true;
 		this.hasVerticalScroller = false;
@@ -20,6 +19,8 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		});
 
 		this.updateSteps(numberOfSteps);
+
+		this.minHeight = 300;
 	}
 
 	updateSteps {arg numberOfSteps;

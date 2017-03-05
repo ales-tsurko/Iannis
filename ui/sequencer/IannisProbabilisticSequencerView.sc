@@ -1,5 +1,5 @@
 IannisProbabilisticSequencerView : CompositeView {
-	var parametersView, stepsView;
+	var <rhythmView, <parametersView, <stepsView;
 
 	// нужно ограничить максимальное количество  шагов. например, 128
 	// (количество миди-нот — то есть при 128 шагах можно определить вероятность
@@ -14,13 +14,14 @@ IannisProbabilisticSequencerView : CompositeView {
 	}
 
 	init {arg name, numberOfSteps;
+		rhythmView = IannisProbabilisticSequencerRhythmView.new;
 		stepsView = IannisProbabilisticSequencerMultipleStepsView.new(numberOfSteps);
-		parametersView = IannisProbabilisticSequencerParametersView.new(numberOfSteps, stepsView);
+		parametersView = IannisProbabilisticSequencerParametersView.new(numberOfSteps);
 
 		//
 		// Layout
 		//
-		this.layout = VLayout(stepsView, parametersView);
+		this.layout = VLayout(rhythmView, stepsView, parametersView);
 	}
 
 }
