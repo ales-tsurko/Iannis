@@ -10,8 +10,16 @@ thisProcess.recompile;
 
 
 w = Window.new;
-a = ATProbabilisticSequencerView(\sequencer, 16);
-w.layout = HLayout(a);
+v = CompositeView.new;
+k = Knob.new;
+i = Image.open("ui/sequencer/img/32nds.png".resolveRelative);
+v.fixedWidth = i.width;
+v.fixedHeight = i.height;
+v.backgroundImage_(i, 1, 1, Rect(0, 0, i.width, i.height));
+
+a = IannisProbabilisticSequencerView(\sequencer, 16);
+w.layout = VLayout(VLayout(HLayout(v), k), a);
+w.onClose = {i.free};
 
 w.front;
 

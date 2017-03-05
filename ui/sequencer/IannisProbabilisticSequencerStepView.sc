@@ -1,4 +1,4 @@
-ATProbabilisticSequencerStepView : CompositeView {
+IannisProbabilisticSequencerStepView : CompositeView {
 	var <probabilityTextField, <probabilitySlider, <pitchPopUp, <label;
 
 	*new {arg name;
