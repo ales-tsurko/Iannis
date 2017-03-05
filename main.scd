@@ -22,16 +22,15 @@ p = IannisProbabilisticSequencer(\seq, \default, 8);
 // но здесь не должно быть regenerate, именно
 // это помогает создавать совсем небольшие изменения
 // в паттерне, а не менять паттерн целиком
-p.updatePitches([0,2,4,9,11]+48, [1,1,10,10,2]);
+p.updatePitches([0,2,7,9,11]+36, [10,1,10,1,2]);
 p.play;
 p.regenerate;
 p.changeLength(4);
 
 r = Dictionary.new;
-r[\quarter] = 0;
 r[\sixteenth] = 1;
-r[\dotedEight] = 0.1;
-r[\eight] = 0;
+r[\dotedEight] = 0.2;
+r[\rest] = 0.5;
 p.updateRhythm(r);
 
 p.reset;

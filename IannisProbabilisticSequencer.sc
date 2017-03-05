@@ -72,10 +72,19 @@ IannisProbabilisticSequencer {
 			);
 		});
 
+		// rhythm
 		if((rhythmFigures.size > 0 && weights.indexOfGreaterThan(0).notNil), {
 			Pbindef(name, \dur, Pwrand(rhythmFigures, weights.normalizeSum, inf));
 		}, {
 			Pbindef(name, \dur, 1);
+		});
+
+		// rest
+		if(rhythmWeights[\rest].notNil, {
+			var restWeight = rhythmWeights[\rest].clip(0, 1);
+			var noteWeight = 1 - restWeight;
+
+			Pbindef(name, \type, Pwrand([\note, \rest], [noteWeight, restWeight], inf));
 		});
 	}
 
