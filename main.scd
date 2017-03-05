@@ -15,16 +15,24 @@ w.layout = VLayout(a);
 
 w.front;
 
+TempoClock.default.tempo = 107/60;
+
 p = IannisProbabilisticSequencer(\seq, \default, 8);
 // изменения здесь не всегда заметны сразу,
 // но здесь не должно быть regenerate, именно
 // это помогает создавать совсем небольшие изменения
 // в паттерне, а не менять паттерн целиком
-p.updatePitches([0,2,3,9,11]+60, [2,1,1,1,2]);
-p.updateRhythm(0.125);
+p.updatePitches([0,2,4,9,11]+48, [1,1,10,10,2]);
 p.play;
 p.regenerate;
-p.changeLength(2)
+p.changeLength(4);
+
+r = Dictionary.new;
+r[\quarter] = 0;
+r[\sixteenth] = 1;
+r[\dotedEight] = 0.1;
+r[\eight] = 0;
+p.updateRhythm(r);
 
 p.reset;
 p.stop;
@@ -78,8 +86,6 @@ knobA.mouseUpAction = {arg knob;
 };
 
 window.front;
-
-TempoClock.default.tempo = 117/60;
 
 Pdef('sequencer').play;
 // Pdef('sequencer2').play;
