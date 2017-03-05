@@ -2,6 +2,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 	var numberOfStepsField, setAllPitchesProbabilitiesField,
 	setAllRhythmProbabilitiesField, transpositionField,
 	playStopButton, resetButton, updateButton,
+	patternLengthField,
 	randomizeStepsProbsButton, randomizeRhythmProbsButton;
 
 	*new {arg numberOfSteps;
@@ -13,13 +14,26 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		var setAllRhythmProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
+		var patternLengthLabel = StaticText.new;
+
+		// pattern length
+		patternLengthLabel.string = "Pattern length (beats):";
+		patternLengthField = TextField.new;
+		patternLengthField.fixedWidth = 50;
+
+		patternLengthField.value = 8;
+
+		patternLengthField.action = {arg field;
+			var length = field.value.asInt.clip(1, 999);
+			patternLengthField.value = length;
+		};
 
 		// number of steps field
-		stepsNumberLabel.string = "Number of steps:";
+		stepsNumberLabel.string = "Number of pitches:";
 		numberOfStepsField = TextField.new;
 		numberOfStepsField.fixedWidth = 50;
 
-		numberOfStepsField.valueAction = numberOfSteps;
+		numberOfStepsField.value = numberOfSteps;
 
 		numberOfStepsField.action = {arg field;
 			var stepsNum = field.value.asInt.clip(2, 128);
@@ -90,7 +104,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		// update button
 		updateButton = Button.new;
-		updateButton.states = [["Regenerate Pattern"]];
+		updateButton.states = [["Regenerate"]];
 		updateButton.fixedWidth = 200;
 
 		// randomize steps button
@@ -113,7 +127,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		randomizeRhythmProbsButton.action = {arg button;
 			this.parent.rhythmView.knobs.do({arg item;
-					item.probabilityKnob.valueAction = 1.0.rand;
+				item.probabilityKnob.valueAction = 1.0.rand;
 			});
 		};
 
@@ -123,8 +137,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 			HLayout(
 				playStopButton,
 				resetButton,
-				nil,
 				updateButton,
+				nil,
 				randomizeStepsProbsButton,
 				randomizeRhythmProbsButton
 			),
@@ -135,12 +149,15 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 				stepsNumberLabel, numberOfStepsField,
 				// transpose
 				transpositionLabel, transpositionField,
-				// set all probs
-				setAllPitchesProbsLabel, setAllPitchesProbabilitiesField
+
 			),
 
 			HLayout(
+				patternLengthLabel,
+				patternLengthField,
 				nil,
+				// set all probs
+				setAllPitchesProbsLabel, setAllPitchesProbabilitiesField,
 				setAllRhythmProbsLabel,
 				setAllRhythmProbabilitiesField
 			)

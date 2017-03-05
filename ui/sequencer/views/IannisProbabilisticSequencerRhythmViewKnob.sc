@@ -6,8 +6,8 @@ IannisProbabilisticSequencerRhythmViewKnob : CompositeView {
 		^super.new.init(imagePath, rhythmSymbol);
 	}
 
-	init {arg imagePath, rhythmSymbol;
-		rhythmSymbol = rhythmSymbol;
+	init {arg imagePath, rhythmSymbolArg;
+		rhythmSymbol = rhythmSymbolArg;
 		// image
 		imageView = CompositeView.new;
 		image = Image.open(imagePath);

@@ -15,6 +15,16 @@ w.layout = VLayout(a);
 
 w.front;
 
+p = IannisProbabilisticSequencer(\seq, \default, 8);
+p.updatePitches([0,2,4,7,11]+60, [2,1,1,1,2]);
+p.updateRhythm(0.125);
+p.play;
+p.regenerate;
+p.changeLength(4)
+
+p.reset;
+p.stop;
+
 (
 //
 // GUI
@@ -51,7 +61,7 @@ patFunc = {arg seqName, prob, seqLength;
 	Pdef(seqName,
 		// второе число можно сделать очень длинным, тогда будет иллюзия
 		// постоянного рандома
-		Pn(Pfindur(seqLength, Pseed(rrand(1, 10000), pat)), inf)
+		Pn(Pfindur(seqLength, Pseed(2147483647.rand, pat)), inf)
 	);
 };
 
