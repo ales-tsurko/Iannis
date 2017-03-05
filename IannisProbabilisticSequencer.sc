@@ -17,8 +17,6 @@ IannisProbabilisticSequencer {
 	updatePitches {arg pitchesArray, weightsArray;
 		var pitchesPattern = Pwrand(pitchesArray.asList, weightsArray.normalizeSum, inf);
 		Pbindef(name, \midinote, pitchesPattern);
-
-		this.regenerate();
 	}
 
 	updateRhythm {arg duration;

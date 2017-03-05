@@ -16,11 +16,15 @@ w.layout = VLayout(a);
 w.front;
 
 p = IannisProbabilisticSequencer(\seq, \default, 8);
-p.updatePitches([0,2,4,7,11]+60, [2,1,1,1,2]);
+// изменения здесь не всегда заметны сразу,
+// но здесь не должно быть regenerate, именно
+// это помогает создавать совсем небольшие изменения
+// в паттерне, а не менять паттерн целиком
+p.updatePitches([0,2,3,9,11]+60, [2,1,1,1,2]);
 p.updateRhythm(0.125);
 p.play;
 p.regenerate;
-p.changeLength(4)
+p.changeLength(2)
 
 p.reset;
 p.stop;
