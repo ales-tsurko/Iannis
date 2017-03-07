@@ -39,6 +39,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		transpositionField.action = {arg field;
 			var newValue = field.value.asFloat.clip(-128, 128);
 			transpositionField.value = newValue;
+
+			correspondingStepsView.transposition = newValue;
+			correspondingStepsView.stepAction();
 		};
 
 		transpositionField.valueAction = 0;

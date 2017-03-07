@@ -1,11 +1,14 @@
 IannisProbabilisticSequencerMultipleStepsView : ScrollView {
-	var data, label;
+	var data, label, <sequencer, <correspondingKey, <>transposition;
 
-	*new {arg numberOfSteps, name;
-		^super.new.init(numberOfSteps, name);
+	*new {arg sequencer, numberOfSteps, name, key;
+		^super.new.init(sequencer, numberOfSteps, name, key);
 	}
 
-	init {arg numberOfSteps, name;
+	init {arg correspondingSequencer, numberOfSteps, name, key;
+		correspondingKey = key;
+		sequencer = correspondingSequencer;
+
 		label = StaticText.new;
 		label.string = name;
 
@@ -16,10 +19,14 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		this.hasBorder = false;
 		this.autohidesScrollers = false;
 
-		data = Array.fill(128, {
-			var dict = Dictionary.new;
-			dict[\expression] = "60";
-			dict[\probability] = 0;
+		data = Dictionary.new;
+		data[\expression] = [];
+		data[\realExpression] = [];
+		data[\probability] = [];
+		128.do({arg n;
+			data[\expression] = data[\expression].add("60");
+			data[\realExpression] = data[\realExpression].add(60);
+			data[\probability] = data[\probability].add(0);
 		});
 
 		this.updateSteps(numberOfSteps);
@@ -33,14 +40,14 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 
 	updateSteps {arg numberOfSteps;
 		this.canvas.layout = GridLayout();
-		this.canvas.layout.vSpacing = 75;
+		this.canvas.layout.vSpacing = 30;
 
 		numberOfSteps.do({arg n;
-			var ch = IannisProbabilisticSequencerStepView.new(n+1);
+			var ch = IannisProbabilisticSequencerStepView.new(n+1, n, this);
 
 			if(data[n].notNil, {
-				ch.probabilitySlider.valueAction = data[n][\probability];
-				ch.expressionField.valueAction = data[n][\expression];
+				ch.probabilitySlider.valueAction = data[\probability][n];
+				ch.expressionField.valueAction = data[\expression][n];
 			});
 
 			this.canvas.layout.add(ch, floor(n/4), n%4)
@@ -50,11 +57,26 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 	updateData {
 		canvas.children.do({arg item;
 			if(item.isKindOf(IannisProbabilisticSequencerStepView), {
-				var n = item.sliderLabel.string.asInt - 1;
-				data[n][\probability] = item.probabilitySlider.value;
-				data[n][\expression] = item.expressionField.string;
+				var n = item.number;
+				data[\probability][n] = item.probabilitySlider.value;
+				data[\expression][n] = item.expressionField.string;
+				data[\realExpression][n] = item.realExpression;
 			});
 		});
+	}
+
+	stepAction {arg stepView;
+		var values;
+
+		// if argument is passed -- update the data
+		if(stepView.notNil, {
+			var n = stepView.number;
+			data[\probability][n] = stepView.probabilitySlider.value;
+			data[\expression][n] = stepView.expressionField.string;
+			data[\realExpression][n] = stepView.realExpression;
+		});
+
+		sequencer.updateEvent(correspondingKey, data[\realExpression], data[\probability], transposition);
 	}
 
 }

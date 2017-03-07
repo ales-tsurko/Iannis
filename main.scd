@@ -9,11 +9,11 @@ thisProcess.recompile;
 )
 
 
-IannisProbabilisticSequencerView(\sequencer).front;
+IannisProbabilisticSequencerView(\sequencer, \default, patternLength: 4).front;
 
 TempoClock.default.tempo = 107/60;
 
-p = IannisProbabilisticSequencer(\seq, \default, 8);
+p = IannisProbabilisticSequencer(\seq, \default, 4);
 // изменения здесь не всегда заметны сразу,
 // но здесь не должно быть regenerate, именно
 // это помогает создавать совсем небольшие изменения
