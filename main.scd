@@ -9,7 +9,7 @@ thisProcess.recompile;
 )
 
 
-IannisProbabilisticSequencerView(\sequencer, 7).front;
+IannisProbabilisticSequencerView(\sequencer).front;
 
 TempoClock.default.tempo = 107/60;
 

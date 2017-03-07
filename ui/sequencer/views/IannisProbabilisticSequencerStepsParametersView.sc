@@ -1,13 +1,15 @@
 IannisProbabilisticSequencerStepsParametersView : CompositeView {
-	var <numberOfStepsField, <setAllProbsField, <transpositionField,
-	<randomizeProbsButton, <correspondingStepsView;
+	var <numberOfStepsField, <setAllProbsField, <setAllExprsField,
+	<transpositionField, <randomizeProbsButton,
+	<correspondingStepsView;
 
 	*new {arg numberOfSteps, stepsView;
 		^super.new.init(numberOfSteps, stepsView);
 	}
 
 	init {arg numberOfSteps, stepsView;
-		var setAllPitchesProbsLabel = StaticText.new;
+		var setAllExprsLabel = StaticText.new;
+		var setAllProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
 
@@ -31,7 +33,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 
 
 		// transposition field
-		transpositionLabel.string = "Transpose:";
+		transpositionLabel.string = "Add (transpose):";
 		transpositionField = TextField.new;
 		transpositionField.fixedWidth = 50;
 		transpositionField.action = {arg field;
@@ -41,8 +43,29 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 
 		transpositionField.valueAction = 0;
 
-		// set all ptiches probabilities field
-		setAllPitchesProbsLabel.string = "Set all probabilities to:";
+		// set all expressions field
+		setAllExprsLabel.string = "Set all expressions to:";
+		setAllExprsField = TextField.new;
+		setAllExprsField.fixedWidth = 50;
+
+		setAllExprsField.value = 60;
+
+		setAllExprsField.action = {arg field;
+			var newValue = field.value;
+			if(newValue.size == 0, {
+				newValue = "60";
+				field.value = newValue;
+			});
+			// update all the expression fields with a new value
+			correspondingStepsView.canvas.children.do({arg item;
+				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
+					item.expressionField.valueAction = newValue;
+				});
+			});
+		};
+
+		// set all probabilities field
+		setAllProbsLabel.string = "Set all probabilities to:";
 		setAllProbsField = TextField.new;
 		setAllProbsField.fixedWidth = 50;
 
@@ -91,14 +114,19 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 
 			HLayout(
 				nil,
+				// set all expressions
+				setAllExprsLabel, setAllExprsField
+			),
+
+			HLayout(
+				nil,
 				// set all probs
-				setAllPitchesProbsLabel, setAllProbsField,
+				setAllProbsLabel, setAllProbsField,
 			),
 			// buttons
 			HLayout(randomizeProbsButton)
 		);
 
 		this.fixedWidth = 250;
-		this.background = Color.gray(0.925, 1);
 	}
 }
