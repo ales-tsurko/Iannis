@@ -9,11 +9,7 @@ thisProcess.recompile;
 )
 
 
-w = Window.new;
-a = IannisProbabilisticSequencerView(\sequencer, 7);
-w.layout = VLayout(a);
-
-w.front;
+IannisProbabilisticSequencerView(\sequencer, 7).front;
 
 TempoClock.default.tempo = 107/60;
 
@@ -22,15 +18,21 @@ p = IannisProbabilisticSequencer(\seq, \default, 8);
 // но здесь не должно быть regenerate, именно
 // это помогает создавать совсем небольшие изменения
 // в паттерне, а не менять паттерн целиком
-p.updatePitches([0,2,7,9,11]+36, [10,1,10,1,2]);
+p.updatePitches([[0, 4, 7], Pseq([0, 4, 7]), [4, 7, 9], [4, 7, 11], [0, 4, 9], Pseq([0, 4, 9]), 11]+60, [5,10,1,5,5,2,2]);
 p.play;
 p.regenerate;
 p.changeLength(4);
 
 r = Dictionary.new;
+r[\quarter] = 0.1;
 r[\sixteenth] = 1;
-r[\dotedEight] = 0.2;
+r[\eight] = 0.5;
+r[\dotedEight] = 0.5;
 r[\rest] = 0.5;
+
+// можно использовать ритмические деревья:
+// Pseq([2, [1, 3, [1, [2, 1, 1, 1]], 1, 3], 1].convertRhythm);
+
 p.updateRhythm(r);
 
 p.reset;

@@ -1,5 +1,5 @@
 IannisProbabilisticSequencer {
-	var <name, <synthName, <length, currentSeed;
+	var <name, <synthName, <length, <currentSeed;
 
 	*new {arg name, synthName, length;
 		^super.new.init(name, synthName, length);

@@ -1,25 +1,24 @@
 IannisProbabilisticSequencerStepView : CompositeView {
-	var <probabilityTextField, <probabilitySlider, <pitchPopUp, <label;
+	var <probabilityTextField, <probabilitySlider, <expressionField, <sliderLabel;
 
 	*new {arg name;
 		^super.new.init(name);
 	}
 
 	init {arg name;
-		var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
+		probabilitySlider = Knob().mode_(\vert).fixedWidth_(33);
 
-		probabilitySlider = Slider().orientation_(\vertical).fixedWidth_(21);
-		pitchPopUp = PopUpMenu.new;
-		pitchPopUp.items = [];
+		// expression field
+		expressionField = TextField.new;
+		expressionField.string = "60";
 
-		128.do({arg i;
-			var newPitch = pitches[i%11]++(i/12).floor;
-			pitchPopUp.items = pitchPopUp.items.add(newPitch);
-		});
+		// a = ("["++expressionField.value++"]").interpret
+
 
 		// text field
 		probabilityTextField = TextField.new;
 		probabilityTextField.string = probabilitySlider.value.asString;
+		probabilityTextField.fixedWidth = 65;
 
 		probabilityTextField.action = {arg tField;
 			probabilitySlider.valueAction = tField.value.asFloat;
@@ -30,11 +29,17 @@ IannisProbabilisticSequencerStepView : CompositeView {
 			probabilityTextField.string = slider.value.round(0.001).asString;
 		};
 
-		// label
-		label = StaticText.new;
-		label.string = name;
-		label.align = \center;
+		// sliderLabel
+		sliderLabel = StaticText.new;
+		sliderLabel.string = name.asString++":";
+		sliderLabel.align = \center;
 
-		this.layout = VLayout(label, pitchPopUp, HLayout(probabilitySlider), probabilityTextField);
+		this.fixedWidth = 225;
+		this.layout = VLayout(
+			nil,
+			HLayout(sliderLabel, expressionField),
+			HLayout(nil, probabilitySlider, probabilityTextField),
+			nil
+		);
 	}
 }
