@@ -76,6 +76,9 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		);
 
 		this.fixedHeight = 75;
+		this.onClose = {
+			correspondingSequencer.stop();
+		};
 	}
 
 	lengthFieldAction {arg field;

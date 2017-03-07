@@ -8,8 +8,9 @@ thisProcess.recompile;
 // ----------------------------------------------------------
 )
 
-
 IannisProbabilisticSequencerView(\sequencer, \default, patternLength: 4).front;
+
+Server.freeAll;
 
 TempoClock.default.tempo = 107/60;
 

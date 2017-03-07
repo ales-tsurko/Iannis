@@ -45,10 +45,8 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		numberOfSteps.do({arg n;
 			var ch = IannisProbabilisticSequencerStepView.new(n+1, n, this);
 
-			if(data[n].notNil, {
-				ch.probabilitySlider.valueAction = data[\probability][n];
-				ch.expressionField.valueAction = data[\expression][n];
-			});
+			ch.probabilitySlider.valueAction = data[\probability][n];
+			ch.expressionField.valueAction = data[\expression][n];
 
 			this.canvas.layout.add(ch, floor(n/4), n%4)
 		});

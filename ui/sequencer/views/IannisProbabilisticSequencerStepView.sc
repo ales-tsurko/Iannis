@@ -32,6 +32,10 @@ IannisProbabilisticSequencerStepView : CompositeView {
 			delegate.stepAction(this);
 		};
 
+		expressionField.focusLostAction = {arg view;
+			expressionField.doAction;
+		};
+
 		// text field
 		probabilityTextField = TextField.new;
 		probabilityTextField.string = probabilitySlider.value.asString;
@@ -41,6 +45,10 @@ IannisProbabilisticSequencerStepView : CompositeView {
 			probabilitySlider.valueAction = tField.value.asFloat;
 
 			delegate.stepAction(this);
+		};
+
+		probabilityTextField.focusLostAction = {arg view;
+			probabilityTextField.doAction;
 		};
 
 		// slider ation
@@ -56,9 +64,6 @@ IannisProbabilisticSequencerStepView : CompositeView {
 		sliderLabel = StaticText.new;
 		sliderLabel.string = name.asString++":";
 		sliderLabel.align = \center;
-
-		// init default value for expression field
-		expressionField.valueAction = 60;
 
 		this.fixedWidth = 225;
 		this.layout = VLayout(
