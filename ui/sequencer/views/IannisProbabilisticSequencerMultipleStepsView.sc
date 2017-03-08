@@ -24,8 +24,8 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		data[\realExpression] = [];
 		data[\probability] = [];
 		128.do({arg n;
-			data[\expression] = data[\expression].add("60");
-			data[\realExpression] = data[\realExpression].add(60);
+			data[\expression] = data[\expression].add("");
+			data[\realExpression] = data[\realExpression].add(nil);
 			data[\probability] = data[\probability].add(0);
 		});
 
