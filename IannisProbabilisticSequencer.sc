@@ -15,17 +15,17 @@ IannisProbabilisticSequencer {
 	}
 
 	updateEvent {arg key, values, weights, transposition;
-		var newValues, newWeights = [];
-		newValues = values.asList;
+		var newValues = [], newWeights = [];
+		// newValues = values.asList;
 
-		newValues = newValues.select({arg item, n;
+		values.asList.do({arg item, n;
 			// update appropriate weights in parallel
 			if(item.notNil, {
-				newWeights = newWeights.add(weights[n]);
+				if((key == \dur && (item <= 0)).not, {
+					newWeights = newWeights.add(weights[n]);
+					newValues = newValues.add(item);
+				});
 			});
-
-			// return
-			item.notNil;
 		});
 
 		// normalize values as probabilities
@@ -46,38 +46,38 @@ IannisProbabilisticSequencer {
 				("There is no values or weights are 0s for key:"+key.asString).postln;
 			});
 		});
-		}
-
-		changeLength {arg newLength;
-			var quant = Pdef((name++"_repeater").asSymbol).quant;
-			Pdef((name++"_repeater").asSymbol).quant = length;
-
-			length = newLength;
-
-			Pdef((name++"_repeater").asSymbol, Pn(Pfindur(newLength, Pseed(seed, Pbindef(name))), inf));
-
-			Pdef((name++"_repeater").asSymbol).quant = quant;
-		}
-
-		seed_ {arg seed;
-			seed = seed;
-			Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
-		}
-
-		regenerate {
-			seed = 2147483647.rand;
-			Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
-		}
-
-		play {
-			Pdef((name++"_repeater").asSymbol).play();
-		}
-
-		stop {
-			Pdef((name++"_repeater").asSymbol).stop();
-		}
-
-		reset {
-			Pdef((name++"_repeater").asSymbol).reset();
-		}
 	}
+
+	changeLength {arg newLength;
+		var quant = Pdef((name++"_repeater").asSymbol).quant;
+		Pdef((name++"_repeater").asSymbol).quant = length;
+
+		length = newLength;
+
+		Pdef((name++"_repeater").asSymbol, Pn(Pfindur(newLength, Pseed(seed, Pbindef(name))), inf));
+
+		Pdef((name++"_repeater").asSymbol).quant = quant;
+	}
+
+	seed_ {arg seed;
+		seed = seed;
+		Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
+	}
+
+	regenerate {
+		seed = 2147483647.rand;
+		Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
+	}
+
+	play {
+		Pdef((name++"_repeater").asSymbol).play();
+	}
+
+	stop {
+		Pdef((name++"_repeater").asSymbol).stop();
+	}
+
+	reset {
+		Pdef((name++"_repeater").asSymbol).reset();
+	}
+}
