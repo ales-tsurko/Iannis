@@ -111,7 +111,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		randomizeProbsButton.action = {arg button;
 			correspondingStepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
-					item.probabilitySlider.valueAction = 1.0.rand;
+					if(item.probabilitySlider.enabled, {
+						item.probabilitySlider.valueAction = 1.0.rand;
+					});
 				});
 			});
 		};
