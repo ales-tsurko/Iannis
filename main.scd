@@ -7,7 +7,7 @@ LanguageConfig.store;
 thisProcess.recompile;
 // ----------------------------------------------------------
 )
-
+45296.asTimeString;
 TempoClock.default.tempo = 107/60;
 
 IannisProbabilisticSequencerView(\sequencer, \default, patternLength: 4).front;

@@ -21,9 +21,23 @@ IannisProbabilisticSequencer {
 		values.asList.do({arg item, n;
 			// update appropriate weights in parallel
 			if(item.notNil, {
-				if((key == \dur && (item <= 0)).not, {
+				if(key != \dur, {
 					newWeights = newWeights.add(weights[n]);
 					newValues = newValues.add(item);
+				}, {
+					// if key is \dur
+
+					// if item.isNumber && item > 0
+					if(item.isNumber, {
+						if(item > 0, {
+							newWeights = newWeights.add(weights[n]);
+							newValues = newValues.add(item);
+						});
+					}, {
+						// if item.isNumber == false
+						newWeights = newWeights.add(weights[n]);
+						newValues = newValues.add(item);
+					});
 				});
 			});
 		});
@@ -39,11 +53,11 @@ IannisProbabilisticSequencer {
 			if(key == \dur, {
 				// if there is no values for duration -- apply default
 				// value
-				("There is no values for duration. Applying default duration.").postln;
+				("There is no values for duration. Applying default duration.").inform;
 				Pbindef(name, key, 1+(transposition?0));
 			}, {
 				// otherwise just print that there is no values
-				("There is no values or weights are 0s for key:"+key.asString).postln;
+				("There is no values or weights are 0s for key:"+key.asString).inform;
 			});
 		});
 	}

@@ -31,17 +31,31 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			correspondingStepsView.updateSteps(stepsNum);
 		};
 
+		numberOfStepsField.focusLostAction = {arg view;
+			numberOfStepsField.doAction;
+		};
+
 
 		// transposition field
 		transpositionLabel.string = "Add (transpose):";
 		transpositionField = TextField.new;
-		transpositionField.fixedWidth = 50;
+		transpositionField.fixedWidth = 125;
 		transpositionField.action = {arg field;
-			var newValue = field.value.asFloat.clip(-128, 128);
-			transpositionField.value = newValue;
+			var expr = field.value.interpret;
+			// if there is no except spaces -- assign 0
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 0;
+				expr = 0;
+			});
 
-			correspondingStepsView.transposition = newValue;
-			correspondingStepsView.stepAction();
+			if(expr.notNil, {
+				correspondingStepsView.transposition = expr;
+				correspondingStepsView.stepAction();
+			});
+		};
+
+		transpositionField.focusLostAction = {arg view;
+			transpositionField.doAction;
 		};
 
 		transpositionField.valueAction = 0;
@@ -49,22 +63,21 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		// set all expressions field
 		setAllExprsLabel.string = "Set all expressions to:";
 		setAllExprsField = TextField.new;
-		setAllExprsField.fixedWidth = 50;
-
-		setAllExprsField.value = 60;
+		setAllExprsField.fixedWidth = 125;
 
 		setAllExprsField.action = {arg field;
-			var newValue = field.value;
-			if(newValue.size == 0, {
-				newValue = "60";
-				field.value = newValue;
-			});
-			// update all the expression fields with a new value
-			correspondingStepsView.canvas.children.do({arg item;
-				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
-					item.expressionField.valueAction = newValue;
+			if(field.value.interpret.notNil, {
+				// update all the expression fields with a new value
+				correspondingStepsView.canvas.children.do({arg item;
+					if(item.isKindOf(IannisProbabilisticSequencerStepView), {
+						item.expressionField.valueAction = field.value;
+					});
 				});
 			});
+		};
+
+		setAllExprsField.focusLostAction = {arg view;
+			setAllExprsField.doAction;
 		};
 
 		// set all probabilities field
@@ -84,6 +97,10 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 					item.probabilitySlider.valueAction = newValue;
 				});
 			});
+		};
+
+		setAllProbsField.focusLostAction = {arg view;
+			setAllProbsField.doAction;
 		};
 
 		// randomize steps button
@@ -130,6 +147,6 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			HLayout(randomizeProbsButton)
 		);
 
-		this.fixedWidth = 250;
+		this.fixedWidth = 300;
 	}
 }

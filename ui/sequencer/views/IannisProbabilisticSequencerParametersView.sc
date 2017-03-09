@@ -22,6 +22,10 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 			this.lengthFieldAction(field);
 		};
 
+		patternLengthField.focusLostAction = {arg view;
+			patternLengthField.doAction;
+		};
+
 		// seed
 		seedLabel.string = "Seed:";
 		seedField = TextField.new;
@@ -30,6 +34,10 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		seedField.action = {arg field;
 			this.seedFieldAction(field);
+		};
+
+		seedField.focusLostAction = {arg view;
+			seedField.doAction;
 		};
 
 		// play/stop button
