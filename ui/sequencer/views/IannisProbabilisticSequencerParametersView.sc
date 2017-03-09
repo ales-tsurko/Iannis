@@ -26,7 +26,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		seedLabel.string = "Seed:";
 		seedField = TextField.new;
 		seedField.fixedWidth = 100;
-		seedField.value = sequencer.currentSeed;
+		seedField.value = sequencer.seed;
 
 		seedField.action = {arg field;
 			this.seedFieldAction(field);
@@ -76,9 +76,6 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		);
 
 		this.fixedHeight = 75;
-		this.onClose = {
-			correspondingSequencer.stop();
-		};
 	}
 
 	lengthFieldAction {arg field;
@@ -111,6 +108,6 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		correspondingSequencer.regenerate();
 
 		// update seed field
-		seedField.value = correspondingSequencer.currentSeed;
+		seedField.value = correspondingSequencer.seed;
 	}
 }
