@@ -1,5 +1,5 @@
 IannisProbabilisticSequencerMultipleStepsView : ScrollView {
-	var data, label, <sequencer, <correspondingKey, <>transposition;
+	var data, label, <sequencer, <correspondingKey, <>transposition, <numOfSteps;
 
 	*new {arg sequencer, numberOfSteps, name, key;
 		^super.new.init(sequencer, numberOfSteps, name, key);
@@ -8,6 +8,7 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 	init {arg correspondingSequencer, numberOfSteps, name, key;
 		correspondingKey = key;
 		sequencer = correspondingSequencer;
+    numOfSteps = numberOfSteps;
 
 		label = StaticText.new;
 		label.string = name;
@@ -39,6 +40,7 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 	}
 
 	updateSteps {arg numberOfSteps;
+    numOfSteps = numberOfSteps;
 		this.canvas.layout = GridLayout();
 		this.canvas.layout.vSpacing = 30;
 
@@ -50,6 +52,8 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 
 			this.canvas.layout.add(ch, floor(n/4), n%4)
 		});
+
+    this.stepAction();
 	}
 
 	updateData {
@@ -74,7 +78,7 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 			data[\realExpression][n] = stepView.realExpression;
 		});
 
-		sequencer.updateEvent(correspondingKey, data[\realExpression], data[\probability], transposition);
+		sequencer.updateEvent(correspondingKey, data[\realExpression], data[\probability], transposition, numOfSteps);
 	}
 
 }

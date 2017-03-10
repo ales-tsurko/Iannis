@@ -31,9 +31,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			correspondingStepsView.updateSteps(stepsNum);
 		};
 
-		numberOfStepsField.focusLostAction = {arg view;
-			numberOfStepsField.doAction;
-		};
+		// numberOfStepsField.focusLostAction = {arg view;
+			// numberOfStepsField.doAction;
+		// };
 
 
 		// transposition field
@@ -54,9 +54,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			});
 		};
 
-		transpositionField.focusLostAction = {arg view;
-			transpositionField.doAction;
-		};
+		// transpositionField.focusLostAction = {arg view;
+			// transpositionField.doAction;
+		// };
 
 		transpositionField.valueAction = 0;
 
@@ -66,19 +66,17 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		setAllExprsField.fixedWidth = 125;
 
 		setAllExprsField.action = {arg field;
-			if(field.value.interpret.notNil, {
 				// update all the expression fields with a new value
 				correspondingStepsView.canvas.children.do({arg item;
 					if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 						item.expressionField.valueAction = field.value;
 					});
 				});
-			});
 		};
 
-		setAllExprsField.focusLostAction = {arg view;
-			setAllExprsField.doAction;
-		};
+		// setAllExprsField.focusLostAction = {arg view;
+			// setAllExprsField.doAction;
+		// };
 
 		// set all probabilities field
 		setAllProbsLabel.string = "Set all probabilities to:";
@@ -99,9 +97,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			});
 		};
 
-		setAllProbsField.focusLostAction = {arg view;
-			setAllProbsField.doAction;
-		};
+		// setAllProbsField.focusLostAction = {arg view;
+			// setAllProbsField.doAction;
+		// };
 
 		// randomize steps button
 		randomizeProbsButton = Button.new;
@@ -122,11 +120,11 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		this.layout = VLayout(
 			nil,
 
-			HLayout(
-				nil,
-				// steps number
-				stepsNumberLabel, numberOfStepsField,
-			),
+      HLayout(
+        nil,
+        // steps number
+        stepsNumberLabel, numberOfStepsField,
+      ),
 
 			HLayout(
 				nil,
