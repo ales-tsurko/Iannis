@@ -3,11 +3,11 @@ IannisProbabilisticSequencerStepView : CompositeView {
 	<expressionField, <sliderLabel,
 	<number, <realExpression;
 
-	*new {arg name, number, delegate;
-		^super.new.init(name, number, delegate);
+	*new {arg name, number, parentView;
+		^super.new.init(name, number, parentView);
 	}
 
-	init {arg name, orderNumber, delegate;
+	init {arg name, orderNumber, parentView;
 		number = orderNumber;
 
 		probabilitySlider = Knob().mode_(\vert).fixedWidth_(33);
@@ -29,7 +29,7 @@ IannisProbabilisticSequencerStepView : CompositeView {
 				probabilityTextField.enabled = true;
 			});
 
-			delegate.stepAction(this);
+			parentView.parentController.stepAction(this);
 		};
 
 		expressionField.focusLostAction = {arg view;
@@ -44,7 +44,7 @@ IannisProbabilisticSequencerStepView : CompositeView {
 		probabilityTextField.action = {arg tField;
 			probabilitySlider.valueAction = tField.value.asFloat;
 
-			delegate.stepAction(this);
+			parentView.parentController.stepAction(this);
 		};
 
 		probabilityTextField.focusLostAction = {arg view;
@@ -57,7 +57,7 @@ IannisProbabilisticSequencerStepView : CompositeView {
 		};
 
 		probabilitySlider.mouseUpAction = {arg slider;
-			delegate.stepAction(this);
+			parentView.parentController.stepAction(this);
 		};
 
 		// sliderLabel

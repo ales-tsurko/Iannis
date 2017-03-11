@@ -1,17 +1,16 @@
 IannisProbabilisticSequencerMultipleStepsView : ScrollView {
-	var data, label, <sequencer, <correspondingKey, <>transposition, <numOfSteps;
+	var <label, <numOfSteps, <parentController;
 
-	*new {arg sequencer, numberOfSteps, name, key;
-		^super.new.init(sequencer, numberOfSteps, name, key);
+	*new {arg numberOfSteps, parentController;
+		^super.new.init(numberOfSteps, parentController);
 	}
 
-	init {arg correspondingSequencer, numberOfSteps, name, key;
-		correspondingKey = key;
-		sequencer = correspondingSequencer;
+	init {arg numberOfSteps, parentCtrlr;
+    parentController = parentCtrlr;
     numOfSteps = numberOfSteps;
 
 		label = StaticText.new;
-		label.string = name;
+		label.string = parentController.name;
 
 		this.canvas = CompositeView();
 
@@ -19,16 +18,6 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		this.hasVerticalScroller = true;
 		this.hasBorder = false;
 		this.autohidesScrollers = false;
-
-		data = Dictionary.new;
-		data[\expression] = [];
-		data[\realExpression] = [];
-		data[\probability] = [];
-		128.do({arg n;
-			data[\expression] = data[\expression].add("");
-			data[\realExpression] = data[\realExpression].add(nil);
-			data[\probability] = data[\probability].add(0);
-		});
 
 		this.updateSteps(numberOfSteps);
 
@@ -47,38 +36,23 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 		numberOfSteps.do({arg n;
 			var ch = IannisProbabilisticSequencerStepView.new(n+1, n, this);
 
-			ch.probabilitySlider.valueAction = data[\probability][n];
-			ch.expressionField.valueAction = data[\expression][n];
+			ch.probabilitySlider.valueAction = parentController.data[\probability][n];
+			ch.expressionField.valueAction = parentController.data[\expression][n];
 
 			this.canvas.layout.add(ch, floor(n/4), n%4)
 		});
 
-    this.stepAction();
+    parentController.updatePattern();
 	}
 
-	updateData {
+	updateParentData {
 		canvas.children.do({arg item;
 			if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 				var n = item.number;
-				data[\probability][n] = item.probabilitySlider.value;
-				data[\expression][n] = item.expressionField.string;
-				data[\realExpression][n] = item.realExpression;
+				parentController.data[\probability][n] = item.probabilitySlider.value;
+				parentController.data[\expression][n] = item.expressionField.string;
+				parentController.data[\realExpression][n] = item.realExpression;
 			});
 		});
 	}
-
-	stepAction {arg stepView;
-		var values;
-
-		// if argument is passed -- update the data
-		if(stepView.notNil, {
-			var n = stepView.number;
-			data[\probability][n] = stepView.probabilitySlider.value;
-			data[\expression][n] = stepView.expressionField.string;
-			data[\realExpression][n] = stepView.realExpression;
-		});
-
-		sequencer.updateEvent(correspondingKey, data[\realExpression], data[\probability], transposition, numOfSteps);
-	}
-
 }

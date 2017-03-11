@@ -1,19 +1,19 @@
 IannisProbabilisticSequencerStepsParametersView : CompositeView {
 	var <numberOfStepsField, <setAllProbsField, <setAllExprsField,
 	<transpositionField, <randomizeProbsButton,
-	<correspondingStepsView;
+	<parentController;
 
-	*new {arg numberOfSteps, stepsView;
-		^super.new.init(numberOfSteps, stepsView);
+	*new {arg numberOfSteps, parentController;
+		^super.new.init(numberOfSteps, parentController);
 	}
 
-	init {arg numberOfSteps, stepsView;
+	init {arg numberOfSteps, parentCtrlr;
 		var setAllExprsLabel = StaticText.new;
 		var setAllProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
 
-		correspondingStepsView = stepsView;
+		parentController = parentCtrlr;
 
 		// number of steps field
 		stepsNumberLabel.string = "Number of steps:";
@@ -26,15 +26,10 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			var stepsNum = field.value.asInt.clip(2, 128);
 			numberOfStepsField.value = stepsNum;
 
-			correspondingStepsView.updateData();
-			correspondingStepsView.removeAll;
-			correspondingStepsView.updateSteps(stepsNum);
+			parentController.stepsView.updateParentData();
+			parentController.stepsView.removeAll;
+			parentController.stepsView.updateSteps(stepsNum);
 		};
-
-		// numberOfStepsField.focusLostAction = {arg view;
-			// numberOfStepsField.doAction;
-		// };
-
 
 		// transposition field
 		transpositionLabel.string = "Add (transpose):";
@@ -49,14 +44,10 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			});
 
 			if(expr.notNil, {
-				correspondingStepsView.transposition = expr;
-				correspondingStepsView.stepAction();
+				parentController.data[\transposition] = expr;
+				parentController.updatePattern();
 			});
 		};
-
-		// transpositionField.focusLostAction = {arg view;
-			// transpositionField.doAction;
-		// };
 
 		transpositionField.valueAction = 0;
 
@@ -67,16 +58,12 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 
 		setAllExprsField.action = {arg field;
 				// update all the expression fields with a new value
-				correspondingStepsView.canvas.children.do({arg item;
+				parentController.stepsView.canvas.children.do({arg item;
 					if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 						item.expressionField.valueAction = field.value;
 					});
 				});
 		};
-
-		// setAllExprsField.focusLostAction = {arg view;
-			// setAllExprsField.doAction;
-		// };
 
 		// set all probabilities field
 		setAllProbsLabel.string = "Set all probabilities to:";
@@ -90,24 +77,20 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			setAllProbsField.value = newValue;
 
 			// update all the probabilies slider with a new value
-			correspondingStepsView.canvas.children.do({arg item;
+			parentController.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					item.probabilitySlider.valueAction = newValue;
 				});
 			});
 		};
 
-		// setAllProbsField.focusLostAction = {arg view;
-			// setAllProbsField.doAction;
-		// };
-
-		// randomize steps button
+		// randomize probs button
 		randomizeProbsButton = Button.new;
 		randomizeProbsButton.states = [["Randomize Probabilities"]];
 		randomizeProbsButton.fixedWidth = 200;
 
 		randomizeProbsButton.action = {arg button;
-			correspondingStepsView.canvas.children.do({arg item;
+			parentController.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					if(item.probabilitySlider.enabled, {
 						item.probabilitySlider.valueAction = 1.0.rand;
