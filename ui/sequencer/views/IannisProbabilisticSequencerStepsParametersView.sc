@@ -93,7 +93,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			parentController.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					if(item.probabilitySlider.enabled, {
-						item.probabilitySlider.valueAction = 1.0.rand;
+						item.probabilityTextField.valueAction = 1.0.rand;
 					});
 				});
 			});
