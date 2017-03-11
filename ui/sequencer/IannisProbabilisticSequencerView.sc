@@ -1,8 +1,6 @@
 IannisProbabilisticSequencerView : CompositeView {
-	var <rhythmStepsView, <rhythmParametersView,
-	<pitchStepsView, <pitchParametersView,
-  <pitchController, <rhythmController,
-	<parametersView,
+  var <parametersContainerView, 
+  <pitchController, <rhythmController, <parametersView,
 	<sequencer;
 
 	*new {arg name, instrument, numberOfPitches = 4, numberOfRhythmicFigures = 2, patternLength = 8;
@@ -10,24 +8,68 @@ IannisProbabilisticSequencerView : CompositeView {
 	}
 
 	init {arg name, instrument, numberOfPitches, numberOfRhythmicFigures, patternLength;
+    var evenStepsViewBackground = Color.gray(0.79, 1), 
+    oddStepsViewBackground = Color.gray(0.72, 1), 
+    evenParametersViewBackground = Color.gray(0.925, 1), 
+    oddParametersViewBackground = Color.gray(0.85, 1);
+
+    // sequencer
 		sequencer = IannisProbabilisticSequencer(name, instrument, patternLength);
 
+    // parameters container
+    parametersContainerView = ScrollView.new;
+
+    parametersContainerView.canvas = CompositeView.new;
+
+    parametersContainerView.hasHorizontalScroller = false;
+    parametersContainerView.hasVerticalScroller = true;
+    parametersContainerView.hasBorder = false;
+
+    parametersContainerView.minHeight = 200;
+
+    parametersContainerView.canvas.layout = VLayout();
+    parametersContainerView.canvas.layout.spacing = 0;
+    parametersContainerView.canvas.layout.margins = 0!4;
+
+    // init parameters
+    // pitch controller
     pitchController = IannisProbabilisticSequencerEventController(sequencer, "Pitch", \midinote, numberOfPitches);
-    pitchController.stepsView.canvas.background = Color.gray(0.79, 1);
-		pitchController.parametersView.background = Color.gray(0.925, 1);
-		// pitchStepsView = IannisProbabilisticSequencerMultipleStepsView.new(sequencer, numberOfPitches, "Pitch", \midinote);
-		// pitchParametersView = IannisProbabilisticSequencerStepsParametersView.new(numberOfPitches, pitchStepsView);
-		// pitchStepsView.canvas.background = Color.gray(0.79, 1);
-		// pitchParametersView.background = Color.gray(0.925, 1);
-
+    pitchController.stepsView.canvas.background = evenStepsViewBackground;
+		pitchController.parametersView.background = evenParametersViewBackground;
+    
+    // rhythm controller
     rhythmController = IannisProbabilisticSequencerEventController(sequencer, "Rhythm", \dur, numberOfRhythmicFigures);
-    rhythmController.stepsView.canvas.background = Color.gray(0.72, 1);
-    rhythmController.parametersView.background = Color.gray(0.85, 1);
-		// rhythmStepsView = IannisProbabilisticSequencerMultipleStepsView.new(sequencer, numberOfRhythmicFigures, "Rhythm", \dur);
-		// rhythmParametersView = IannisProbabilisticSequencerStepsParametersView.new(numberOfRhythmicFigures, rhythmStepsView);
-		// rhythmStepsView.canvas.background = Color.gray(0.72, 1);
-		// rhythmParametersView.background = Color.gray(0.85, 1);
+    rhythmController.stepsView.canvas.background = oddStepsViewBackground;
+    rhythmController.parametersView.background = oddParametersViewBackground;
 
+    // add parameters to container
+    parametersContainerView.canvas.layout.add(pitchController);
+    parametersContainerView.canvas.layout.add(rhythmController);
+
+    // add controllers for synth parameters
+    SynthDescLib.global.at(instrument.asSymbol).controlNames.do({arg paramName, n;
+      if((paramName != 'freq').and(paramName != 'midinote').and(paramName != 'gate'), {
+        var background = [];
+        var newParameterController = IannisProbabilisticSequencerEventController(sequencer, paramName, paramName.asSymbol, 4);
+
+        // applying background
+        if((n%2).even, {
+          background = background.add(evenStepsViewBackground);
+          background = background.add(evenParametersViewBackground);
+        }, {
+          background = background.add(oddStepsViewBackground);
+          background = background.add(oddParametersViewBackground);
+        });
+
+        newParameterController.stepsView.canvas.background = background[0];
+        newParameterController.parametersView.background = background[1];
+
+        // add new parameter controller to layout
+        parametersContainerView.canvas.layout.add(newParameterController);
+      });
+    });
+
+    // parameters view
 		parametersView = IannisProbabilisticSequencerParametersView.new(sequencer);
 
 
@@ -35,14 +77,12 @@ IannisProbabilisticSequencerView : CompositeView {
 		// Layout
 		//
 		this.layout = VLayout(
-      pitchController,
-      rhythmController,
-			// HLayout(pitchStepsView, pitchParametersView),
-			// HLayout(rhythmStepsView, rhythmParametersView),
-			parametersView
+			parametersView,
+      parametersContainerView
 		);
 
 		this.layout.spacing = 0;
+    this.layout.margins = 0!4;
 	}
 
 }

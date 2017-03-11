@@ -33,6 +33,7 @@ IannisProbabilisticSequencerEventController : CompositeView {
 		);
 
 		this.layout.spacing = 0;
+    this.layout.margins = 0!4;
   }
 
   stepAction {arg stepView;

@@ -70,14 +70,13 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		this.layout = VLayout(
 			// buttons
 			HLayout(
-				playStopButton,
-				resetButton,
+				patternLengthLabel, patternLengthField,
 				nil,
 				seedLabel, seedField
 			),
 
 			HLayout(
-				patternLengthLabel, patternLengthField,
+				playStopButton, resetButton,
 				nil,
 				updateButton
 			)
