@@ -8,7 +8,7 @@ IannisProbabilisticSequencerView : CompositeView {
 	}
 
 	init {arg name, instrument, numberOfPitches, numberOfRhythmicFigures, patternLength;
-    var evenStepsViewBackground = Color.gray(0.79, 1), 
+    var n = 0, evenStepsViewBackground = Color.gray(0.79, 1), 
     oddStepsViewBackground = Color.gray(0.72, 1), 
     evenParametersViewBackground = Color.gray(0.925, 1), 
     oddParametersViewBackground = Color.gray(0.85, 1);
@@ -47,7 +47,7 @@ IannisProbabilisticSequencerView : CompositeView {
     parametersContainerView.canvas.layout.add(rhythmController);
 
     // add controllers for synth parameters
-    SynthDescLib.global.at(instrument.asSymbol).controlNames.do({arg paramName, n;
+    SynthDescLib.global.at(instrument.asSymbol).controlNames.do({arg paramName;
       if((paramName != 'freq').and(paramName != 'midinote').and(paramName != 'gate'), {
         var background = [];
         var newParameterController = IannisProbabilisticSequencerEventController(sequencer, paramName, paramName.asSymbol, 4);
@@ -66,6 +66,8 @@ IannisProbabilisticSequencerView : CompositeView {
 
         // add new parameter controller to layout
         parametersContainerView.canvas.layout.add(newParameterController);
+
+        n = n + 1;
       });
     });
 
