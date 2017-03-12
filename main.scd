@@ -11,7 +11,7 @@ thisProcess.recompile;
 45296.asTimeString;
 
 s.boot;
-Tuning.directory
+
 TempoClock.default.tempo = 107/60;
 
 IannisProbabilisticSequencerView(\sequencer, \default, patternLength: 4).front;

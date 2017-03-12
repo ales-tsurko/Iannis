@@ -1,7 +1,7 @@
 IannisProbabilisticSequencerParametersView : CompositeView {
 	var playStopButton, resetButton, updateButton,
 	patternLengthField, seedField, correspondingSequencer,
-  rootPopup, scalePopup;
+  rootPopup, scalePopup, tuningPopup;
 
 	*new {arg sequencer;
 		^super.new.init(sequencer);
@@ -12,6 +12,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		var seedLabel = StaticText.new;
     var rootLabel = StaticText.new;
     var scaleLabel = StaticText.new;
+    var tuningLabel = StaticText.new;
     var beatCounter = StaticText.new;
     var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
     correspondingSequencer = sequencer;
@@ -50,11 +51,29 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     });
 
     scalePopup.action = {arg popup;
-      var newScale = Scale.at(Scale.names[popup.value]);
+      var newScale = Scale.newFromKey(Scale.names[popup.value]);
       correspondingSequencer.scale = newScale;
     };
 
     scalePopup.valueAction = 11; // index of chromatic scale
+
+    // tuning
+    tuningLabel.string = "Tuning:";
+    tuningPopup = PopUpMenu.new;
+    tuningPopup.items = [];
+
+
+    Tuning.names.do({arg name;
+      var newTuning = Tuning.at(name).name;
+      tuningPopup.items = tuningPopup.items.add(newTuning);
+    });
+
+    tuningPopup.action = {arg popup;
+      var newTuning = Tuning.names[popup.value];
+      correspondingSequencer.scale.tuning = newTuning;
+    };
+    
+    tuningPopup.valueAction = 3; // index of ET12
 
 		// pattern length
 		patternLengthLabel.string = "Pattern length (beats):";
@@ -130,10 +149,12 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
       VLayout(
         HLayout(
-          nil, scaleLabel, scalePopup
+          nil, 
+          rootLabel, rootPopup, 
+          scaleLabel, scalePopup
         ),
         HLayout(
-          nil, rootLabel, rootPopup
+          nil, tuningLabel, tuningPopup 
         )
       )
     );
