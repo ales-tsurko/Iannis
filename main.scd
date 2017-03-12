@@ -8,8 +8,6 @@ thisProcess.recompile;
 // ----------------------------------------------------------
 )
 
-45296.asTimeString;
-
 s.boot;
 
 TempoClock.default.tempo = 107/60;

@@ -24,7 +24,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		numberOfStepsField.value = numberOfSteps;
 
 		numberOfStepsField.action = {arg field;
-			var stepsNum = field.value.asInt.clip(2, 128);
+			var stepsNum = field.value.asInt.clip(1, 128);
 			numberOfStepsField.value = stepsNum;
 
 			parentController.stepsView.updateParentData();
