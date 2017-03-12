@@ -32,26 +32,6 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			parentController.stepsView.updateSteps(stepsNum);
 		};
 
-		// transposition field
-		transpositionLabel.string = "Add (transpose):";
-		transpositionField = TextField.new;
-		transpositionField.fixedWidth = 125;
-		transpositionField.action = {arg field;
-			var expr = field.value.interpret;
-			// if there is no except spaces -- assign 0
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 0;
-				expr = 0;
-			});
-
-			if(expr.notNil, {
-				parentController.data[\transposition] = expr;
-				parentController.updatePattern();
-			});
-		};
-
-		transpositionField.valueAction = 0;
-
 		// multiplication field
 		mulLabel.string = "Multiply:";
 		mulField = TextField.new;
@@ -71,6 +51,26 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		};
 
 		mulField.valueAction = 1;
+
+		// transposition field
+		transpositionLabel.string = "Add (transpose):";
+		transpositionField = TextField.new;
+		transpositionField.fixedWidth = 125;
+		transpositionField.action = {arg field;
+			var expr = field.value.interpret;
+			// if there is no except spaces -- assign 0
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 0;
+				expr = 0;
+			});
+
+			if(expr.notNil, {
+				parentController.data[\transposition] = expr;
+				parentController.updatePattern();
+			});
+		};
+
+		transpositionField.valueAction = 0;
 
 		// set all expressions field
 		setAllExprsLabel.string = "Set all expressions to:";

@@ -23,6 +23,7 @@ IannisProbabilisticSequencer {
   updateEvent {arg key, values, weights, mul, add, numberOfSteps;
     var newValues = [], newWeights = [];
     var cropedValues, cropedWeights;
+    var newMul;
     cropedValues = values.keep(numberOfSteps);
     cropedWeights = weights.keep(numberOfSteps);
 
@@ -54,17 +55,30 @@ IannisProbabilisticSequencer {
     // normalize values as probabilities
     newWeights = newWeights.normalizeSum;
 
+    // prevent entering 0 for duration
+    if(key == \dur, {
+      if(mul.isNumber, {
+        if(mul <= 0, {
+          newMul = 1;
+        }, {
+          newMul = mul;
+        });
+      }, {
+        newMul = mul;
+      });
+    });
+
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
     if(newValues.size > 0 && newWeights.indexOfGreaterThan(0).notNil, {
-      Pbindef(name, key, Pwrand(newValues, newWeights, inf)*(mul?1)+(add?0));
+      Pbindef(name, key, Pwrand(newValues, newWeights, inf)*(newMul?1)+(add?0));
     }, {
       if(key == \dur, {
         // if there is no values for duration -- apply default
         // value
         ("There is no values for duration. Applying default duration.").inform;
 
-        Pbindef(name, key, 1*(mul?1)+(add?0));
+        Pbindef(name, key, 1*(newMul?1)+(add?0));
       }, {
         // otherwise just print that there is no values
         ("There is no values or weights are 0s for key:"+key.asString).inform;
