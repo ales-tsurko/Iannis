@@ -48,10 +48,7 @@ IannisProbabilisticSequencerEventController : CompositeView {
   }
 
   updatePattern {
-    // update number of steps in sequencer
-    sequencer.length = numberOfSteps;
-
     // updatePattern
-    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition]);
+    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition], numberOfSteps);
   }
 }
