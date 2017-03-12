@@ -16,6 +16,7 @@ IannisProbabilisticSequencerEventController : CompositeView {
 		data[\realExpression] = [];
 		data[\probability] = [];
     data[\transposition] = 0;
+    data[\mul] = 1;
 		128.do({arg n;
 			data[\expression] = data[\expression].add("");
 			data[\realExpression] = data[\realExpression].add(nil);
@@ -47,6 +48,6 @@ IannisProbabilisticSequencerEventController : CompositeView {
   }
 
   updatePattern {
-    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\transposition], numberOfSteps);
+    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition], numberOfSteps);
   }
 }

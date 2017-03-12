@@ -1,6 +1,6 @@
 IannisProbabilisticSequencerStepsParametersView : CompositeView {
 	var <numberOfStepsField, <setAllProbsField, <setAllExprsField,
-	<transpositionField, <randomizeProbsButton,
+	<transpositionField, <mulField, <randomizeProbsButton,
 	<parentController;
 
 	*new {arg numberOfSteps, parentController;
@@ -12,6 +12,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		var setAllProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
+    var mulLabel = StaticText.new;
 
 		parentController = parentCtrlr;
 
@@ -50,6 +51,26 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		};
 
 		transpositionField.valueAction = 0;
+
+		// multiplication field
+		mulLabel.string = "Multiply:";
+		mulField = TextField.new;
+		mulField.fixedWidth = 125;
+		mulField.action = {arg field;
+			var expr = field.value.interpret;
+			// if there is no anything except spaces -- assign 1
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 1;
+				expr = 1;
+			});
+
+			if(expr.notNil, {
+				parentController.data[\mul] = expr;
+				parentController.updatePattern();
+			});
+		};
+
+		mulField.valueAction = 1;
 
 		// set all expressions field
 		setAllExprsLabel.string = "Set all expressions to:";
@@ -108,6 +129,12 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
         // steps number
         stepsNumberLabel, numberOfStepsField,
       ),
+
+			HLayout(
+				nil,
+				// multiply
+				mulLabel, mulField,
+			),
 
 			HLayout(
 				nil,
