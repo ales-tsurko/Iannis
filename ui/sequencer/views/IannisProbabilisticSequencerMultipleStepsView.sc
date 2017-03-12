@@ -30,6 +30,7 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 
 	updateSteps {arg numberOfSteps;
     numOfSteps = numberOfSteps;
+
 		this.canvas.layout = GridLayout();
 		this.canvas.layout.vSpacing = 30;
 
@@ -42,6 +43,8 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 			this.canvas.layout.add(ch, floor(n/4), n%4)
 		});
 
+    // update pattern and number of steps in parent controller
+    parentController.numberOfSteps = numOfSteps;
     parentController.updatePattern();
 	}
 

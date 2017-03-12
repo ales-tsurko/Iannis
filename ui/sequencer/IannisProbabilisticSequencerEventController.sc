@@ -1,5 +1,5 @@
 IannisProbabilisticSequencerEventController : CompositeView {
-  var <data, <stepsView, <parametersView, <eventKey, <name, <sequencer, <numberOfSteps;
+  var <data, <stepsView, <parametersView, <eventKey, <name, <sequencer, <>numberOfSteps;
 
   *new {arg sequencer, name, eventKey, numberOfSteps = 4;
     ^super.new.init(sequencer, name, eventKey, numberOfSteps);
@@ -48,6 +48,10 @@ IannisProbabilisticSequencerEventController : CompositeView {
   }
 
   updatePattern {
-    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition], numberOfSteps);
+    // update number of steps in sequencer
+    sequencer.length = numberOfSteps;
+
+    // updatePattern
+    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition]);
   }
 }

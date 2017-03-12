@@ -1,5 +1,5 @@
 IannisProbabilisticSequencer {
-  var <name, <synthName, <length, <seed, 
+  var <name, <synthName, <>length, <seed, 
   <>root, <>scale, <time, <>timeAction;
 
   *new {arg name, synthName, length;
@@ -21,12 +21,12 @@ IannisProbabilisticSequencer {
     this.regenerate();
   }
 
-  updateEvent {arg key, values, weights, mul, add, numberOfSteps;
+  updateEvent {arg key, values, weights, mul, add;
     var newValues = [], newWeights = [];
     var cropedValues, cropedWeights;
     var newMul;
-    cropedValues = values.keep(numberOfSteps);
-    cropedWeights = weights.keep(numberOfSteps);
+    cropedValues = values.keep(length);
+    cropedWeights = weights.keep(length);
 
     // filter values and weights for nil-values
     cropedValues.asList.do({arg item, n;
