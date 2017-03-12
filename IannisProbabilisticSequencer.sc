@@ -1,5 +1,6 @@
 IannisProbabilisticSequencer {
-  var <name, <synthName, <length, <seed;
+  var <name, <synthName, <length, <seed, 
+  <>root, <>scale;
 
   *new {arg name, synthName, length;
     ^super.new.init(name, synthName, length);
@@ -10,7 +11,12 @@ IannisProbabilisticSequencer {
     synthName = correspondingSynthName;
     length = patternLength;
 
-    Pbindef(name, \instrument, synthName);
+    Pbindef(name, 
+      \instrument, synthName, 
+      \root, Pfunc({root}, inf),
+      \scale, Pfunc({scale}, inf)
+    );
+
     this.regenerate();
   }
 

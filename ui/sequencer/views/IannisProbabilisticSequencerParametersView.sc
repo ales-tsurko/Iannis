@@ -1,6 +1,7 @@
 IannisProbabilisticSequencerParametersView : CompositeView {
 	var playStopButton, resetButton, updateButton,
-	patternLengthField, seedField, correspondingSequencer;
+	patternLengthField, seedField, correspondingSequencer,
+  rootPopup, scalePopup;
 
 	*new {arg sequencer;
 		^super.new.init(sequencer);
@@ -9,7 +10,43 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 	init {arg sequencer;
 		var patternLengthLabel = StaticText.new;
 		var seedLabel = StaticText.new;
-		correspondingSequencer = sequencer;
+    var rootLabel = StaticText.new;
+    var scaleLabel = StaticText.new;
+    var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
+    correspondingSequencer = sequencer;
+
+    // root
+    rootLabel.string = "Root:";
+    rootPopup = PopUpMenu.new;
+    rootPopup.items = [];
+
+    128.do({arg i;
+      var newPitch = pitches[i%11]++(i/12).floor;
+      rootPopup.items = rootPopup.items.add(newPitch);
+    });
+
+    rootPopup.action = {arg popup;
+      correspondingSequencer.root = popup.value - 60;
+    };
+
+    rootPopup.valueAction = 60;
+
+    // scale
+    scaleLabel.string = "Scale:";
+    scalePopup = PopUpMenu.new;
+    scalePopup.items = [];
+
+    Scale.names.do({arg name;
+      var newScale = Scale.at(name).name;
+      scalePopup.items = scalePopup.items.add(newScale);
+    });
+
+    scalePopup.action = {arg popup;
+      var newScale = Scale.at(Scale.names[popup.value]);
+      correspondingSequencer.scale = newScale;
+    };
+
+    scalePopup.valueAction = 11; // index of chromatic scale
 
 		// pattern length
 		patternLengthLabel.string = "Pattern length (beats):";
@@ -67,20 +104,29 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 			this.updateButtonAction(button);
 		};
 
-		this.layout = VLayout(
-			// buttons
-			HLayout(
-				patternLengthLabel, patternLengthField,
-				nil,
-				seedLabel, seedField
-			),
+    this.layout = HLayout(
+      VLayout(
+        HLayout(
+          patternLengthLabel, patternLengthField,
+          nil,
+          seedLabel, seedField
+        ),
+        HLayout(
+          playStopButton, resetButton, updateButton,
+        )
+      ),
 
-			HLayout(
-				playStopButton, resetButton,
-				nil,
-				updateButton
-			)
-		);
+      nil,
+
+      VLayout(
+        HLayout(
+          nil, scaleLabel, scalePopup
+        ),
+        HLayout(
+          nil, rootLabel, rootPopup
+        )
+      )
+    );
 
 		this.fixedHeight = 75;
 	}

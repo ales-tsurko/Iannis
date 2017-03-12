@@ -33,7 +33,7 @@ IannisProbabilisticSequencerView : CompositeView {
 
     // init parameters
     // pitch controller
-    pitchController = IannisProbabilisticSequencerEventController(sequencer, "Pitch", \midinote, numberOfPitches);
+    pitchController = IannisProbabilisticSequencerEventController(sequencer, "Note", \degree, numberOfPitches);
     pitchController.stepsView.canvas.background = evenStepsViewBackground;
 		pitchController.parametersView.background = evenParametersViewBackground;
     
