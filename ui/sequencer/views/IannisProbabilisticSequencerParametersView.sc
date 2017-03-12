@@ -12,8 +12,16 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		var seedLabel = StaticText.new;
     var rootLabel = StaticText.new;
     var scaleLabel = StaticText.new;
+    var beatCounter = StaticText.new;
     var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
     correspondingSequencer = sequencer;
+
+    // beat counter
+    beatCounter.string = (correspondingSequencer.time+1).asString;
+    beatCounter.font = Font("Arial", 42);
+    correspondingSequencer.timeAction = {arg newTime;
+      beatCounter.string = newTime.asString;
+    };
 
     // root
     rootLabel.string = "Root:";
@@ -97,7 +105,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		// update button
 		updateButton = Button.new;
-		updateButton.states = [["Regenerate"]];
+		updateButton.states = [["Update"]];
 		updateButton.fixedWidth = 200;
 
 		updateButton.action = {arg button;
@@ -116,6 +124,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
         )
       ),
 
+      nil,
+      beatCounter,
       nil,
 
       VLayout(

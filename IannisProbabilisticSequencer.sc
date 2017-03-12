@@ -1,6 +1,6 @@
 IannisProbabilisticSequencer {
   var <name, <synthName, <length, <seed, 
-  <>root, <>scale;
+  <>root, <>scale, <time, <>timeAction;
 
   *new {arg name, synthName, length;
     ^super.new.init(name, synthName, length);
@@ -10,6 +10,7 @@ IannisProbabilisticSequencer {
     name = sequencerName;
     synthName = correspondingSynthName;
     length = patternLength;
+    time = 0;
 
     Pbindef(name, 
       \instrument, synthName, 
@@ -71,13 +72,14 @@ IannisProbabilisticSequencer {
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
     if(newValues.size > 0 && newWeights.indexOfGreaterThan(0).notNil, {
+      time = 0;
       Pbindef(name, key, Pwrand(newValues, newWeights, inf)*(newMul?1)+(add?0));
     }, {
       if(key == \dur, {
         // if there is no values for duration -- apply default
         // value
         ("There is no values for duration. Applying default duration.").inform;
-
+        time = 0;
         Pbindef(name, key, 1*(newMul?1)+(add?0));
       }, {
         // otherwise just print that there is no values
@@ -91,31 +93,57 @@ IannisProbabilisticSequencer {
     Pdef((name++"_repeater").asSymbol).quant = length;
 
     length = newLength;
-
-    Pdef((name++"_repeater").asSymbol, Pn(Pfindur(newLength, Pseed(seed, Pbindef(name))), inf));
+    this.updateRepeater();
 
     Pdef((name++"_repeater").asSymbol).quant = quant;
   }
 
   seed_ {arg seed;
     seed = seed;
-    Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
+    this.updateRepeater();
   }
 
   regenerate {
     seed = 2147483647.rand;
-    Pdef((name++"_repeater").asSymbol, Pn(Pfindur(length, Pseed(seed, Pbindef(name))), inf));
+    this.updateRepeater();
+  }
+
+  updateRepeater {
+    time = 0;
+    Pdef((name++"_repeater").asSymbol, Pn(
+      Pfindur(length,
+        Ppar([
+          Pfunc({
+            AppClock.sched(0.0, {
+              this.time = this.time%length+1;
+            });
+            // return 1 because of a problem when returning 0...
+            1;
+          }),
+          Pseed(seed, Pbindef(name));
+        ])
+      ), 
+      inf)
+    );
+  }
+
+  time_ {arg newTime;
+    time = newTime;
+    if(timeAction.notNil, {timeAction.value(newTime)});
   }
 
   play {
+    time = 0;
     Pdef((name++"_repeater").asSymbol).play();
   }
 
   stop {
+    time = 0;
     Pdef((name++"_repeater").asSymbol).stop();
   }
 
   reset {
+    time = 0;
     Pdef((name++"_repeater").asSymbol).reset();
   }
 }
