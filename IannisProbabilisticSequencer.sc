@@ -7,6 +7,7 @@ IannisProbabilisticSequencer {
   }
 
   init {arg sequencerName, correspondingSynthName, patternLength;
+    var ptime = Ptime.new.asStream;
     name = sequencerName;
     synthName = correspondingSynthName;
     length = patternLength;
@@ -15,7 +16,18 @@ IannisProbabilisticSequencer {
     Pbindef(name, 
       \instrument, synthName, 
       \root, Pfunc({root}, inf),
-      \scale, Pfunc({scale}, inf)
+      \scale, Pfunc({scale}, inf),
+      // update time
+      \pfunc, Pif(Ptime(inf).frac <= 0.0, 
+      Pif(Ptime(inf) <= 0.0, 
+      Pfunc({
+        AppClock.sched(0.0, {this.time = 1});
+      }), 
+      Pfunc({
+        AppClock.sched(0.0, {this.time = this.time + 1});
+      })),
+      // return something
+      1)
     );
 
     this.regenerate();
@@ -72,14 +84,12 @@ IannisProbabilisticSequencer {
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
     if(newValues.size > 0 && newWeights.indexOfGreaterThan(0).notNil, {
-      time = 0;
       Pbindef(name, key, Pwrand(newValues, newWeights, inf)*(newMul?1)+(add?0));
     }, {
       if(key == \dur, {
         // if there is no values for duration -- apply default
         // value
         ("There is no values for duration. Applying default duration.").inform;
-        time = 0;
         Pbindef(name, key, 1*(newMul?1)+(add?0));
       }, {
         // otherwise just print that there is no values
@@ -109,21 +119,12 @@ IannisProbabilisticSequencer {
   }
 
   updateRepeater {
-    time = 0;
-    Pdef((name++"_repeater").asSymbol, Pn(
-      Pfindur(length,
-        Ppar([
-          Pfunc({
-            AppClock.sched(0.0, {
-              this.time = this.time%length+1;
-            });
-            // return 1 because of a problem when returning 0...
-            1;
-          }),
-          Pseed(seed, Pbindef(name));
-        ])
-      ), 
-      inf)
+    Pdef((name++"_repeater").asSymbol, 
+    Pn(
+      Pfindur(
+        length,
+        Pseed(seed, Pbindef(name))
+      ), inf)
     );
   }
 
