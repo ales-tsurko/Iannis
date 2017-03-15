@@ -1,10 +1,8 @@
 (
 // For development only
 // ----------------------------------------------------------
-LanguageConfig.removeIncludePath(Document.current.dir);
-LanguageConfig.addIncludePath(Document.current.dir);
-LanguageConfig.store;
-thisProcess.recompile;
+Quarks.install("~/Desktop/Iannis".standardizePath);
+Quarks.uninstall("Iannis");
 // ----------------------------------------------------------
 )
 

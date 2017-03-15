@@ -78,17 +78,21 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		// pattern length
 		patternLengthLabel.string = "Pattern length (beats):";
 		patternLengthField = TextField.new;
-		patternLengthField.fixedWidth = 50;
-
-		patternLengthField.value = 8;
-
+		patternLengthField.fixedWidth = 125;
 		patternLengthField.action = {arg field;
-			this.lengthFieldAction(field);
+			var expr = field.value.interpret;
+			// if there is no anything except spaces -- assign 4
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 4;
+				expr = 4;
+			});
+
+			if(expr.notNil, {
+        this.lengthFieldAction(expr);
+			});
 		};
 
-		patternLengthField.focusLostAction = {arg view;
-			patternLengthField.doAction;
-		};
+		patternLengthField.valueAction = 8;
 
 		// seed
 		seedLabel.string = "Seed:";
@@ -162,18 +166,15 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		this.fixedHeight = 75;
 	}
 
-	lengthFieldAction {arg field;
-		var length = field.value.asInt.clip(1, 999);
-		patternLengthField.value = length;
-
-		correspondingSequencer.changeLength(length);
+	lengthFieldAction {arg expr;
+		correspondingSequencer.length = expr;
 	}
 
 	seedFieldAction {arg field;
 		var seed = field.value.asInt;
 		field.value = seed;
 
-		correspondingSequencer.setSeed(seed);
+		correspondingSequencer.seed = seed;
 	}
 
 	playStopButtonAction {arg button;

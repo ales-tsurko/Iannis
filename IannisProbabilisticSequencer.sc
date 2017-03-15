@@ -7,27 +7,33 @@ IannisProbabilisticSequencer {
   }
 
   init {arg sequencerName, correspondingSynthName, patternLength;
-    var ptime = Ptime.new.asStream;
     name = sequencerName;
     synthName = correspondingSynthName;
     length = patternLength;
     time = 0;
 
+    // define main pattern
     Pbindef(name, 
       \instrument, synthName, 
       \root, Pfunc({root}, inf),
       \scale, Pfunc({scale}, inf),
       // update time
-      \pfunc, Pif(Ptime(inf).frac <= 0.0, 
-      Pif(Ptime(inf) <= 0.0, 
-      Pfunc({
-        AppClock.sched(0.0, {this.time = 1});
-      }), 
-      Pfunc({
-        AppClock.sched(0.0, {this.time = this.time + 1});
-      })),
-      // return something
-      1)
+      \pfunc, Pif(
+        // do only on whole beats
+        Ptime(inf).frac <= 0.0, 
+        Pif(
+          // if a beat is 0 (the first beat)
+          Ptime(inf) <= 0.0, 
+          Pfunc({
+            AppClock.sched(0.0, {this.time = 1});
+          }), 
+          Pfunc({
+            AppClock.sched(0.0, {this.time = this.time + 1});
+          })
+        ),
+        // in neither case return something
+        1
+      )
     );
 
     this.regenerate();
@@ -36,7 +42,7 @@ IannisProbabilisticSequencer {
   updateEvent {arg key, values, weights, mul, add, numberOfSteps;
     var newValues = [], newWeights = [];
     var cropedValues, cropedWeights;
-    var newMul;
+    var newMul = mul;
     cropedValues = values.keep(numberOfSteps);
     cropedWeights = weights.keep(numberOfSteps);
 
@@ -73,11 +79,7 @@ IannisProbabilisticSequencer {
       if(mul.isNumber, {
         if(mul <= 0, {
           newMul = 1;
-        }, {
-          newMul = mul;
         });
-      }, {
-        newMul = mul;
       });
     });
 
@@ -98,14 +100,14 @@ IannisProbabilisticSequencer {
     });
   }
 
-  changeLength {arg newLength;
-    var quant = Pdef((name++"_repeater").asSymbol).quant;
-    Pdef((name++"_repeater").asSymbol).quant = length;
-
-    length = newLength;
+  length_ {arg newLength;
+    // var quant = Pdef((name++"_repeater").asSymbol).quant;
+    // Pdef((name++"_repeater").asSymbol).quant = length;
+// 
+    length = newLength.asStream;
     this.updateRepeater();
 
-    Pdef((name++"_repeater").asSymbol).quant = quant;
+    // Pdef((name++"_repeater").asSymbol).quant = quant;
   }
 
   seed_ {arg seed;
@@ -121,10 +123,10 @@ IannisProbabilisticSequencer {
   updateRepeater {
     Pdef((name++"_repeater").asSymbol, 
     Pn(
-      Pfindur(
-        length,
-        Pseed(seed, Pbindef(name))
-      ), inf)
+      Plazy({
+        var dur = length.next;
+        Pfindur(dur, Pseed(seed, Pbindef(name)))
+      }), inf)
     );
   }
 
