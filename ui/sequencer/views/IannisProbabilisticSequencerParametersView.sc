@@ -80,33 +80,22 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		patternLengthField = TextField.new;
 		patternLengthField.fixedWidth = 125;
 		patternLengthField.action = {arg field;
-			var expr = field.value.interpret;
-			// if there is no anything except spaces -- assign 4
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 4;
-				expr = 4;
-			});
-
-			if(expr.notNil, {
-        this.lengthFieldAction(expr);
-			});
+        this.lengthFieldAction(field);
 		};
 
 		patternLengthField.valueAction = 8;
 
 		// seed
-		seedLabel.string = "Seed:";
+		seedLabel.string = "Version number:";
 		seedField = TextField.new;
 		seedField.fixedWidth = 100;
-		seedField.value = sequencer.seed;
 
 		seedField.action = {arg field;
-			this.seedFieldAction(field);
+        this.seedFieldAction(field);
 		};
+    		
+    seedField.valueAction = correspondingSequencer.seed;
 
-		seedField.focusLostAction = {arg view;
-			seedField.doAction;
-		};
 
 		// play/stop button
 		playStopButton = Button.new;
@@ -128,7 +117,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		// update button
 		updateButton = Button.new;
-		updateButton.states = [["Update"]];
+		updateButton.states = [["Random Version"]];
 		updateButton.fixedWidth = 200;
 
 		updateButton.action = {arg button;
@@ -166,16 +155,31 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		this.fixedHeight = 75;
 	}
 
-	lengthFieldAction {arg expr;
-		correspondingSequencer.length = expr;
-	}
+  lengthFieldAction {arg field;
+    var expr = field.value.interpret;
+    // if there is no anything except spaces -- assign 4
+    if(field.value.findRegexp("[^ \t]").size == 0, {
+      field.value = 4;
+      expr = 4;
+    });
 
-	seedFieldAction {arg field;
-		var seed = field.value.asInt;
-		field.value = seed;
+    if(expr.notNil, {
+      correspondingSequencer.length = expr;
+    });
+  }
 
-		correspondingSequencer.seed = seed;
-	}
+  seedFieldAction {arg field;
+    var expr = field.value.interpret;
+    // if there is no anything except spaces -- assign 4
+    if(field.value.findRegexp("[^ \t]").size == 0, {
+      field.value = correspondingSequencer.seed;
+      expr = correspondingSequencer.seed;
+    });
+
+    if(expr.notNil, {
+      correspondingSequencer.seed = expr;
+    });
+  }
 
 	playStopButtonAction {arg button;
 		if(button.value == 1, {
