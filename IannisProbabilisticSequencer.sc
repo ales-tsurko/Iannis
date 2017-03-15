@@ -120,19 +120,14 @@ IannisProbabilisticSequencer {
       Plazy({
         var dur = length.next??{length.reset;length.next??{length=4;length.next}};
         var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
+        var ptime = Ptime.new.asStream;
         Pfindur(dur, Ppar([
           Pseed(version, Pbindef(name)),
-          // per beat
-          Plazy({
-            var ptime = Ptime.new.asStream;
-            Pbind(
-              \dur, 1,
-              \pfunc, Pfunc({
-                AppClock.sched(0.0, {this.time = ptime.next.round + 1});
-                1;
-              });
-            )
-          })
+          // per beat event
+          (play: {
+            AppClock.sched(0.0, {this.time = ptime.next.round + 1});
+          }, 
+          dur: 1);
         ]))
       }), inf)
     );
