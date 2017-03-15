@@ -1,5 +1,5 @@
 IannisProbabilisticSequencerStepsParametersView : CompositeView {
-	var <numberOfStepsField, <setAllProbsField, <setAllExprsField,
+	var <numberOfStepsBox, <setAllProbsBox, <setAllExprsField,
 	<transpositionField, <mulField, <randomizeProbsButton,
 	<parentController;
 
@@ -17,20 +17,23 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		parentController = parentCtrlr;
 
 		// number of steps field
+    // судя по всему, нужно сделать его по поднятию
+    // мыши, потому что будет хайли сипию интенсив
+    // в другом случае
 		stepsNumberLabel.string = "Number of steps:";
-		numberOfStepsField = TextField.new;
-		numberOfStepsField.fixedWidth = 50;
+    numberOfStepsBox = NumberBox.new;
+    numberOfStepsBox.decimals = 0;
+    numberOfStepsBox.clipLo = 1;
+    numberOfStepsBox.clipHi = 128;
+    numberOfStepsBox.alt_scale = 2;
+    numberOfStepsBox.shift_scale = 4;
+    numberOfStepsBox.fixedWidth = 50;
 
-		numberOfStepsField.value = numberOfSteps;
-
-		numberOfStepsField.action = {arg field;
-			var stepsNum = field.value.asInt.clip(1, 128);
-			numberOfStepsField.value = stepsNum;
-
-			parentController.stepsView.updateParentData();
-			parentController.stepsView.removeAll;
-			parentController.stepsView.updateSteps(stepsNum);
-		};
+    numberOfStepsBox.addAction({arg box;
+      parentController.stepsView.updateParentData();
+      parentController.stepsView.removeAll;
+      parentController.stepsView.updateSteps(box.value.asInt);
+    }, \mouseUpAction);
 
 		// multiplication field
 		mulLabel.string = "Multiply:";
@@ -87,23 +90,27 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		};
 
 		// set all probabilities field
-		setAllProbsLabel.string = "Set all probabilities to:";
-		setAllProbsField = TextField.new;
-		setAllProbsField.fixedWidth = 50;
+    setAllProbsLabel.string = "Set all probabilities to:";
+    setAllProbsBox = NumberBox.new;
+    setAllProbsBox.fixedWidth = 50;
+    setAllProbsBox.decimals = 3;
+    setAllProbsBox.value = 0.0;
+    setAllProbsBox.clipLo = 0.0;
+    setAllProbsBox.clipHi = 1.0;
+    setAllProbsBox.step = 0.05;
+    setAllProbsBox.scroll_step = 0.05;
+    setAllProbsBox.alt_scale = 0.05;
+    setAllProbsBox.shift_scale = 2;
 
-		setAllProbsField.value = 0;
+    setAllProbsBox.addAction({arg box;
+      // update all the probabilies slider with a new value
+      parentController.stepsView.canvas.children.do({arg item;
+        if(item.isKindOf(IannisProbabilisticSequencerStepView), {
+          item.probabilitySlider.valueAction = box.value;
+        });
+      });
+    }, \mouseUpAction);
 
-		setAllProbsField.action = {arg field;
-			var newValue = field.value.asFloat.clip(0, 1);
-			setAllProbsField.value = newValue;
-
-			// update all the probabilies slider with a new value
-			parentController.stepsView.canvas.children.do({arg item;
-				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
-					item.probabilitySlider.valueAction = newValue;
-				});
-			});
-		};
 
 		// randomize probs button
 		randomizeProbsButton = Button.new;
@@ -114,7 +121,8 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			parentController.stepsView.canvas.children.do({arg item;
 				if(item.isKindOf(IannisProbabilisticSequencerStepView), {
 					if(item.probabilitySlider.enabled, {
-						item.probabilityTextField.valueAction = 1.0.rand;
+						item.probabilitySlider.value = 1.0.rand;
+            item.probabilitySlider.mouseUpAction();
 					});
 				});
 			});
@@ -127,7 +135,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
       HLayout(
         nil,
         // steps number
-        stepsNumberLabel, numberOfStepsField,
+        stepsNumberLabel, numberOfStepsBox,
       ),
 
 			HLayout(
@@ -151,7 +159,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			HLayout(
 				nil,
 				// set all probs
-				setAllProbsLabel, setAllProbsField,
+				setAllProbsLabel, setAllProbsBox,
 			),
 			// buttons
 			HLayout(randomizeProbsButton)

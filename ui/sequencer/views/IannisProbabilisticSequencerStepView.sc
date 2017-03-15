@@ -1,5 +1,5 @@
 IannisProbabilisticSequencerStepView : CompositeView {
-	var <probabilityTextField, <probabilitySlider,
+	var <probabilitySlider,
 	<expressionField, <sliderLabel,
 	<number, <realExpression;
 
@@ -8,9 +8,8 @@ IannisProbabilisticSequencerStepView : CompositeView {
 	}
 
 	init {arg name, orderNumber, parentView;
+    var weightLabel = StaticText.new;
 		number = orderNumber;
-
-		probabilitySlider = Knob().mode_(\vert).fixedWidth_(33);
 
 		// expression field
 		expressionField = TextField.new;
@@ -23,10 +22,8 @@ IannisProbabilisticSequencerStepView : CompositeView {
 				probabilitySlider.valueAction = 0;
 
 				probabilitySlider.enabled = false;
-				probabilityTextField.enabled = false;
 			}, {
 				probabilitySlider.enabled = true;
-				probabilityTextField.enabled = true;
 			});
 
 			parentView.parentController.stepAction(this);
@@ -36,29 +33,22 @@ IannisProbabilisticSequencerStepView : CompositeView {
 			expressionField.doAction;
 		};
 
-		// text field
-		probabilityTextField = TextField.new;
-		probabilityTextField.string = probabilitySlider.value.asString;
-		probabilityTextField.fixedWidth = 65;
+		// slider
+    weightLabel.string = "Weight:";
+    probabilitySlider = NumberBox.new;
+    probabilitySlider.fixedWidth = 50;
+    probabilitySlider.decimals = 3;
+    probabilitySlider.clipLo = 0.0;
+    probabilitySlider.clipHi = 1.0;
+    probabilitySlider.step = 0.05;
+    probabilitySlider.scroll_step = 0.05;
+    probabilitySlider.alt_scale = 0.05;
+    probabilitySlider.shift_scale = 2;
 
-		probabilityTextField.action = {arg tField;
-			probabilitySlider.valueAction = tField.value.asFloat;
+    probabilitySlider.addAction({
+      parentView.parentController.stepAction(this);
+    }, \mouseUpAction);
 
-			parentView.parentController.stepAction(this);
-		};
-
-		probabilityTextField.focusLostAction = {arg view;
-			probabilityTextField.doAction;
-		};
-
-		// slider ation
-		probabilitySlider.action = {arg slider;
-			probabilityTextField.string = slider.value.round(0.001).asString;
-		};
-
-		probabilitySlider.mouseUpAction = {arg slider;
-			parentView.parentController.stepAction(this);
-		};
 
 		// sliderLabel
 		sliderLabel = StaticText.new;
@@ -69,7 +59,7 @@ IannisProbabilisticSequencerStepView : CompositeView {
 		this.layout = VLayout(
 			nil,
 			HLayout(sliderLabel, expressionField),
-			HLayout(nil, probabilitySlider, probabilityTextField),
+			HLayout(nil, weightLabel, probabilitySlider),
 			nil
 		);
 	}

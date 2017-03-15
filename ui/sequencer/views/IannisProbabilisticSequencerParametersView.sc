@@ -1,7 +1,8 @@
 IannisProbabilisticSequencerParametersView : CompositeView {
 	var playStopButton, resetButton, updateButton,
 	patternLengthField, seedField, correspondingSequencer,
-  rootPopup, scalePopup, tuningPopup;
+  rootNumberBox, scalePopup, tuningPopup,
+  arrayOfNotes;
 
 	*new {arg sequencer;
 		^super.new.init(sequencer);
@@ -11,10 +12,11 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		var patternLengthLabel = StaticText.new;
 		var seedLabel = StaticText.new;
     var rootLabel = StaticText.new;
+    var rootPitchRepresentation = StaticText.new;
     var scaleLabel = StaticText.new;
     var tuningLabel = StaticText.new;
     var beatCounter = StaticText.new;
-    var pitches = ["G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"];
+    var pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     correspondingSequencer = sequencer;
 
     // beat counter
@@ -25,20 +27,28 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     };
 
     // root
-    rootLabel.string = "Root:";
-    rootPopup = PopUpMenu.new;
-    rootPopup.items = [];
-
+    // init array of notes
+    arrayOfNotes = [];
     128.do({arg i;
-      var newPitch = pitches[i%11]++(i/12).floor;
-      rootPopup.items = rootPopup.items.add(newPitch);
+      var newNote = pitches[i%12]++(i/12).floor;
+      arrayOfNotes = arrayOfNotes.add(newNote);
     });
 
-    rootPopup.action = {arg popup;
-      correspondingSequencer.root = popup.value - 60;
+    rootLabel.string = "Root:";
+    rootNumberBox = NumberBox.new;
+    rootNumberBox.fixedWidth = 50;
+    rootNumberBox.decimals = 0;
+    rootNumberBox.clipLo = 0;
+    rootNumberBox.clipHi = 127;
+    rootNumberBox.alt_scale = 3;
+    rootNumberBox.shift_scale = 12;
+
+    rootNumberBox.action = {arg box;
+      rootLabel.string = "Root:" + arrayOfNotes[box.value];
+      correspondingSequencer.root = box.value - 60;
     };
 
-    rootPopup.valueAction = 60;
+    rootNumberBox.valueAction = 60;
 
     // scale
     scaleLabel.string = "Scale:";
@@ -143,7 +153,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
       VLayout(
         HLayout(
           nil, 
-          rootLabel, rootPopup, 
+          rootLabel, rootNumberBox, rootPitchRepresentation, 
           scaleLabel, scalePopup
         ),
         HLayout(
