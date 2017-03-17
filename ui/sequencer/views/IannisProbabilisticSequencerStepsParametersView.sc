@@ -38,6 +38,8 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
       };
     };
 
+    numberOfStepsBox.value = numberOfSteps;
+
 		// multiplication field
 		mulLabel.string = "Multiply:";
 		mulField = TextField.new;
