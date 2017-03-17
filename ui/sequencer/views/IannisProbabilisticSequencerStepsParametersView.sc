@@ -17,9 +17,6 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		parentController = parentCtrlr;
 
 		// number of steps field
-    // судя по всему, нужно сделать его по поднятию
-    // мыши, потому что будет хайли сипию интенсив
-    // в другом случае
 		stepsNumberLabel.string = "Number of steps:";
     numberOfStepsBox = NumberBox.new;
     numberOfStepsBox.decimals = 0;
@@ -34,6 +31,12 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
       parentController.stepsView.removeAll;
       parentController.stepsView.updateSteps(box.value.asInt);
     }, \mouseUpAction);
+
+    numberOfStepsBox.keyUpAction = {arg box, char, mod, unicode, keycode, key;
+      if (keycode == 36) {
+        numberOfStepsBox.mouseUpAction.(numberOfStepsBox);
+      };
+    };
 
 		// multiplication field
 		mulLabel.string = "Multiply:";
@@ -111,6 +114,11 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
       });
     }, \mouseUpAction);
 
+    setAllProbsBox.keyUpAction = {arg box, char, mod, unicode, keycode, key;
+      if (keycode == 36) {
+        setAllProbsBox.mouseUpAction.(setAllProbsBox);
+      };
+    };
 
 		// randomize probs button
 		randomizeProbsButton = Button.new;

@@ -49,6 +49,11 @@ IannisProbabilisticSequencerStepView : CompositeView {
       parentView.parentController.stepAction(this);
     }, \mouseUpAction);
 
+    probabilitySlider.keyUpAction = {arg box, char, mod, unicode, keycode, key;
+      if (keycode == 36) {
+        probabilitySlider.mouseUpAction.(probabilitySlider);
+      };
+    };
 
 		// sliderLabel
 		sliderLabel = StaticText.new;
