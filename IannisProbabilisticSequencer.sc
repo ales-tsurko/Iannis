@@ -17,23 +17,6 @@ IannisProbabilisticSequencer {
       \instrument, synthName, 
       \root, Pfunc({root}, inf),
       \scale, Pfunc({scale}, inf),
-      // update time
-      // \pfunc, Pif(
-        // // do only on whole beats
-        // Ptime(inf).frac <= 0.0, 
-        // Pif(
-          // // if a beat is 0 (the first beat)
-          // Ptime(inf) <= 0.0, 
-          // Pfunc({
-            // AppClock.sched(0.0, {this.time = 1});
-          // }), 
-          // Pfunc({
-            // AppClock.sched(0.0, {this.time = this.time + 1});
-          // })
-        // ),
-        // // in neither case return something
-        // 1
-      // )
     );
 
     this.regenerate();
@@ -139,17 +122,17 @@ IannisProbabilisticSequencer {
   }
 
   play {
-    time = 0;
+    this.time = 1;
     Pdef((name++"_repeater").asSymbol).play();
   }
 
   stop {
-    time = 0;
+    this.time = 1;
     Pdef((name++"_repeater").asSymbol).stop();
   }
 
   reset {
-    time = 0;
+    this.time = 1;
     Pdef((name++"_repeater").asSymbol).reset();
   }
 }
