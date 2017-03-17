@@ -1,6 +1,7 @@
 IannisProbabilisticSequencer {
   var <name, <synthName, <length, <seed, 
-  <>root, <>scale, <time, <>timeAction;
+  <>root, <>scale, <time, <>timeAction, <playTimes,
+  onFinishActions, addOnFinishAction;
 
   *new {arg name, synthName, length;
     ^super.new.init(name, synthName, length);
@@ -11,12 +12,14 @@ IannisProbabilisticSequencer {
     synthName = correspondingSynthName;
     length = patternLength;
     time = 0;
+    this.playTimes = 0;
+    onFinishActions = [];
 
     // define main pattern
     Pbindef(name, 
       \instrument, synthName, 
       \root, Pfunc({root}, inf),
-      \scale, Pfunc({scale}, inf),
+      \scale, Pfunc({scale}, inf)
     );
 
     this.regenerate();
@@ -99,26 +102,47 @@ IannisProbabilisticSequencer {
 
   updateRepeater {
     Pdef((name++"_repeater").asSymbol, 
-    Pn(
-      Plazy({
-        var dur = length.next??{length.reset;length.next??{length=4;length.next}};
-        var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
-        var ptime = Ptime.new.asStream;
-        Pfindur(dur, Ppar([
-          Pseed(version, Pbindef(name)),
-          // per beat event
-          (play: {
-            AppClock.sched(0.0, {this.time = ptime.next.round + 1});
-          }, 
-          dur: 1);
-        ]))
-      }), inf)
+    Pseq([
+      Pn(
+        Plazy({
+          var dur = length.next??{length.reset;length.next??{length=4;length.next}};
+          var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
+          var ptime = Ptime.new.asStream;
+          Pfindur(dur, Ppar([
+            Pseed(version, Pbindef(name)),
+            // per beat event
+            (play: {
+              AppClock.sched(0.0, {this.time = ptime.next.round + 1});
+            }, 
+            dur: 1);
+          ]))
+        }), playTimes), 
+
+        // do on finished playing pattern
+        Pfuncn({
+          AppClock.sched(0.0, {
+            onFinishActions.do(_.());
+            this.stop();
+          });
+          // should return something
+          1;
+        });
+      ])
     );
   }
 
   time_ {arg newTime;
     time = newTime;
     if(timeAction.notNil, {timeAction.value(newTime)});
+  }
+
+  playTimes_ {arg newValue;
+    if (newValue == 0) {
+      playTimes = inf;
+    } {
+      playTimes = newValue;
+    };
+    this.updateRepeater();
   }
 
   play {
@@ -134,5 +158,9 @@ IannisProbabilisticSequencer {
   reset {
     this.time = 1;
     Pdef((name++"_repeater").asSymbol).reset();
+  }
+
+  addOnFinishAction {arg action;
+    onFinishActions = onFinishActions.add(action);
   }
 }

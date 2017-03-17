@@ -2,7 +2,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 	var playStopButton, resetButton, updateButton,
 	patternLengthField, seedField, correspondingSequencer,
   rootNumberBox, scalePopup, tuningPopup,
-  arrayOfNotes;
+  arrayOfNotes, playTimesBox;
 
 	*new {arg sequencer;
 		^super.new.init(sequencer);
@@ -15,6 +15,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     var rootPitchRepresentation = StaticText.new;
     var scaleLabel = StaticText.new;
     var tuningLabel = StaticText.new;
+    var playTimesLabel = StaticText.new;
     var beatCounter = StaticText.new;
     var pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     correspondingSequencer = sequencer;
@@ -95,6 +96,17 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
 		patternLengthField.valueAction = 8;
 
+    // play times
+    playTimesLabel.string = "Play times:";
+    playTimesBox = NumberBox.new;
+    playTimesBox.decimals = 0;
+    playTimesBox.clipLo = 0;
+    playTimesBox.clipHi = 999;
+
+    playTimesBox.action = {arg box;
+      correspondingSequencer.playTimes = box.value;
+    };
+
 		// seed
 		seedLabel.string = "Version number:";
 		seedField = TextField.new;
@@ -115,6 +127,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		playStopButton.action = {arg button;
 			this.playStopButtonAction(button);
 		};
+
+    correspondingSequencer.addOnFinishAction({playStopButton.value = 0});
 
 		// reset button
 		resetButton = Button.new;
@@ -137,12 +151,12 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     this.layout = HLayout(
       VLayout(
         HLayout(
-          patternLengthLabel, patternLengthField,
-          nil,
-          seedLabel, seedField
+          playStopButton, resetButton, updateButton,
         ),
         HLayout(
-          playStopButton, resetButton, updateButton,
+          patternLengthLabel, patternLengthField, playTimesLabel, playTimesBox,
+          nil,
+          seedLabel, seedField
         )
       ),
 
