@@ -1,6 +1,8 @@
 IannisProbabilisticSequencerStepsParametersView : CompositeView {
 	var <numberOfStepsBox, <setAllProbsBox, <setAllExprsField,
-	<transpositionField, <mulField, <randomizeProbsButton,
+	<transpositionField, <transpositionDurBox, 
+  <mulField, <mulDurBox,
+  <randomizeProbsButton,
 	<parentController;
 
 	*new {arg numberOfSteps, parentController;
@@ -12,7 +14,9 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 		var setAllProbsLabel = StaticText.new;
 		var stepsNumberLabel = StaticText.new;
 		var transpositionLabel = StaticText.new;
+    var transposeDurLabel = StaticText.new;
     var mulLabel = StaticText.new;
+    var mulDurLabel = StaticText.new;
 
 		parentController = parentCtrlr;
 
@@ -41,44 +45,61 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
     numberOfStepsBox.value = numberOfSteps;
 
 		// multiplication field
+    // duration is needed in action, so initialize it here
+    mulDurLabel.string = "Mul duration:";
+    mulDurBox = NumberBox.new;
+    mulDurBox.value = 1;
+
 		mulLabel.string = "Multiply:";
 		mulField = TextField.new;
 		mulField.fixedWidth = 125;
 		mulField.action = {arg field;
-			var expr = field.value.interpret;
-			// if there is no anything except spaces -- assign 1
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 1;
-				expr = 1;
-			});
-
-			if(expr.notNil, {
-				parentController.data[\mul] = expr;
-				parentController.updatePattern();
-			});
+      parentController.setMul(field, mulDurBox.value);
+      parentController.updatePattern();
 		};
 
 		mulField.valueAction = 1;
 
+    // multiplication duration
+    mulDurBox.minDecimals = 0;
+    mulDurBox.maxDecimals = 4;
+    mulDurBox.clipLo = 0.015;
+    mulDurBox.clipHi = 32;
+    mulDurBox.alt_scale = 0.25;
+    mulDurBox.shift_scale = 1;
+    mulDurBox.fixedWidth = 50;
+
+    mulDurBox.action = {arg box;
+      parentController.setMul(mulField, box.value);
+    };
+
 		// transposition field
+    transposeDurLabel.string = "Add duration:";
+    transpositionDurBox = NumberBox.new;
+    transpositionDurBox.value = 1;
+
 		transpositionLabel.string = "Add (transpose):";
 		transpositionField = TextField.new;
 		transpositionField.fixedWidth = 125;
 		transpositionField.action = {arg field;
-			var expr = field.value.interpret;
-			// if there is no except spaces -- assign 0
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 0;
-				expr = 0;
-			});
-
-			if(expr.notNil, {
-				parentController.data[\transposition] = expr;
-				parentController.updatePattern();
-			});
+      parentController.setAdd(field, transpositionDurBox.value);
+      parentController.updatePattern();
 		};
 
 		transpositionField.valueAction = 0;
+
+    // transposition duration
+    transpositionDurBox.minDecimals = 0;
+    transpositionDurBox.maxDecimals = 4;
+    transpositionDurBox.clipLo = 0.015;
+    transpositionDurBox.clipHi = 32;
+    transpositionDurBox.alt_scale = 0.25;
+    transpositionDurBox.shift_scale = 1;
+    transpositionDurBox.fixedWidth = 50;
+
+    transpositionDurBox.action = {arg box;
+      parentController.setAdd(transpositionField, box.value);
+    };
 
 		// set all expressions field
 		setAllExprsLabel.string = "Set all expressions to:";
@@ -145,20 +166,30 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
       HLayout(
         nil,
         // steps number
-        stepsNumberLabel, numberOfStepsBox,
+        stepsNumberLabel, numberOfStepsBox
       ),
 
 			HLayout(
 				nil,
 				// multiply
-				mulLabel, mulField,
+				mulLabel, mulField
 			),
+      // mul dur
+      HLayout(
+        nil,
+        mulDurLabel, mulDurBox
+      ),
 
 			HLayout(
 				nil,
 				// transpose
-				transpositionLabel, transpositionField,
+				transpositionLabel, transpositionField
 			),
+      // transpose dur
+      HLayout(
+        nil,
+        transposeDurLabel, transpositionDurBox
+      ),
 
 			HLayout(
 				nil,
@@ -169,7 +200,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 			HLayout(
 				nil,
 				// set all probs
-				setAllProbsLabel, setAllProbsBox,
+				setAllProbsLabel, setAllProbsBox
 			),
 			// buttons
 			HLayout(randomizeProbsButton)

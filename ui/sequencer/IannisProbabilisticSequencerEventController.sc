@@ -15,8 +15,6 @@ IannisProbabilisticSequencerEventController : CompositeView {
 		data[\expression] = [];
 		data[\realExpression] = [];
 		data[\probability] = [];
-    data[\transposition] = 0;
-    data[\mul] = 1;
 		128.do({arg n;
 			data[\expression] = data[\expression].add("");
 			data[\realExpression] = data[\realExpression].add(nil);
@@ -47,8 +45,34 @@ IannisProbabilisticSequencerEventController : CompositeView {
     this.updatePattern();
   }
 
+  setAdd {arg field, duration = 1;
+			var expr = field.value.interpret;
+			// if there is no except spaces -- assign 0
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 0;
+				expr = 0;
+			});
+
+			if(expr.notNil, {
+        sequencer.setAdd(eventKey, expr, duration);
+			});
+  }
+
+  setMul {arg field, duration = 1;
+			var expr = field.value.interpret;
+			// if there is no anything except spaces -- assign 1
+			if(field.value.findRegexp("[^ \t]").size == 0, {
+				field.value = 1;
+				expr = 1;
+			});
+
+			if(expr.notNil, {
+        sequencer.setMul(eventKey, expr, duration);
+			});
+  }
+
   updatePattern {
     // updatePattern
-    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], data[\mul], data[\transposition], numberOfSteps);
+    sequencer.updateEvent(eventKey, data[\realExpression], data[\probability], numberOfSteps);
   }
 }

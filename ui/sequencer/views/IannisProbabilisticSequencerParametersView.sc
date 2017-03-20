@@ -99,6 +99,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     // play times
     playTimesLabel.string = "Play times:";
     playTimesBox = NumberBox.new;
+    playTimesBox.fixedWidth = 50;
     playTimesBox.decimals = 0;
     playTimesBox.clipLo = 0;
     playTimesBox.clipHi = 999;

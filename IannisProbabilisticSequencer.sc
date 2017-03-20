@@ -1,7 +1,8 @@
 IannisProbabilisticSequencer {
   var <name, <synthName, <length, <seed, 
   <>root, <>scale, <time, <>timeAction, <playTimes,
-  onFinishActions, addOnFinishAction;
+  onFinishActions, addOnFinishAction, 
+  data;
 
   *new {arg name, synthName, length;
     ^super.new.init(name, synthName, length);
@@ -14,6 +15,9 @@ IannisProbabilisticSequencer {
     time = 0;
     this.playTimes = 0;
     onFinishActions = [];
+    data = IdentityDictionary.new;
+    data[\mul] = IdentityDictionary.new;
+    data[\add] = IdentityDictionary.new;
 
     // define main pattern
     Pbindef(name, 
@@ -25,10 +29,9 @@ IannisProbabilisticSequencer {
     this.regenerate();
   }
 
-  updateEvent {arg key, values, weights, mul, add, numberOfSteps;
+  updateEvent {arg key, values, weights, numberOfSteps;
     var newValues = [], newWeights = [];
     var cropedValues, cropedWeights;
-    var newMul = mul;
     cropedValues = values.keep(numberOfSteps);
     cropedWeights = weights.keep(numberOfSteps);
 
@@ -62,9 +65,10 @@ IannisProbabilisticSequencer {
 
     // prevent entering 0 for duration
     if(key == \dur, {
-      if(mul.isNumber, {
-        if(mul <= 0, {
-          newMul = 1;
+      if(data[\mul][key].isNil) {this.setMul(\dur, 1, 1)};
+      if(data[\mul][key][\value].isNumber, {
+        if(data[\mul][key][\value] <= 0, {
+          data[\mul][key][\value] = 1;
         });
       });
     });
@@ -72,13 +76,18 @@ IannisProbabilisticSequencer {
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
     if(newValues.size > 0 && newWeights.indexOfGreaterThan(0).notNil, {
-      Pbindef(name, key, Pwrand(newValues, newWeights, inf)*(newMul?1)+(add?0));
+      Pbindef(name, key, 
+        Pwrand(newValues, newWeights, inf)
+        * Pfunc({data[\mul][key][\current]?1})
+        + Pfunc({data[\add][key][\current]?0}));
     }, {
       if(key == \dur, {
         // if there is no values for duration -- apply default
         // value
         ("There is no values for duration. Applying default duration.").inform;
-        Pbindef(name, key, 1*(newMul?1)+(add?0));
+        Pbindef(name, key, 
+        1 * Pfunc({data[\mul][key][\current]?1})
+        + Pfunc({data[\add][key][\current]?0}));
       }, {
         // otherwise just print that there is no values
         ("There is no values or weights are 0s for key:"+key.asString).inform;
@@ -108,14 +117,31 @@ IannisProbabilisticSequencer {
           var dur = length.next??{length.reset;length.next??{length=4;length.next}};
           var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
           var ptime = Ptime.new.asStream;
+          var mulAddEvents = [];
+
+          // filling mul/add events
+          [\mul, \add].do({arg topkey;
+            data[topkey].keysDo({arg key;
+              var playFunc = {
+                var stream = data[topkey][key][\value];
+                data[topkey][key][\current] = stream.next??{stream.reset;stream.next};
+              };
+              var dur = data[topkey][key][\dur];
+              // add event
+              var event = (play: playFunc, dur: dur);
+              mulAddEvents = mulAddEvents.add(event);
+            });
+          });
+
+          // main pattern
           Pfindur(dur, Ppar([
             Pseed(version, Pbindef(name)),
-            // per beat event
+            // beat counter
             (play: {
               AppClock.sched(0.0, {this.time = ptime.next.round + 1});
             }, 
-            dur: 1);
-          ]))
+            dur: 1)
+          ] ++ mulAddEvents))
         }), playTimes), 
 
         // do on finished playing pattern
@@ -129,6 +155,22 @@ IannisProbabilisticSequencer {
         });
       ])
     );
+  }
+
+  setMul {arg forKey, value, duration;
+    if (data[\mul][forKey].isNil) {data[\mul][forKey] = IdentityDictionary.new};
+    data[\mul][forKey][\value] = value.asStream;
+    data[\mul][forKey][\dur] = duration;
+
+    this.updateRepeater();
+  }
+
+  setAdd {arg forKey, value, duration;
+    if (data[\add][forKey].isNil) {data[\add][forKey] = IdentityDictionary.new};
+    data[\add][forKey][\value] = value.asStream;
+    data[\add][forKey][\dur] = duration;
+
+    this.updateRepeater();
   }
 
   time_ {arg newTime;
@@ -153,11 +195,23 @@ IannisProbabilisticSequencer {
   stop {
     this.time = 1;
     Pdef((name++"_repeater").asSymbol).stop();
+    // reset subevents
+    [\mul, \add].do({arg topkey;
+      data[topkey].keysDo({arg key;
+        data[topkey][key][\value].reset();
+      });
+    });
   }
 
   reset {
     this.time = 1;
     Pdef((name++"_repeater").asSymbol).reset();
+    // reset subevents
+    [\mul, \add].do({arg topkey;
+      data[topkey].keysDo({arg key;
+        data[topkey][key][\value].reset();
+      });
+    });
   }
 
   addOnFinishAction {arg action;
