@@ -11,7 +11,7 @@ IannisProbabilisticSequencerEventController : CompositeView {
     name = argName;
     eventKey = event;
 
-		data = Dictionary.new;
+		data = IdentityDictionary.new;
 		data[\expression] = [];
 		data[\realExpression] = [];
 		data[\probability] = [];
@@ -45,11 +45,11 @@ IannisProbabilisticSequencerEventController : CompositeView {
     this.updatePattern();
   }
 
-  setAdd {arg field, duration = 1;
-			var expr = field.value.interpret;
+  setAdd {arg valueField, duration = 1;
+			var expr = valueField.value.interpret;
 			// if there is no except spaces -- assign 0
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 0;
+			if(valueField.value.findRegexp("[^ \t]").size == 0, {
+				valueField.value = 0;
 				expr = 0;
 			});
 
@@ -58,11 +58,11 @@ IannisProbabilisticSequencerEventController : CompositeView {
 			});
   }
 
-  setMul {arg field, duration = 1;
-			var expr = field.value.interpret;
+  setMul {arg valueField, duration = 1;
+			var expr = valueField.value.interpret;
 			// if there is no anything except spaces -- assign 1
-			if(field.value.findRegexp("[^ \t]").size == 0, {
-				field.value = 1;
+			if(valueField.value.findRegexp("[^ \t]").size == 0, {
+				valueField.value = 1;
 				expr = 1;
 			});
 

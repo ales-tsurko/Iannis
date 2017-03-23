@@ -2,6 +2,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 	var playStopButton, resetButton, updateButton,
 	patternLengthField, seedField, correspondingSequencer,
   rootNumberBox, scalePopup, tuningPopup,
+  quantizationBox, offsetBox,
   arrayOfNotes, playTimesBox;
 
 	*new {arg sequencer;
@@ -17,6 +18,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     var tuningLabel = StaticText.new;
     var playTimesLabel = StaticText.new;
     var beatCounter = StaticText.new;
+    var quantizationLabel = StaticText.new;
+    var offsetLabel = StaticText.new;
     var pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     correspondingSequencer = sequencer;
 
@@ -119,6 +122,36 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     		
     seedField.valueAction = correspondingSequencer.seed;
 
+    // quantization
+    quantizationLabel.string = "Quantization:";
+    quantizationBox = NumberBox.new;
+    quantizationBox.minDecimals = 0;
+    quantizationBox.maxDecimals = 4;
+    quantizationBox.alt_scale = 0.25;
+    quantizationBox.shift_scale = 1;
+    quantizationBox.fixedWidth = 50;
+
+    quantizationBox.action = {arg box;
+      sequencer.setQuantization(box.value);
+    };
+
+    quantizationBox.valueAction = 1;
+
+    // offset
+    offsetLabel.string = "Offset:";
+    offsetBox = NumberBox.new;
+    offsetBox.fixedWidth = 50;
+    offsetBox.minDecimals = 0;
+    offsetBox.maxDecimals = 4;
+    offsetBox.alt_scale = 0.25;
+    offsetBox.shift_scale = 1;
+    offsetBox.clipLo = 0;
+
+    offsetBox.action = {arg box;
+      sequencer.setQuantization(quantizationBox.value, box.value);
+    };
+
+    offsetBox.valueAction = 0;
 
 		// play/stop button
 		playStopButton = Button.new;
@@ -158,6 +191,12 @@ IannisProbabilisticSequencerParametersView : CompositeView {
           patternLengthLabel, patternLengthField, playTimesLabel, playTimesBox,
           nil,
           seedLabel, seedField
+        ),
+        // quantization
+        HLayout(
+          quantizationLabel, quantizationBox,
+          offsetLabel, offsetBox,
+          nil
         )
       ),
 
@@ -166,6 +205,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
       nil,
 
       VLayout(
+        nil,
         HLayout(
           nil, 
           rootLabel, rootNumberBox, rootPitchRepresentation, 
@@ -173,11 +213,12 @@ IannisProbabilisticSequencerParametersView : CompositeView {
         ),
         HLayout(
           nil, tuningLabel, tuningPopup 
-        )
+        ),
+        nil
       )
     );
 
-		this.fixedHeight = 75;
+		this.fixedHeight = 130;
 	}
 
   lengthFieldAction {arg field;
@@ -206,6 +247,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     });
   }
 
+
 	playStopButtonAction {arg button;
 		if(button.value == 1, {
 			correspondingSequencer.play();
@@ -224,4 +266,5 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 		// update seed field
 		seedField.value = correspondingSequencer.seed;
 	}
+
 }

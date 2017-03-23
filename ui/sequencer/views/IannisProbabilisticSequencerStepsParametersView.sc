@@ -20,7 +20,7 @@ IannisProbabilisticSequencerStepsParametersView : CompositeView {
 
 		parentController = parentCtrlr;
 
-		// number of steps field
+		// number of steps
 		stepsNumberLabel.string = "Number of steps:";
     numberOfStepsBox = NumberBox.new;
     numberOfStepsBox.decimals = 0;

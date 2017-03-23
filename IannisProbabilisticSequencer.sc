@@ -1,6 +1,7 @@
 IannisProbabilisticSequencer {
   var <name, <synthName, <length, <seed, 
   <>root, <>scale, <time, <>timeAction, <playTimes,
+  shuffle,
   onFinishActions, addOnFinishAction, 
   data;
 
@@ -18,6 +19,11 @@ IannisProbabilisticSequencer {
     data = IdentityDictionary.new;
     data[\mul] = IdentityDictionary.new;
     data[\add] = IdentityDictionary.new;
+
+    // shuffle is an array of two values: 
+    // a user value, represented by [0,1] range
+    // a real value, represented by a stream
+    shuffle = [0, Pseq([1,1],inf).asStream];
 
     // define main pattern
     Pbindef(name, 
@@ -64,14 +70,14 @@ IannisProbabilisticSequencer {
     newWeights = newWeights.normalizeSum;
 
     // prevent entering 0 for duration
-    if(key == \dur, {
+    if(key == \dur) {
       if(data[\mul][key].isNil) {this.setMul(\dur, 1, 1)};
-      if(data[\mul][key][\value].isNumber, {
-        if(data[\mul][key][\value] <= 0, {
-          data[\mul][key][\value] = 1;
-        });
+      if(data[\mul][key][\value].source.isNumber, {
+        if(data[\mul][key][\value].source <= 0) {
+          data[\mul][key][\value].source = 1;
+        };
       });
-    });
+    };
 
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
@@ -95,6 +101,79 @@ IannisProbabilisticSequencer {
     });
   }
 
+  updateRepeater {
+    Pdef((name++"_repeater").asSymbol, 
+    Plazy({
+      // prepare mul/add events
+      var mulAddEvents = [];
+
+      // filling mul/add events
+      [\mul, \add].do({arg topkey;
+        data[topkey].keysDo({arg key;
+          var stream = data[topkey][key][\value].asStream;
+          var playFunc = {
+            data[topkey][key][\current] = stream.next??{stream.reset;stream.next};
+          };
+          var dur = data[topkey][key][\dur];
+          // add event
+          var event = (play: playFunc, dur: dur);
+          mulAddEvents = mulAddEvents.add(event);
+        });
+      });
+
+      // main pattern
+      Pseq([
+        Pn(
+          Plazy({
+            var dur = length.next??{length.reset;length.next??{length=4;length.next}};
+            var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
+            var ptime = Ptime.new.asStream;
+            // main pattern
+            Pfindur(dur, Ppar([
+              Pseed(version, Pbindef(name)),
+              // beat counter
+              (play: {
+                AppClock.sched(0.0, {this.time = ptime.next.round + 1});
+              }, 
+              dur: 1)
+            ] ++ mulAddEvents))
+          }), playTimes), 
+
+          // do when finished playing pattern
+          Pfuncn({
+            AppClock.sched(0.0, {
+              onFinishActions.do(_.());
+              this.stop();
+            });
+            // should return something
+            1;
+          });
+        ])
+      })
+    );
+  }
+
+  setMul {arg forKey, value, duration;
+    if (data[\mul][forKey].isNil) {data[\mul][forKey] = IdentityDictionary.new};
+    data[\mul][forKey][\value] = PatternProxy(value);
+    data[\mul][forKey][\dur] = duration;
+
+    this.updateRepeater();
+  }
+
+  setAdd {arg forKey, value, duration;
+    if (data[\add][forKey].isNil) {data[\add][forKey] = IdentityDictionary.new};
+    data[\add][forKey][\value] = PatternProxy(value);
+    data[\add][forKey][\dur] = duration;
+
+    this.updateRepeater();
+  }
+
+  time_ {arg newTime;
+    time = newTime;
+    if(timeAction.notNil, {timeAction.value(newTime)});
+  }
+
   length_ {arg newLength;
     length = newLength.asStream;
     this.updateRepeater();
@@ -109,74 +188,6 @@ IannisProbabilisticSequencer {
     this.seed = 2147483647.rand;
   }
 
-  updateRepeater {
-    Pdef((name++"_repeater").asSymbol, 
-    Pseq([
-      Pn(
-        Plazy({
-          var dur = length.next??{length.reset;length.next??{length=4;length.next}};
-          var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
-          var ptime = Ptime.new.asStream;
-          var mulAddEvents = [];
-
-          // filling mul/add events
-          [\mul, \add].do({arg topkey;
-            data[topkey].keysDo({arg key;
-              var playFunc = {
-                var stream = data[topkey][key][\value];
-                data[topkey][key][\current] = stream.next??{stream.reset;stream.next};
-              };
-              var dur = data[topkey][key][\dur];
-              // add event
-              var event = (play: playFunc, dur: dur);
-              mulAddEvents = mulAddEvents.add(event);
-            });
-          });
-
-          // main pattern
-          Pfindur(dur, Ppar([
-            Pseed(version, Pbindef(name)),
-            // beat counter
-            (play: {
-              AppClock.sched(0.0, {this.time = ptime.next.round + 1});
-            }, 
-            dur: 1)
-          ] ++ mulAddEvents))
-        }), playTimes), 
-
-        // do on finished playing pattern
-        Pfuncn({
-          AppClock.sched(0.0, {
-            onFinishActions.do(_.());
-            this.stop();
-          });
-          // should return something
-          1;
-        });
-      ])
-    );
-  }
-
-  setMul {arg forKey, value, duration;
-    if (data[\mul][forKey].isNil) {data[\mul][forKey] = IdentityDictionary.new};
-    data[\mul][forKey][\value] = value.asStream;
-    data[\mul][forKey][\dur] = duration;
-
-    this.updateRepeater();
-  }
-
-  setAdd {arg forKey, value, duration;
-    if (data[\add][forKey].isNil) {data[\add][forKey] = IdentityDictionary.new};
-    data[\add][forKey][\value] = value.asStream;
-    data[\add][forKey][\dur] = duration;
-
-    this.updateRepeater();
-  }
-
-  time_ {arg newTime;
-    time = newTime;
-    if(timeAction.notNil, {timeAction.value(newTime)});
-  }
 
   playTimes_ {arg newValue;
     if (newValue == 0) {
@@ -212,6 +223,32 @@ IannisProbabilisticSequencer {
         data[topkey][key][\value].reset();
       });
     });
+  }
+
+  setQuantization {arg quantization, offset = 0;
+    Pdef((name++"_repeater").asSymbol).quant = quantization;
+
+    // assign offset
+    Pbindef(name, \timingOffset, offset);
+
+    // update quantization for muls and adds
+    [\mul, \add].do({arg topkey;
+      data[topkey].keysDo({arg key;
+        data[topkey][key][\value].quant = quantization;
+      });
+    });
+
+    // this.updateRepeater();
+  }
+
+  shuffle_ {arg value;
+    var halfValue = value.clip(0.0, 1.0) * 0.5;
+    shuffle[0] = value.clip(0.0, 1.0);
+    shuffle[1] = Pseq([1+halfValue, 1-halfValue], inf).asStream;
+  }
+
+  shuffle {
+    ^shuffle[0];
   }
 
   addOnFinishAction {arg action;
