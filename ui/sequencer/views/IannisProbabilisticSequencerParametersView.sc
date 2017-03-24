@@ -3,6 +3,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 	patternLengthField, seedField, correspondingSequencer,
   rootNumberBox, scalePopup, tuningPopup,
   quantizationBox, offsetBox,
+  swingKnob,
   arrayOfNotes, playTimesBox;
 
 	*new {arg sequencer;
@@ -20,6 +21,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     var beatCounter = StaticText.new;
     var quantizationLabel = StaticText.new;
     var offsetLabel = StaticText.new;
+    var swingLabel = StaticText.new;
+    var swingValueLabel = StaticText.new;
     var pitches = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     correspondingSequencer = sequencer;
 
@@ -153,6 +156,19 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
     offsetBox.valueAction = 0;
 
+    // swing
+    swingLabel.string = "Swing:";
+    swingValueLabel.align = \center;
+    swingKnob = Knob.new;
+    swingKnob.mode = \vert;
+
+    swingKnob.action = {arg knob;
+      sequencer.shuffle = knob.value;
+      swingValueLabel.string = (knob.value.round(0.01)*100).asString++"%";
+    };
+
+    swingKnob.valueAction = 0;
+
 		// play/stop button
 		playStopButton = Button.new;
 		playStopButton.states = [["Play"], ["Stop"]];
@@ -192,11 +208,13 @@ IannisProbabilisticSequencerParametersView : CompositeView {
           nil,
           seedLabel, seedField
         ),
-        // quantization
         HLayout(
+          // quantization
           quantizationLabel, quantizationBox,
           offsetLabel, offsetBox,
-          nil
+          nil,
+          //swing
+          VLayout(VLayout(nil,swingLabel,nil),nil), VLayout(swingKnob, swingValueLabel)
         )
       ),
 

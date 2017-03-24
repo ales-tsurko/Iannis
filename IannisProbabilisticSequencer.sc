@@ -19,6 +19,7 @@ IannisProbabilisticSequencer {
     data = IdentityDictionary.new;
     data[\mul] = IdentityDictionary.new;
     data[\add] = IdentityDictionary.new;
+    data[\event] = IdentityDictionary.new;
 
     // shuffle is an array of two values: 
     // a user value, represented by [0,1] range
@@ -82,18 +83,27 @@ IannisProbabilisticSequencer {
     // if newValues contains values and weights contains non-zero(s)
     // -- apply it
     if(newValues.size > 0 && newWeights.indexOfGreaterThan(0).notNil, {
+      var newValue = Pwrand(newValues, newWeights, inf);
+
       Pbindef(name, key, 
-        Pwrand(newValues, newWeights, inf)
+        newValue
         * Pfunc({data[\mul][key][\current]?1})
         + Pfunc({data[\add][key][\current]?0}));
+
+        // update data
+        data[\event][key] = newValue;
     }, {
       if(key == \dur, {
+        var newValue = 1;
         // if there is no values for duration -- apply default
         // value
         ("There is no values for duration. Applying default duration.").inform;
         Pbindef(name, key, 
-        1 * Pfunc({data[\mul][key][\current]?1})
+        newValue * Pfunc({data[\mul][key][\current]?1})
         + Pfunc({data[\add][key][\current]?0}));
+
+        // update data
+        data[\event][key] = newValue;
       }, {
         // otherwise just print that there is no values
         ("There is no values or weights are 0s for key:"+key.asString).inform;
@@ -242,9 +252,14 @@ IannisProbabilisticSequencer {
   }
 
   shuffle_ {arg value;
+    var durPattern = data[\event][\dur]?1;
     var halfValue = value.clip(0.0, 1.0) * 0.5;
     shuffle[0] = value.clip(0.0, 1.0);
-    shuffle[1] = Pseq([1+halfValue, 1-halfValue], inf).asStream;
+    shuffle[1] = Pseq([1+halfValue, 1-halfValue], inf);
+    Pbindef(name, 
+      // apply only for durations that's shorter then 0.5
+      \dur, Pif(durPattern < 0.5, durPattern * shuffle[1], durPattern)
+    );
   }
 
   shuffle {
