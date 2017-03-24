@@ -235,6 +235,11 @@ IannisProbabilisticSequencer {
     });
   }
 
+  panic {
+    Pbindef((name++"_repeater").asSymbol, \kill, true);
+    this.updateRepeater();
+  }
+
   setQuantization {arg quantization, offset = 0;
     Pdef((name++"_repeater").asSymbol).quant = quantization;
 

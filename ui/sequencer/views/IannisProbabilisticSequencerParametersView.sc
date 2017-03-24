@@ -4,6 +4,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
   rootNumberBox, scalePopup, tuningPopup,
   quantizationBox, offsetBox,
   swingKnob,
+  panicButton,
   arrayOfNotes, playTimesBox;
 
 	*new {arg sequencer;
@@ -169,6 +170,15 @@ IannisProbabilisticSequencerParametersView : CompositeView {
 
     swingKnob.valueAction = 0;
 
+    // panic button
+    panicButton = Button.new;
+    panicButton.states = [["Panic!"]];
+    panicButton.fixedWidth = 200;
+
+    panicButton.action = {arg button;
+      if (button.value == 0) {sequencer.panic()};
+    };
+
 		// play/stop button
 		playStopButton = Button.new;
 		playStopButton.states = [["Play"], ["Stop"]];
@@ -214,7 +224,10 @@ IannisProbabilisticSequencerParametersView : CompositeView {
           offsetLabel, offsetBox,
           nil,
           //swing
-          VLayout(VLayout(nil,swingLabel,nil),nil), VLayout(swingKnob, swingValueLabel)
+          swingLabel, VLayout(swingKnob, swingValueLabel),
+          nil,
+          // panic
+          panicButton
         )
       ),
 
