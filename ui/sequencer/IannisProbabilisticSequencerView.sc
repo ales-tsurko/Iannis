@@ -5,7 +5,6 @@ IannisProbabilisticSequencerView : CompositeView {
   <availableParameters,
   parametersListView,
   userParametersViews,
-  addParameterButton,
 	<sequencer;
 
 	*new {arg name, instrument, numberOfPitches = 4, numberOfRhythmicFigures = 2, patternLength = 8;
@@ -71,14 +70,6 @@ IannisProbabilisticSequencerView : CompositeView {
     parametersContainerView.canvas.layout.spacing = 0;
     parametersContainerView.canvas.layout.margins = 0!4;
 
-    // add parameter button
-    addParameterButton = Button.new;
-    addParameterButton.fixedWidth = 200;
-    addParameterButton.states = [["Add Parameters"]];
-    addParameterButton.action = {arg button;
-      if (button.value == 0) {this.showParameterChooser()};
-    };
-
     // parameters view
 		parametersView = IannisProbabilisticSequencerParametersView.new(sequencer);
 
@@ -86,7 +77,6 @@ IannisProbabilisticSequencerView : CompositeView {
 		// Layout
 		//
     this.layout = VLayout(
-      HLayout(nil, addParameterButton),
       parametersContainerView,
 			parametersView
 		);
@@ -101,7 +91,7 @@ IannisProbabilisticSequencerView : CompositeView {
     var addButton = Button.new;
     parametersListView = ListView.new;
 
-    addParameterButton.enabled = false;
+    parametersView.addParameterButton.enabled = false;
 
     parametersListView.items = availableParameters;
     parametersListView.selectionMode = \extended;
@@ -143,10 +133,20 @@ IannisProbabilisticSequencerView : CompositeView {
       parametersListView.items = availableParameters;
     };
 
+    // double click
+    parametersListView.mouseDownAction = {arg view, x, y, modifiers, buttonNumber, clickCount;
+      if (view.value.notNil) {
+        if (buttonNumber == 0 && clickCount == 2) {
+          addButton.doAction();
+        };
+      };
+    };
+
     window.layout = VLayout(parametersListView, HLayout(nil, addButton));
     window.alwaysOnTop = true;
     window.front;
-    window.onClose = {addParameterButton.enabled = true};
+    window.endFullScreen;
+    window.onClose = {parametersView.addParameterButton.enabled = true};
   }
 
   userParameterWillClose {arg key;

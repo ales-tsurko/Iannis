@@ -5,6 +5,7 @@ IannisProbabilisticSequencerParametersView : CompositeView {
   quantizationBox, offsetBox,
   swingKnob,
   panicButton,
+  <addParameterButton,
   arrayOfNotes, playTimesBox;
 
 	*new {arg sequencer;
@@ -32,6 +33,14 @@ IannisProbabilisticSequencerParametersView : CompositeView {
     beatCounter.font = Font("Arial", 42);
     correspondingSequencer.timeAction = {arg newTime;
       beatCounter.string = newTime.asString;
+    };
+
+    // add parameter button
+    addParameterButton = Button.new;
+    addParameterButton.fixedWidth = 200;
+    addParameterButton.states = [["Add Parameters"]];
+    addParameterButton.action = {arg button;
+      if (button.value == 0) {this.parent.showParameterChooser()};
     };
 
     // root
@@ -236,7 +245,6 @@ IannisProbabilisticSequencerParametersView : CompositeView {
       nil,
 
       VLayout(
-        nil,
         HLayout(
           nil, 
           rootLabel, rootNumberBox, rootPitchRepresentation, 
@@ -245,7 +253,8 @@ IannisProbabilisticSequencerParametersView : CompositeView {
         HLayout(
           nil, tuningLabel, tuningPopup 
         ),
-        nil
+        nil,
+        HLayout(nil, addParameterButton)
       )
     );
 
