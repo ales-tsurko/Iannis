@@ -36,7 +36,7 @@ IannisProbabilisticSequencerMultipleStepsView : ScrollView {
 
       closeButton.action = {arg button;
         if (button.value == 0) {
-          parentController.close();
+          parentController.closeButtonAction(button);
         };
       };
 

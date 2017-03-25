@@ -35,10 +35,11 @@ IannisProbabilisticSequencerEventController : CompositeView {
 
 		this.layout.spacing = 0;
     this.layout.margins = 0!4;
+  }
 
-    this.onClose = {
-      parentView.userParameterWillClose(eventKey);
-    }
+  closeButtonAction {arg button;
+    this.visible = false;
+    parentView.userParameterWillClose(eventKey);
   }
 
   stepAction {arg stepView;

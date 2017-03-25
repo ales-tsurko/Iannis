@@ -2,9 +2,9 @@ IannisProbabilisticSequencerView : CompositeView {
   var <parametersContainerView, 
   <parametersView,
   eventControllers,
-  <userParameters,
   <availableParameters,
   parametersListView,
+  userParametersViews,
   addParameterButton,
 	<sequencer;
 
@@ -51,7 +51,7 @@ IannisProbabilisticSequencerView : CompositeView {
     });
 
     availableParameters = availableParameters++~paramsWithoutDefaults;
-    userParameters = [];
+    userParametersViews = IdentityDictionary.new;
 
     // pitch
     eventControllers[\degree] = IannisProbabilisticSequencerEventController(sequencer, "Note", \degree, numberOfPitches, true, this);
@@ -120,27 +120,36 @@ IannisProbabilisticSequencerView : CompositeView {
 
     addButton.action = {arg button;
       parametersListView.selection.do({arg index;
-        var key = availableParameters.removeAt(index).asSymbol;
-        var parameterController = IannisProbabilisticSequencerEventController(sequencer, key.asString, key, 1, false, this);
-        parameterController.stepsView.canvas.background = Color.gray(0.72, 1);
-        parameterController.parametersView.background = Color.gray(0.85, 1);
+        var key = availableParameters[index].asSymbol;
+        if (userParametersViews[key.asSymbol].notNil) {
+          userParametersViews[key.asSymbol].visible = true;
+        } {
+          var parameterController = IannisProbabilisticSequencerEventController(sequencer, key.asString, key, 1, false, this);
+          parameterController.stepsView.canvas.background = Color.gray(0.72, 1);
+          parameterController.parametersView.background = Color.gray(0.85, 1);
 
-        parametersContainerView.canvas.layout.add(parameterController);
+          parametersContainerView.canvas.layout.add(parameterController);
 
-        userParameters = userParameters.add(key);
+          userParametersViews[key.asSymbol] = parameterController;
+        };
       });
 
-      // update view
+      // update available parameters
+      availableParameters = availableParameters.reject({arg item, n;
+        parametersListView.selection.includes(n);
+      });
+
+      // update parameters list
       parametersListView.items = availableParameters;
     };
 
     window.layout = VLayout(parametersListView, HLayout(nil, addButton));
+    window.alwaysOnTop = true;
     window.front;
     window.onClose = {addParameterButton.enabled = true};
   }
 
   userParameterWillClose {arg key;
-    userParameters.removeAt(userParameters.indexOfEqual(key.asSymbol));
     availableParameters = availableParameters.add(key);
 
     if (parametersListView.notNil) {
