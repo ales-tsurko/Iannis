@@ -37,7 +37,7 @@ IannisProbabilisticSequencerView : CompositeView {
     //
         parametersListView = ListView.new;
     eventControllers = IdentityDictionary.new;
-    availableParameters = ["pan", "legato", "sustain", "oct", "stretch", "tempo", "strum", "detune", "mtranspose", "gtranspose", "ctranspose"];
+    availableParameters = ["pan", "legato", "sustain", "octave", "stretch", "tempo", "strum", "detune", "mtranspose", "gtranspose", "ctranspose"];
     // add synth parameters
     ~paramsWithoutDefaults = SynthDescLib.global.at(instrument.asSymbol).controlNames
     .select({arg item;
