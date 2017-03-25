@@ -1,11 +1,13 @@
 IannisProbabilisticSequencerEventController : CompositeView {
-  var <data, <stepsView, <parametersView, <eventKey, <name, <sequencer, <>numberOfSteps;
+  var <data, <stepsView, <parametersView, <parentView, 
+  <eventKey, <name, <sequencer, <>numberOfSteps;
 
-  *new {arg sequencer, name, eventKey, numberOfSteps = 4;
-    ^super.new.init(sequencer, name, eventKey, numberOfSteps);
+  *new {arg sequencer, name, eventKey, numberOfSteps = 4, isDefault = false, parentView;
+    ^super.new.init(sequencer, name, eventKey, numberOfSteps, isDefault, parentView);
   }
 
-  init {arg seq, argName, event, numOfSteps;
+  init {arg seq, argName, event, numOfSteps, isDefault, prntView;
+    parentView = prntView;
     numberOfSteps = numOfSteps;
     sequencer = seq;
     name = argName;
@@ -21,7 +23,7 @@ IannisProbabilisticSequencerEventController : CompositeView {
 			data[\probability] = data[\probability].add(0);
 		});
 
-		stepsView = IannisProbabilisticSequencerMultipleStepsView.new(numberOfSteps, this);
+		stepsView = IannisProbabilisticSequencerMultipleStepsView.new(numberOfSteps, this, isDefault.not);
 		parametersView = IannisProbabilisticSequencerStepsParametersView.new(numberOfSteps, this);
 
 		//
@@ -33,6 +35,10 @@ IannisProbabilisticSequencerEventController : CompositeView {
 
 		this.layout.spacing = 0;
     this.layout.margins = 0!4;
+
+    this.onClose = {
+      parentView.userParameterWillClose(eventKey);
+    }
   }
 
   stepAction {arg stepView;

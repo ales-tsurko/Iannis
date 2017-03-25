@@ -137,13 +137,14 @@ IannisProbabilisticSequencer {
           Plazy({
             var dur = length.next??{length.reset;length.next??{length=4;length.next}};
             var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
-            var ptime = Ptime.new.asStream;
+            // var ptime = Ptime.new.asStream;
+            AppClock.sched(0.0, {this.time = 0});
             // main pattern
             Pfindur(dur, Ppar([
               Pseed(version, Pbindef(name)),
               // beat counter
               (play: {
-                AppClock.sched(0.0, {this.time = ptime.next.round + 1});
+                AppClock.sched(0.0, {this.time = this.time + 1});
               }, 
               dur: 1)
             ] ++ mulAddEvents))

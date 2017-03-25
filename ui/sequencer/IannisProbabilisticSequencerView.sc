@@ -1,6 +1,11 @@
 IannisProbabilisticSequencerView : CompositeView {
   var <parametersContainerView, 
-  <pitchController, <rhythmController, <parametersView,
+  <parametersView,
+  eventControllers,
+  <userParameters,
+  <availableParameters,
+  parametersListView,
+  addParameterButton,
 	<sequencer;
 
 	*new {arg name, instrument, numberOfPitches = 4, numberOfRhythmicFigures = 2, patternLength = 8;
@@ -8,7 +13,7 @@ IannisProbabilisticSequencerView : CompositeView {
 	}
 
 	init {arg name, instrument, numberOfPitches, numberOfRhythmicFigures, patternLength;
-    var n = 0, evenStepsViewBackground = Color.gray(0.79, 1), 
+    var evenStepsViewBackground = Color.gray(0.79, 1), 
     oddStepsViewBackground = Color.gray(0.72, 1), 
     evenParametersViewBackground = Color.gray(0.925, 1), 
     oddParametersViewBackground = Color.gray(0.85, 1);
@@ -27,64 +32,120 @@ IannisProbabilisticSequencerView : CompositeView {
 
     parametersContainerView.minHeight = 200;
 
-    parametersContainerView.canvas.layout = VLayout();
+    //
+    // init parameters
+    //
+        parametersListView = ListView.new;
+    eventControllers = IdentityDictionary.new;
+    availableParameters = ["pan", "legato", "sustain", "oct", "stretch", "tempo", "strum", "detune", "mtranspose", "gtranspose", "ctranspose"];
+    // add synth parameters
+    ~paramsWithoutDefaults = SynthDescLib.global.at(instrument.asSymbol).controlNames
+    .select({arg item;
+      (item != 'freq')
+      .and(item != 'midinote')
+      .and(item != 'note')
+      .and(item != 'gate')
+      .and(item != 'amp')
+      .and(item != 'dur')
+      .and(availableParameters.indexOfEqual(item.asString).isNil);
+    });
+
+    availableParameters = availableParameters++~paramsWithoutDefaults;
+    userParameters = [];
+
+    // pitch
+    eventControllers[\degree] = IannisProbabilisticSequencerEventController(sequencer, "Note", \degree, numberOfPitches, true, this);
+    eventControllers[\degree].stepsView.canvas.background = evenStepsViewBackground;
+    eventControllers[\degree].parametersView.background = evenParametersViewBackground;
+    // duration
+    eventControllers[\dur] = IannisProbabilisticSequencerEventController(sequencer, "Rhythm", \dur, numberOfRhythmicFigures, true, this);
+    eventControllers[\dur].stepsView.canvas.background = oddStepsViewBackground;
+    eventControllers[\dur].parametersView.background = oddParametersViewBackground;
+    // amp
+    eventControllers[\amp] = IannisProbabilisticSequencerEventController(sequencer, "Amplitude", \amp, 1, true, this);
+    eventControllers[\amp].stepsView.canvas.background = evenStepsViewBackground;
+    eventControllers[\amp].parametersView.background = evenParametersViewBackground;
+
+    // add parameters to container
+    parametersContainerView.canvas.layout = VLayout(*eventControllers.values);
     parametersContainerView.canvas.layout.spacing = 0;
     parametersContainerView.canvas.layout.margins = 0!4;
 
-    // init parameters
-    // pitch controller
-    pitchController = IannisProbabilisticSequencerEventController(sequencer, "Note", \degree, numberOfPitches);
-    pitchController.stepsView.canvas.background = evenStepsViewBackground;
-		pitchController.parametersView.background = evenParametersViewBackground;
-    
-    // rhythm controller
-    rhythmController = IannisProbabilisticSequencerEventController(sequencer, "Rhythm", \dur, numberOfRhythmicFigures);
-    rhythmController.stepsView.canvas.background = oddStepsViewBackground;
-    rhythmController.parametersView.background = oddParametersViewBackground;
-
-    // add parameters to container
-    parametersContainerView.canvas.layout.add(pitchController);
-    parametersContainerView.canvas.layout.add(rhythmController);
-
-    // add controllers for synth parameters
-    SynthDescLib.global.at(instrument.asSymbol).controlNames.do({arg paramName;
-      if((paramName != 'freq').and(paramName != 'midinote').and(paramName != 'gate'), {
-        var background = [];
-        var newParameterController = IannisProbabilisticSequencerEventController(sequencer, paramName, paramName.asSymbol, 4);
-
-        // applying background
-        if((n%2).even, {
-          background = background.add(evenStepsViewBackground);
-          background = background.add(evenParametersViewBackground);
-        }, {
-          background = background.add(oddStepsViewBackground);
-          background = background.add(oddParametersViewBackground);
-        });
-
-        newParameterController.stepsView.canvas.background = background[0];
-        newParameterController.parametersView.background = background[1];
-
-        // add new parameter controller to layout
-        parametersContainerView.canvas.layout.add(newParameterController);
-
-        n = n + 1;
-      });
-    });
+    // add parameter button
+    addParameterButton = Button.new;
+    addParameterButton.fixedWidth = 200;
+    addParameterButton.states = [["Add Parameters"]];
+    addParameterButton.action = {arg button;
+      if (button.value == 0) {this.showParameterChooser()};
+    };
 
     // parameters view
 		parametersView = IannisProbabilisticSequencerParametersView.new(sequencer);
 
-
 		//
 		// Layout
 		//
-		this.layout = VLayout(
-			parametersView,
-      parametersContainerView
+    this.layout = VLayout(
+      HLayout(nil, addParameterButton),
+      parametersContainerView,
+			parametersView
 		);
 
 		this.layout.spacing = 0;
     this.layout.margins = 0!4;
 	}
 
+  showParameterChooser {
+    var screenCenter = Rect().centerIn(Window.screenBounds);
+    var window = Window("Parameters", Rect(screenCenter.x-100, screenCenter.y-150, 200, 300), false);
+    var addButton = Button.new;
+    parametersListView = ListView.new;
+
+    addParameterButton.enabled = false;
+
+    parametersListView.items = availableParameters;
+    parametersListView.selectionMode = \extended;
+    parametersListView.action = {arg view;
+      if (view.selection.size == 0) {
+        addButton.enabled = false;
+      };
+      addButton.enabled = true;
+    };
+
+
+    // init add button with false state, because
+    // on initialization there are no selections
+    addButton.fixedWidth = 100;
+    addButton.states = [["Add"]];
+
+    addButton.action = {arg button;
+      parametersListView.selection.do({arg index;
+        var key = availableParameters.removeAt(index).asSymbol;
+        var parameterController = IannisProbabilisticSequencerEventController(sequencer, key.asString, key, 1, false, this);
+        parameterController.stepsView.canvas.background = Color.gray(0.72, 1);
+        parameterController.parametersView.background = Color.gray(0.85, 1);
+
+        parametersContainerView.canvas.layout.add(parameterController);
+
+        userParameters = userParameters.add(key);
+      });
+
+      // update view
+      parametersListView.items = availableParameters;
+    };
+
+    window.layout = VLayout(parametersListView, HLayout(nil, addButton));
+    window.front;
+    window.onClose = {addParameterButton.enabled = true};
+  }
+
+  userParameterWillClose {arg key;
+    userParameters.removeAt(userParameters.indexOfEqual(key.asSymbol));
+    availableParameters = availableParameters.add(key);
+
+    if (parametersListView.notNil) {
+      parametersListView.items = availableParameters;
+      parametersListView.doAction();
+    };
+  }
 }
