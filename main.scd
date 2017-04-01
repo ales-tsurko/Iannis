@@ -39,4 +39,6 @@ r.stopRecording();
 r.playSample(true);
 r.stopSample();
 
+IannisRecorderController("~/Desktop".standardizePath).front;
+
 Server.freeAll;
