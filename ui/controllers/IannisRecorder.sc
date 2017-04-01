@@ -1,65 +1,119 @@
 IannisRecorder : CompositeView {
-  var currentPlayerSynth, 
-  <currentBuffer,
-  <currentFilePath,
+  var playerSynth, recorderSynth,
+  startTime, recordingDur,
+  maxDur,
+  recordingBuffer, playerBuffer,
+  <filePath,
   <isPlaying,
+  <isRecording,
   <>inputBusNum, <>quant,
-  <dir;
+  <recordingDir;
 
-  *new {arg dir;
-    ^super.new.init(dir);
+  *new {arg recordingDir;
+    ^super.new.init(recordingDir);
   }
 
   init {arg samplesDir;
-    dir = samplesDir;
+    recordingDir = samplesDir;
     inputBusNum = 0;
     quant = 4;
     isPlaying = false;
+    isRecording = false;
+    this.maxDur = 30;
+
+    // SynthDefs
 
     SynthDef(\iannis_mic_in, {arg in, out;
       Out.ar(out, SoundIn.ar(in));
     }).add();
+
+    SynthDef(\iannis_recorder, {arg bufnum, in, isRun = 1;
+      RecordBuf.ar(In.ar(in, 2), bufnum, 0, 1, 0, isRun, 0, doneAction: 2);
+    }).add();
+
+    SynthDef(\iannis_sample_player, {arg bufnum, fadeDur = 0.025, out = 0, isLoop = 0;
+      var fades = EnvGen.ar(Env.circle([0, 1, 1, 0], [fadeDur, BufDur.kr(bufnum)-(fadeDur*3), fadeDur]));
+      var output = PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum), loop: isLoop);
+      output = output * fades;
+
+      Out.ar(out, output);
+    }).add();
   }
 
-  prepareForRecord {
-    currentFilePath = dir +/+ ("Recording-"++thisThread.seconds.asString).replace(".", "-") ++ ".aif";
-    // Server.default.prepareForRecord(currentFilePath, 2);
+  maxDur_ {arg value;
+    if (isRecording.not) {
+      maxDur = value;
+
+      recordingBuffer = Buffer.alloc(Server.default, value*Server.default.sampleRate, 2);
+    } {
+      "can't set maxDur while recording".warn;
+    }
+  }
+
+  writePlayerBuffer {
+    // init and copy data
+    playerBuffer.free();
+    playerBuffer = Buffer.alloc(Server.default, recordingDur*Server.default.sampleRate, 2);
+    recordingBuffer.copyData(playerBuffer);
+
+    // write a file
+    filePath = recordingDir +/+ ("Recording-"++thisThread.seconds.asString).replace(".", "-") ++ ".aif";
+    playerBuffer.write(filePath, "aiff", "float");
   }
 
   record {
-    Routine.run({
-      this.prepareForRecord();
+    if (isRecording.not) {
+      Routine({
+        "start recording".postln;
 
-      // start recording
-      Server.default.record(currentFilePath, inputBusNum, 2);
-    }, quant: this.quant);
+        isRecording = true;
+
+        recorderSynth = Synth.tail(nil, \iannis_recorder, [
+          \bufnum, recordingBuffer,
+          \in, inputBusNum
+        ]);
+        startTime = TempoClock.default.seconds;
+      }).play(TempoClock.default, quant);
+    }
   }
 
   stopRecording {
-    Routine.run({
-      // stop recording
-      Server.default.stopRecording();
+    if (isRecording) {
+      Routine({
+        "stop recording".postln;
+        recorderSynth.set([\isRun, 0]);
+        recordingDur = TempoClock.default.seconds - startTime;
 
-      // init current buffer
-      currentBuffer = Buffer.read(Server.default, currentFilePath);
-    }, quant: this.quant);  
+        // init a player buffer and write a file
+        this.writePlayerBuffer();
+
+        isRecording = false;
+      }).play(TempoClock.default, quant);
+    }
   }
 
-  playSample {arg isLoop = false;
-    if(isPlaying.not && Server.default.isRecording.not) {
-      Routine.run({
-        currentPlayerSynth = currentBuffer.play(isLoop);
+  playSample {arg isLoop = false, fadeDur = 0.025;
+    if(isPlaying.not && isRecording.not) {
+      Routine({
+        var loop;
+        if (isLoop) {loop = 1} {loop=0};
+        playerSynth = Synth(\iannis_sample_player, [
+          \bufnum, playerBuffer,
+          \isLoop, loop,
+          \fadeDur, fadeDur
+        ]);
+
         isPlaying = isLoop;
-      }, quant: this.quant);
+      }).play(TempoClock.default, quant);
     }
   }
 
   stopSample {
-    if (isPlaying && Server.default.isRecording.not) {
-      Routine.run({
-        currentPlayerSynth.free();
+    if (isPlaying && isRecording.not) {
+      Routine({
+        playerSynth.free();
         isPlaying = false;
-      }, quant: this.quant);
+      }).play(TempoClock.default, quant);
     }
   }
 
