@@ -1,0 +1,347 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(28),  "Ales Tsurko",  "Granulator",  
+	Array.prNew(1),  Event.prNew,  Array.prNew(8),  "Default",  
+	Event.prNew,  Array.prNew(4),  "http://alestsurko.by",  Event.prNew,  
+	Array.prNew(4),  Array.prNew(1),  Event.prNew,  Array.prNew(8),  
+	"OSC 1",  Array.prNew(4),  Event.prNew,  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  "Sample",  Event.prNew,  
+	Array.prNew(4),  Event.prNew,  Array.prNew(12),  "Grain Parameters",  
+	Event.prNew,  Array.prNew(12),  "Grain Envelope",  Event.prNew,  
+	Array.prNew(8),  Array.prNew(5),  Event.prNew,  Array.prNew(8),  
+	"Rectangle",  {
+                      var buffer, signal;
+                      var bufSize = 8192;
+                      buffer = Buffer.alloc(Server.default, bufSize, 1);
+                      signal = Signal.rectWindow(bufSize);
+                      buffer.loadCollection(signal);
+
+                      // return
+                      buffer.bufnum;
+                    },  Event.prNew,  Array.prNew(4),  
+	"Triangle",  Event.prNew,  Array.prNew(8),  "Hanning",  
+	{
+                      var buffer, signal;
+                      var bufSize = 8192;
+                      buffer = Buffer.alloc(Server.default, bufSize, 1);
+                      signal = Signal.hanningWindow(bufSize);
+                      buffer.loadCollection(signal);
+
+                      // return
+                      buffer.bufnum;
+                    },  Event.prNew,  Array.prNew(8),  "Hamming",  
+	{
+                      var buffer, signal;
+                      var bufSize = 8192;
+                      buffer = Buffer.alloc(Server.default, bufSize, 1);
+                      signal = Signal.hammingWindow(bufSize);
+                      buffer.loadCollection(signal);
+
+                      // return
+                      buffer.bufnum;
+                    },  Event.prNew,  Array.prNew(8),  "Welch",  
+	{
+                      var buffer, signal;
+                      var bufSize = 8192;
+                      buffer = Buffer.alloc(Server.default, bufSize, 1);
+                      signal = Signal.welchWindow(bufSize);
+                      buffer.loadCollection(signal);
+
+                      // return
+                      buffer.bufnum;
+                    },  Array.prNew(1),  Event.prNew,  Array.prNew(8),  
+	Array.prNew(4),  Event.prNew,  Array.prNew(4),  Event.prNew,  
+	Array.prNew(8),  "Duration",  Event.prNew,  Array.prNew(4),  
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(12),  
+	"Position",  Event.prNew,  Array.prNew(4),  Event.prNew,  
+	Array.prNew(4),  Event.prNew,  Array.prNew(8),  "Density",  
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  "Randomness",  Event.prNew,  
+	Array.prNew(4),  Event.prNew,  Array.prNew(8),  "Envelope",  
+	Event.prNew,  Array.prNew(8),  "Envelope",  Event.prNew,  
+	Array.prNew(4),  Event.prNew,  Array.prNew(8),  "Output",  
+	Event.prNew,  Array.prNew(8),  Array.prNew(4),  Event.prNew,  
+	Array.prNew(12),  "Amp",  Event.prNew,  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  "Pan",  Event.prNew,  
+	Array.prNew(4),  "Granular sampler."
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 7,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ nil,  nil,  'author',  o[2],  
+		'name',  o[3],  'factory_presets',  o[4],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'site',  o[10],  'type',  'synth',  
+		nil,  nil,  'ui',  o[11],  
+		'description',  o[109],  nil,  nil ],  
+	// Array
+	4, [ o[5] ],  
+	// Event
+	5, [ array: o[6],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	6, [ 'name',  o[7],  nil,  nil,  
+		'values',  o[8],  nil,  nil ],  
+	// Event
+	8, [ array: o[9],  size: 0,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	9, [ nil,  nil,  nil,  nil ],  
+	// Event
+	11, [ array: o[12],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	12, [ nil,  nil,  'pages',  o[13] ],  
+	// Array
+	13, [ o[14] ],  
+	// Event
+	14, [ array: o[15],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	15, [ 'name',  o[16],  nil,  nil,  
+		'groups',  o[17],  nil,  nil ],  
+	// Array
+	17, [ o[18],  o[25],  o[85],  o[93] ],  
+	// Event
+	18, [ array: o[19],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	19, [ nil,  nil,  'bufnum',  o[20] ],  
+	// Event
+	20, [ array: o[21],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	21, [ 'name',  o[22],  nil,  nil,  
+		nil,  nil,  'spec',  'bufnum',  
+		nil,  nil,  'ui',  o[23] ],  
+	// Event
+	23, [ array: o[24],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	24, [ nil,  nil,  'type',  'recorder' ],  
+	// Event
+	25, [ array: o[26],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	26, [ 'name',  o[27],  nil,  nil,  
+		nil,  nil,  'grain_env_bufnum',  o[28],  
+		'rows',  o[53],  nil,  nil ],  
+	// Event
+	28, [ array: o[29],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	29, [ 'name',  o[30],  nil,  nil,  
+		nil,  nil,  'spec',  'bufnum',  
+		nil,  nil,  'ui',  o[31] ],  
+	// Event
+	31, [ array: o[32],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	32, [ nil,  nil,  'type',  'popup',  
+		nil,  nil,  'items',  o[33] ],  
+	// Array
+	33, [ o[34],  o[38],  o[41],  o[45],  
+		o[49] ],  
+	// Event
+	34, [ array: o[35],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	35, [ 'name',  o[36],  nil,  nil,  
+		nil,  nil,  'value',  o[37] ],  
+	// Event
+	38, [ array: o[39],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	39, [ 'name',  o[40],  nil,  nil ],  
+	// Event
+	41, [ array: o[42],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	42, [ 'name',  o[43],  nil,  nil,  
+		nil,  nil,  'value',  o[44] ],  
+	// Event
+	45, [ array: o[46],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	46, [ 'name',  o[47],  nil,  nil,  
+		nil,  nil,  'value',  o[48] ],  
+	// Event
+	49, [ array: o[50],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	50, [ 'name',  o[51],  nil,  nil,  
+		nil,  nil,  'value',  o[52] ],  
+	// Array
+	53, [ o[54] ],  
+	// Event
+	54, [ array: o[55],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	55, [ nil,  nil,  nil,  nil,  
+		'align',  'center',  'items',  o[56] ],  
+	// Array
+	56, [ o[57],  o[64],  o[71],  o[78] ],  
+	// Event
+	57, [ array: o[58],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	58, [ 'grain_dur',  o[59],  nil,  nil ],  
+	// Event
+	59, [ array: o[60],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	60, [ 'name',  o[61],  nil,  nil,  
+		nil,  nil,  'ui',  o[62] ],  
+	// Event
+	62, [ array: o[63],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	63, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	64, [ array: o[65],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	65, [ nil,  nil,  'pos',  o[66] ],  
+	// Event
+	66, [ array: o[67],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	67, [ 'name',  o[68],  nil,  nil,  
+		nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[69] ],  
+	// Event
+	69, [ array: o[70],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	70, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	71, [ array: o[72],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	72, [ nil,  nil,  'density',  o[73] ],  
+	// Event
+	73, [ array: o[74],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	74, [ 'name',  o[75],  nil,  nil,  
+		nil,  nil,  'ui',  o[76] ],  
+	// Event
+	76, [ array: o[77],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	77, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	78, [ array: o[79],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	79, [ 't1rand',  o[80],  nil,  nil ],  
+	// Event
+	80, [ array: o[81],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	81, [ 'name',  o[82],  nil,  nil,  
+		nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[83] ],  
+	// Event
+	83, [ array: o[84],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	84, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	85, [ array: o[86],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	86, [ 'name',  o[87],  nil,  nil,  
+		nil,  nil,  'env',  o[88] ],  
+	// Event
+	88, [ array: o[89],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	89, [ 'name',  o[90],  nil,  nil,  
+		nil,  nil,  'ui',  o[91] ],  
+	// Event
+	91, [ array: o[92],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	92, [ nil,  nil,  'type',  'env_adsr' ],  
+	// Event
+	93, [ array: o[94],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	94, [ 'name',  o[95],  nil,  nil,  
+		nil,  nil,  'row',  o[96] ],  
+	// Event
+	96, [ array: o[97],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	97, [ nil,  nil,  nil,  nil,  
+		'align',  'right',  'items',  o[98] ],  
+	// Array
+	98, [ 'amp',  o[99],  'pan',  o[104] ],  
+	// Event
+	99, [ array: o[100],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	100, [ 'name',  o[101],  nil,  nil,  
+		nil,  nil,  'spec',  'amp',  
+		nil,  nil,  'ui',  o[102] ],  
+	// Event
+	102, [ array: o[103],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	103, [ nil,  nil,  'type',  'hslider' ],  
+	// Event
+	104, [ array: o[105],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	105, [ 'name',  o[106],  nil,  nil,  
+		nil,  nil,  'spec',  'pan',  
+		nil,  nil,  'ui',  o[107] ],  
+	// Event
+	107, [ array: o[108],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	108, [ nil,  nil,  'type',  'hslider' ]
+];
+prUnarchive(o,p);
