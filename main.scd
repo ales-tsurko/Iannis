@@ -32,13 +32,6 @@ SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add
 
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
-r = IannisRecorder("~/Desktop".standardizePath);
-r.quant = 4;
-r.record();
-r.stopRecording();
-r.playSample(true);
-r.stopSample();
-
 IannisRecorderController("~/Desktop".standardizePath).front;
 
 Server.freeAll;

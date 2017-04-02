@@ -2,6 +2,7 @@ IannisRecorderController : CompositeView {
   var <recordingDir,
   chooseDirectoryButton,
   filesListView,
+  directoryLabel,
   maxDurationBox,
   sampleView,
   inputBusNumBox, isInHardwareCheckBox,
@@ -18,7 +19,8 @@ IannisRecorderController : CompositeView {
     var inputBusLabel = StaticText.new;
     var quantizationLabel = StaticText.new;
     var maxDurationLabel = StaticText.new;
-
+    directoryLabel = StaticText.new;
+    directoryLabel.align = \left;
     recordingDir = samplesDir;
     recorder = IannisRecorder(recordingDir, this);
 
@@ -56,7 +58,7 @@ IannisRecorderController : CompositeView {
 
     // is input hardware
     isInHardwareCheckBox = CheckBox.new;
-    isInHardwareCheckBox.string = "Is hardware";
+    isInHardwareCheckBox.string = "hardware";
     isInHardwareCheckBox.action = {arg checkBox;
       this.isInHardwareCheckBoxAction(checkBox);
     };
@@ -77,6 +79,10 @@ IannisRecorderController : CompositeView {
     // files list
     filesListView = ListView.new;
     filesListView.fixedWidth = 150;
+    filesListView.selectionMode = \single;
+    filesListView.action = {arg listView;
+      this.filesListViewAction(listView);
+    };
 
     // play button
     playButton = Button.new;
@@ -88,7 +94,7 @@ IannisRecorderController : CompositeView {
 
     // is loop
     isLoopCheckBox = CheckBox.new;
-    isLoopCheckBox.string = "Is loop";
+    isLoopCheckBox.string = "loop";
     isLoopCheckBox.action = {arg checkBox;
       this.isLoopCheckBoxAction(checkBox);
     };
@@ -97,6 +103,7 @@ IannisRecorderController : CompositeView {
     quantizationLabel.string = "Quantization:";
     quantizeBox = NumberBox.new;
     quantizeBox.fixedWidth = 50;
+    quantizeBox.clipLo = 0;
     quantizeBox.minDecimals = 0;
     quantizeBox.maxDecimals = 4;
     quantizeBox.alt_scale = 0.25;
@@ -116,9 +123,13 @@ IannisRecorderController : CompositeView {
         nil,
         maxDurationLabel, maxDurationBox, 
       ),
+
+      directoryLabel, 
+      
       HLayout(
-        sampleView, filesListView
+        filesListView, sampleView 
       ),
+      
       HLayout(
         recordButton, playButton, isLoopCheckBox,
         nil,
@@ -128,6 +139,11 @@ IannisRecorderController : CompositeView {
   }
 
   chooseDirectoryButtonAction {arg button;
+    if (button.value == 0) {
+      FileDialog({arg path;
+          recorder.recordingDir = path;
+        }, {}, 2, 0, true);
+    }
   }
 
   maxDurationBoxAction {arg box;
@@ -166,12 +182,41 @@ IannisRecorderController : CompositeView {
     recorder.isPlayingLoop = checkBox.value;
   }
 
+  filesListViewAction {arg listView;
+    recorder.soundfile = recorder.soundfilesInDir[listView.value];
+    if (recorder.isPlaying) {
+      fork {
+        recorder.stopSampleImmediately();
+
+        Server.default.sync;
+
+        AppClock.sched(0.0, {playButton.valueAction = 1});
+      }
+    }
+  }
+
   // delegate methods
   didUpdateSample {
     AppClock.sched(0.0, {
       sampleView.soundfile = recorder.soundfile;
       sampleView.read(0, recorder.soundfile.numFrames);
-      // sampleView.refresh();
+      sampleView.refresh();
+    });
+  }
+
+  didUpdateFilesList {
+    AppClock.sched(0.0, {
+      filesListView.clear();
+      filesListView.items = [];
+      recorder.soundfilesInDir.do({arg item; 
+        filesListView.items = filesListView.items.add(item.path.basename);
+      });
+    });
+  }
+
+  didUpdateDirectory {
+    AppClock.sched(0.0, {
+      directoryLabel.string = recorder.recordingDir;
     });
   }
 

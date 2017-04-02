@@ -1,25 +1,24 @@
 IannisRecorder {
   var delegate,
   playerSynth, recorderSynth,
-  startTime, recordingDur,
+  startTime, <recordingDur,
   maxDur,
   recordingBuffer, playerBuffer, 
   <>isInputHardware,
   <soundfile,
-  <filePath,
   <isPlaying,
   <isPlayingLoop,
   <isRecording,
   <>inputBusNum, <>quant,
-  <recordingDir;
+  <recordingDir, <soundfilesInDir;
 
   *new {arg recordingDir, delegate;
     ^super.new.init(recordingDir, delegate);
   }
 
   init {arg samplesDir, viewController;
-    recordingDir = samplesDir;
     delegate = viewController;
+    this.recordingDir = samplesDir;
     inputBusNum = 0;
     quant = 4;
     isPlaying = false;
@@ -58,9 +57,35 @@ IannisRecorder {
     }
   }
 
+  updateFilesList {
+    fork{
+      soundfilesInDir = SoundFile.collect(recordingDir+/+"*");
+
+      Server.default.sync;
+
+      delegate.didUpdateFilesList();
+    }
+  }
+
+  recordingDir_ {arg value;
+    fork {
+      recordingDir = value;
+
+      delegate.didUpdateDirectory();
+
+      this.updateFilesList();
+
+      Server.default.sync;
+
+      if (soundfilesInDir.size > 0) {
+        this.soundfile = soundfilesInDir[0];
+      }
+    }
+  }
+
   writePlayerBuffer {
     fork {
-      var numOfSamples;
+      var numOfSamples, filePath;
       // init and copy data
       playerBuffer.free();
       numOfSamples = round(recordingDur * Server.default.sampleRate);
@@ -76,8 +101,22 @@ IannisRecorder {
       Server.default.sync;
 
       // update soundfile
-      soundfile = SoundFile.new;
+      // soundfile = SoundFile.new;
       soundfile.openRead(filePath);
+
+      Server.default.sync;
+
+      delegate.didUpdateSample();
+
+      this.updateFilesList();
+    }
+  }
+
+  soundfile_ {arg value;
+    soundfile = value;
+    fork {
+      playerBuffer.free();
+      playerBuffer = Buffer.read(Server.default, soundfile.path);
 
       Server.default.sync;
 
@@ -138,6 +177,8 @@ IannisRecorder {
           \fadeDur, fadeDur
         ]);
 
+        isPlaying = true;
+
         playerSynth.onFree({
           isPlaying = false;
           delegate.didStopPlaySample();
@@ -154,6 +195,12 @@ IannisRecorder {
       Routine({
         playerSynth.free();
       }).play(TempoClock.default, quant);
+    }
+  }
+
+  stopSampleImmediately {
+    if (isPlaying && isRecording.not) {
+      playerSynth.free();
     }
   }
 
