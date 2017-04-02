@@ -26,7 +26,7 @@ IannisRecorderController : CompositeView {
 
     // choose directory
     chooseDirectoryButton = Button.new;
-    chooseDirectoryButton.fixedWidth = 100;
+    chooseDirectoryButton.fixedWidth = 150;
     chooseDirectoryButton.states = [["Directory"]];
     chooseDirectoryButton.action = {arg button;
       this.chooseDirectoryButtonAction(button);
@@ -116,24 +116,31 @@ IannisRecorderController : CompositeView {
     quantizeBox.valueAction = 1;
 
     this.layout = VLayout(
+      directoryLabel,
+
       HLayout(
-        chooseDirectoryButton,
-        nil,
-        inputBusLabel, inputBusNumBox, isInHardwareCheckBox,
-        nil,
-        maxDurationLabel, maxDurationBox, 
+        filesListView, sampleView
       ),
 
-      directoryLabel, 
-      
       HLayout(
-        filesListView, sampleView 
-      ),
-      
-      HLayout(
-        recordButton, playButton, isLoopCheckBox,
-        nil,
-        quantizationLabel, quantizeBox
+        VLayout(
+          chooseDirectoryButton,
+          nil
+        ),
+
+        VLayout(
+          HLayout(
+            recordButton, playButton, isLoopCheckBox,
+            nil,
+            quantizationLabel, quantizeBox
+          ),
+          HLayout(
+            inputBusLabel, inputBusNumBox, isInHardwareCheckBox,
+            nil,
+            maxDurationLabel, maxDurationBox
+          ),
+          nil
+        )
       )
     )
   }
