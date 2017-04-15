@@ -38,8 +38,8 @@ IannisProbabilisticSequencerView : CompositeView {
     eventControllers = IdentityDictionary.new;
     availableParameters = ["pan", "legato", "sustain", "octave", "stretch", "tempo", "strum", "detune", "mtranspose", "gtranspose", "ctranspose"];
     // add synth parameters
-// TODO: загрузка всех синтов и эффектов уже должна быть сделана в другом окне,
-// здесь она для теста, чтобы параметры синта были доступны
+    // TODO: загрузка всех синтов и эффектов уже должна быть сделана в другом окне,
+    // здесь она для теста, чтобы параметры синта были доступны
     ~paramsWithoutDefaults = SynthDescLib.getLib(\iannis_synth)[instrument.asSymbol].controlNames
     .select({arg item;
       (item != 'freq')

@@ -1,9 +1,9 @@
 (
 // For development only
-// ----------------------------------------------------------
+// ---------------------------------------------------------
 Quarks.install("~/Desktop/Iannis".standardizePath);
 Quarks.uninstall("Iannis");
-// ----------------------------------------------------------
+// ---------------------------------------------------------
 )
 
 s.boot;
@@ -33,5 +33,34 @@ SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
 IannisRecorderController("~/Desktop".standardizePath).front;
+
+
+
+// Tabbed view
+
+l = StaticText();
+l.string = "Hello";
+
+v = CompositeView();
+v.fixedHeight = 300;
+v.fixedWidth = 200;
+
+v.layout = HLayout(l);
+
+t = IannisTabbedView("tab", v);
+
+t.front();
+
+// adding a tab
+m = StaticText();
+m.string = "another tab";
+
+z = CompositeView();
+z.fixedHeight = 300;
+z.fixedWidth = 200;
+
+z.layout = HLayout(m);
+
+t.addPage("tab 2", z);
 
 Server.freeAll;
