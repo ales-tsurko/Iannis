@@ -1,12 +1,13 @@
 IannisSynthMetadataParser {
-  var <synthName, <metadata, view;
+  var <synthName, <metadata, view, node;
 
-  *new {arg metadata;
-    ^super.new.init(metadata);
+  *new {arg metadata, node;
+    ^super.new.init(metadata, node);
   }
 
-  init {arg inMetadata;
+  init {arg inMetadata, aNode;
     metadata = inMetadata;
+    node = aNode;
   }
 
   parse {
@@ -57,21 +58,23 @@ IannisSynthMetadataParser {
   }
 
   parseGroup {arg groupObj, pageIndex;
-    var newGroup = CompositeView();
-    newGroup.layout = VLayout();
-    
-    if (groupObj[\name].notNil) {
-      var label = StaticText();
-      label.string = groupObj[\name];
+    var newGroup;
+    var groupName = groupObj[\name]?"";
 
-      newGroup.background = Color.gray(0.65);
+    newGroup = IannisGroupView(groupName);
+    newGroup.contentView.layout = VLayout();
 
-      newGroup.layout.add(HLayout(label, nil));
+    // hide header if name is not specified
+    if (groupObj[\name].isNil) {
+      newGroup.headerView.visible = false;
+    } {
+      newGroup.contentView.background = Color.gray(0.77);
+    newGroup.contentView.fixedHeight = 200;
     };
 
     // parse parameters
     groupObj[\parameters].do({arg parameter;
-      this.parseGroupParameter(parameter, newGroup);
+      this.parseGroupParameter(parameter, newGroup.contentView);
     });
 
     view.addGroupViewToPageAtIndex(newGroup, pageIndex);

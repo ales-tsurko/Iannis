@@ -10,11 +10,11 @@ IannisTabbedView : CompositeView {
     currentIndex = 0;
 
     tabsContainer = ScrollView();
-    tabsContainer.fixedHeight = 40;
+    tabsContainer.fixedHeight = 60;
     tabsContainer.hasBorder = false;
     tabsContainer.hasVerticalScroller = false;
     tabsContainer.canvas = CompositeView();
-    tabsContainer.canvas.layout = HLayout();
+    tabsContainer.canvas.layout = HLayout(nil);
 
     stackLayout = StackLayout();
 
@@ -28,26 +28,27 @@ IannisTabbedView : CompositeView {
 
 
   addPage {arg name, view;
-    var button = Button();
+    var button = CompositeView();
+    var buttonLabel = StaticText();
     var content = ScrollView();
 
-    button.fixedHeight = 20;
+    button.fixedHeight = 40;
     button.fixedWidth = 110;
-    button.states = [[name]];
+    button.background = Color.gray(0.6);
+    buttonLabel.string = name;
+    button.layout = HLayout(nil, buttonLabel, nil);
 
     tabs = tabs.add(button);
 
-    button.action = {arg button;
-      if (button.value == 0) {
-        this.switchPage(this.currentIndex(button));
-      };
+    button.mouseDownAction = {arg button;
+      this.switchPage(this.currentIndex(button));
     };
 
     content.canvas = view;
     content.hasBorder = false;
     views = views.add(content);
 
-    tabsContainer.canvas.layout.add(button);
+    tabsContainer.canvas.layout.insert(button, tabs.size-1);
     stackLayout.add(content);
 
     this.switchPage(currentIndex);
