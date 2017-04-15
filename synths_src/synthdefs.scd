@@ -184,39 +184,44 @@ s.boot;
 // );
 
 ~metadata = (
-	type: \synth,
-	name: "Granulator",
-	author: "Ales Tsurko",
-	site: "http://alestsurko.by",
-	description: "Granular sampler.",
-	ui: (
-		pages: [
-			// каждая страница -- отдельный таб
-			(
-				name: "OSC 1",
-				groups: [
-					(
-						// если параметра name нет, то группа не будет
-						// выделяться как группа
-						// параметр name может быть пустой строкой "",
-						// тогда группа будет визуально группой, но
-						// без имени
-						bufnum: (
-							name: "Sample",
-							spec: \bufnum,
-							ui: (
-								type: \recorder
-							)
-						)
-					),
-					(
-						name: "Grain Parameters",
-						grain_env_bufnum: (
-							name: "Grain Envelope",
-							spec: \bufnum,
-							ui: (
-								type: \popup,
-								items: [
+  type: \synth,
+  name: "Granulator",
+  author: "Ales Tsurko",
+  site: "http://alestsurko.by",
+  description: "Granular sampler.",
+  ui: (
+    pages: [
+      // каждая страница -- отдельный таб
+      (
+        name: "OSC 1",
+        groups: [
+          // Bufnum group
+          (
+            // если параметра name нет, то группа не будет
+            // выделяться как группа
+            // параметр name может быть пустой строкой "",
+            // тогда группа будет визуально группой, но
+            // без имени
+            parameters: [(
+              key: \bufnum,
+              // name: "Sample",
+              // spec: \bufnum,
+              ui: (
+                type: \recorder
+              )
+            )]
+          ),
+
+          // Grain Parameters Group
+          (
+            name: "Grain Parameters",
+            parameters: [(
+              key: \grain_env_bufnum,
+              name: "Grain Envelope",
+              spec: \bufnum,
+              ui: (
+                type: \popup,
+                items: [
                   (
                     name: "Rectangle",
                     value: {
@@ -273,94 +278,100 @@ s.boot;
                       buffer.bufnum;
                     }
                   )
-								]
-							)
-						),
-						rows: [(
-							align: \center,
-							items: [
-								(
-									grain_dur: (
-										name: "Duration",
-										// spec: ...,
-										ui: (
-											type: \knob
-										)
-									)
-								),
-								(
-									pos: (
-										name: "Position",
-										spec: \unipolar,
-										ui: (
-											type: \knob
-										)
-									)
-								),
-								(
-									density: (
-										name: "Density",
-										// spec: ...,
-										ui: (
-											type: \knob
-										)
-									)
-								),
-								(
-									t1rand: (
-										name: "Randomness",
-										spec: \unipolar,
-										ui: (
-											type: \knob
-										)
-									)
-								)
-							]
-						)]
-					),
-					(
-						name: "Envelope",
-						env: (
-							name: "Envelope",
-							// spec: ...,
-							ui: (
-								type: \env_adsr
-							)
-						)
-					),
-					(
-						name: "Output",
-						row: (
-							align: \right,
-							items: [
-								amp: (
-									name: "Amp",
-									spec: \amp,
-									ui: (
-										type: \hslider
-									)
-								),
-								pan: (
-									name: "Pan",
-									spec: \pan,
-									ui: (
-										type: \hslider
-									)
-								)
-							]
-						)
-					)
-				]
-			)
-		]
-	),
-	factory_presets: [
-		(
-			name: "Default",
-			values: ()
-		)
-	]
+                ]
+              )
+            ),
+            (
+              // parameters row
+              isRow: true,
+              align: \center,
+
+              parameters: [(
+                key: \grain_dur,
+                name: "Duration",
+                // spec: ...,
+                ui: (
+                  type: \knob
+                )
+              ),
+              (
+                key: \pos,
+                name: "Position",
+                spec: \unipolar,
+                ui: (
+                  type: \knob
+                )
+              ),
+              (
+                key: \density,
+                name: "Density",
+                // spec: ...,
+                ui: (
+                  type: \knob
+                )
+              ),
+              (
+                key: \t1rand,
+                name: "Randomness",
+                spec: \unipolar,
+                ui: (
+                  type: \knob
+                )
+              )]
+            )
+          ]),
+
+          // Envelope Group
+          (
+            name: "Envelope",
+            parameters: [(
+              key: \env,
+              name: "Envelope",
+              // spec: ...,
+              ui: (
+                type: \env_adsr
+              )
+            )]
+          ),
+
+          // Output group
+          (
+            name: "Output",
+            parameters: [(
+              isRow: true,
+              align: \right,
+
+              parameters: [(
+                key: \amp,
+                name: "Amp",
+                spec: \amp,
+                ui: (
+                  type: \hslider
+                )
+              ),
+              (
+                key: \pan,
+                name: "Pan",
+                spec: \pan,
+                ui: (
+                  type: \hslider
+                )
+              )]
+            )]
+          )
+        ]
+      )
+    ]
+  ),
+  factory_presets: [(
+    name: "Default",
+    values: ()
+  )]
 );
+
+p = IannisSynthMetadataParser(~metadata);
+v = p.parse();
+v.front();
 
 SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1, 
   gran_dur = 1, pos = 0.0, density = 4, t1rand = 0.1,

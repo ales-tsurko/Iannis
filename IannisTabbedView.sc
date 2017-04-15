@@ -1,5 +1,5 @@
 IannisTabbedView : CompositeView {
-  var currentIndex, tabsContainer, tabs, views;
+  var currentIndex, <tabsContainer, tabs, <views, stackLayout;
 
   *new {arg initialName, initialView;
     ^super.new.init(initialName, initialView);
@@ -9,12 +9,18 @@ IannisTabbedView : CompositeView {
     tabs = [];
     currentIndex = 0;
 
-    tabsContainer = CompositeView();
-    tabsContainer.fixedHeight = 30;
-    tabsContainer.layout = HLayout();
+    tabsContainer = ScrollView();
+    tabsContainer.fixedHeight = 40;
+    tabsContainer.hasBorder = false;
+    tabsContainer.hasVerticalScroller = false;
+    tabsContainer.canvas = CompositeView();
+    tabsContainer.canvas.layout = HLayout();
+
+    stackLayout = StackLayout();
 
     this.layout = VLayout(
-      tabsContainer
+      tabsContainer,
+      stackLayout
     );
 
     this.addPage(initName, initView);
@@ -41,8 +47,8 @@ IannisTabbedView : CompositeView {
     content.hasBorder = false;
     views = views.add(content);
 
-    tabsContainer.layout.add(button);
-    this.layout.add(content);
+    tabsContainer.canvas.layout.add(button);
+    stackLayout.add(content);
 
     this.switchPage(currentIndex);
   }
@@ -56,12 +62,6 @@ IannisTabbedView : CompositeView {
   }
 
   switchPage {arg index;
-    views.do({arg view, n;
-      if (index == n) {
-        view.visible = true;
-      } {
-        view.visible = false;
-      };
-    });
+    stackLayout.index = index;
   }
 }
