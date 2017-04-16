@@ -1,5 +1,6 @@
 IannisRecorderController : CompositeView {
   var <recordingDir,
+  <value,
   chooseDirectoryButton,
   filesListView,
   directoryLabel,
@@ -208,6 +209,9 @@ IannisRecorderController : CompositeView {
       sampleView.soundfile = recorder.soundfile;
       sampleView.read(0, recorder.soundfile.numFrames);
       sampleView.refresh();
+
+      value = recorder.playerBuffer;
+      this.doAction();
     });
   }
 

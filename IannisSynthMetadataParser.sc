@@ -69,38 +69,125 @@ IannisSynthMetadataParser {
       newGroup.headerView.visible = false;
     } {
       newGroup.contentView.background = Color.gray(0.77);
-    newGroup.contentView.fixedHeight = 200;
     };
 
     // parse parameters
     groupObj[\parameters].do({arg parameter;
-      this.parseGroupParameter(parameter, newGroup.contentView);
+      if (parameter[\isRow].isNil) {
+        var element = this.parseUIElement(parameter[\key], parameter[\name], parameter[\spec], parameter[\ui]);
+        newGroup.contentView.layout.add(element)
+      } {
+        // if is row
+        var align = parameter[\align];
+        var parameters = parameter[\parameters];
+        var row = this.parseRow(parameters, align);
+        newGroup.contentView.layout.add(row);
+      };
     });
 
     view.addGroupViewToPageAtIndex(newGroup, pageIndex);
   }
 
-  parseGroupParameter {arg parameterObj, groupView; 
-    if (parameterObj[\isRow].isNil) {
-      switch(
-        parameterObj[\ui][\type],
-        \recorder, {groupView.layout.add(this.parseRecorderUI())}
-      );
-    } {
-      // parse row
-    };
+  parseRow {arg parametersArr, align;
+    var returnLayout;
+    var view = CompositeView();
+    view.layout = HLayout();
+
+    parametersArr.do({arg obj;
+      var element = this.parseUIElement(obj[\key], obj[\name], obj[\spec],obj[\ui]);
+      view.layout.add(element);
+    });
+
+    switch(align,
+      \left, {returnLayout = HLayout(nil, view)},
+      \center, {returnLayout = HLayout(nil, view, nil)},
+      \right, {returnLayout = HLayout(view, nil)}
+    );
+    ^returnLayout;
   }
 
-  parseRecorderUI {
+  parseUIElement {arg key, name, spec, uiObj;
+    var view;
+
+    switch(
+      uiObj[\type],
+      \recorder, {
+        view = this.parseRecorderUI(key);
+      },
+      \popup, {
+        view = this.parsePopupUI(key, name, uiObj);
+      },
+      \knob, {
+        view = this.parseKnobUI(key, name, spec, uiObj);
+      }
+    );
+
+    ^view;
+  }
+
+
+  parseRecorderUI {arg key;
     var newRecorder = IannisRecorderController("~/Desktop".standardizePath);
-    // newRecorder.action = {arg recorder;
-      // view.node.set(key, recorder.bufnum);
-    // };
-  ^newRecorder;
+    newRecorder.action = {arg recorder;
+      node.set(key, recorder.value);
+    };
+
+    ^newRecorder;
+  }
+
+  parsePopupUI {arg key, name, uiObj;
+    var view = CompositeView();
+    var label = StaticText();
+    var popup = PopUpMenu();
+    var itemsAndValues = ();
+
+    uiObj[\items].do({arg item;
+      itemsAndValues[item[\name].asSymbol] = item[\value].value;
+    });
+
+    label.string = name;
+    popup.fixedWidth = 150;
+    popup.items = itemsAndValues.keys.asArray;
+
+    popup.action = {arg p;
+      var value = itemsAndValues.values[p.value];
+      node.set(key, value);
+    };
+
+    view.layout = VLayout(label, popup);
+
+    ^HLayout(view, nil);
   }
 
   parsePresets {arg presetsObj;
     postln("parse presets:"+presetsObj);
+  }
+
+  parseKnobUI {arg key, name, spec, uiObj;
+    var view = CompositeView();
+    var label = StaticText();
+    var valueLabel = StaticText();
+    var knob = Knob();
+    // view.fixedWidth = 90;
+    label.string = name;
+    label.align = \center;
+    valueLabel.align = \center;
+    knob.fixedWidth = 40;
+    knob.fixedHeight = 40;
+    knob.mode = \vert;
+
+    // apply spec and action to knob
+    knob.action = {arg k;
+      var newValue = spec.asSpec.map(k.value);
+      node.set(key, newValue);
+      valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+    };
+
+    knob.valueAction = spec.asSpec.unmap(spec.asSpec.default);
+
+    view.layout = VLayout(label, HLayout(knob), valueLabel);
+
+    ^view;
   }
 
 }

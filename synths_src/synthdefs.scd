@@ -204,8 +204,6 @@ s.boot;
             // без имени
             parameters: [(
               key: \bufnum,
-              // name: "Sample",
-              // spec: \bufnum,
               ui: (
                 type: \recorder
               )
@@ -218,7 +216,6 @@ s.boot;
             parameters: [(
               key: \grain_env_bufnum,
               name: "Grain Envelope",
-              spec: \bufnum,
               ui: (
                 type: \popup,
                 items: [
@@ -234,10 +231,6 @@ s.boot;
                       // return
                       buffer.bufnum;
                     }
-                  ),
-                  (
-                    name: "Triangle",
-                    // value: ... Env.triangle
                   ),
                   (
                     name: "Hanning",
@@ -283,13 +276,13 @@ s.boot;
             ),
             (
               // parameters row
-              isRow: true,
+              isRow: 0,
               align: \center,
 
               parameters: [(
                 key: \grain_dur,
                 name: "Duration",
-                // spec: ...,
+                spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
                 ui: (
                   type: \knob
                 )
@@ -305,7 +298,7 @@ s.boot;
               (
                 key: \density,
                 name: "Density",
-                // spec: ...,
+                spec: ControlSpec(1, 16, \lin, 1, 1),
                 ui: (
                   type: \knob
                 )
@@ -338,7 +331,7 @@ s.boot;
           (
             name: "Output",
             parameters: [(
-              isRow: true,
+              isRow: 0,
               align: \right,
 
               parameters: [(
@@ -369,6 +362,7 @@ s.boot;
   )]
 );
 
+s.boot();
 p = IannisSynthMetadataParser(~metadata);
 v = p.parse();
 v.front();

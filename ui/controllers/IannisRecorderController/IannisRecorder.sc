@@ -3,7 +3,7 @@ IannisRecorder {
   playerSynth, recorderSynth,
   startTime, <recordingDur,
   maxDur,
-  recordingBuffer, playerBuffer, 
+  recordingBuffer, <playerBuffer, 
   <>isInputHardware,
   <soundfile,
   <isPlaying,
