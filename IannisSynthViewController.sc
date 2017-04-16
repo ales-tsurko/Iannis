@@ -1,13 +1,14 @@
 IannisSynthViewController : CompositeView {
-  var <synthName, <pagesView, <node, 
+  var <synthName, <pagesView, <node, <metadata, 
   toolbarView, synthNameLabel;
 
-  *new {arg node;
-    ^super.new.init(node);
+  *new {arg node, metadata;
+    ^super.new.init(node, metadata);
   }
 
-  init {arg aNode;
+  init {arg aNode, metad;
     node = aNode;
+    metadata = metad;
     this.fixedWidth = 680;
     this.layout = VLayout();
     this.initToolbar();

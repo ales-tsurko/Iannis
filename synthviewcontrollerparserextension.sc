@@ -1,19 +1,6 @@
-IannisSynthMetadataParser {
-  var <synthName, <metadata, view, node;
-
-  *new {arg metadata, node;
-    ^super.new.init(metadata, node);
-  }
-
-  init {arg inMetadata, aNode;
-    metadata = inMetadata;
-    node = aNode;
-  }
++ IannisSynthViewController {
 
   parse {
-    // init view
-    view = IannisSynthViewController();
-
     metadata.keysDo({arg key;
       switch(key,
         \name, {this.parseName(metadata[\name])},
@@ -21,12 +8,10 @@ IannisSynthMetadataParser {
         \factory_presets, {this.parsePresets(metadata[\factory_presets])}
       );
     });
-
-    ^view;
   }
 
   parseName {arg name;
-    view.synthName = name;
+    this.synthName = name;
   }
 
   parseUI {arg uiObj;
@@ -46,10 +31,10 @@ IannisSynthMetadataParser {
     if (numberOfPages == 1 && pageObj[\name].isNil) {
       // hide tab bar if there is just one page 
       // and the former has no name
-      view.addPage("tab");
-      view.pagesView.tabsContainer.visible = false; 
+      this.addPage("tab");
+      this.pagesView.tabsContainer.visible = false; 
     } {
-      view.addPage(pageObj[\name]);
+      this.addPage(pageObj[\name]);
     };
 
     pageObj[\groups].do({arg groupObj;
@@ -85,11 +70,10 @@ IannisSynthMetadataParser {
       };
     });
 
-    view.addGroupViewToPageAtIndex(newGroup, pageIndex);
+    this.addGroupViewToPageAtIndex(newGroup, pageIndex);
   }
 
   parseRow {arg parametersArr, align;
-    var returnLayout;
     var view = CompositeView();
     view.layout = HLayout();
 
@@ -98,12 +82,7 @@ IannisSynthMetadataParser {
       view.layout.add(element);
     });
 
-    switch(align,
-      \left, {returnLayout = HLayout(view, nil)},
-      \center, {returnLayout = HLayout(nil, view, nil)},
-      \right, {returnLayout = HLayout(nil, view)}
-    );
-    ^returnLayout;
+    ^this.parseAlignment(view, align);
   }
 
   parseUIElement {arg key, name, spec, uiObj;
@@ -122,6 +101,12 @@ IannisSynthMetadataParser {
       },
       \hslider, {
         view = this.parseSliderUI(key, name, spec, uiObj, \horizontal);
+      },
+      \vslider, {
+        view = this.parseSliderUI(key, name, spec, uiObj, \vertical);
+      },
+      \env_adsr, {
+        view = this.parseEnvADSRUI(key, name, uiObj);
       }
     );
 
@@ -159,11 +144,7 @@ IannisSynthMetadataParser {
 
     view.layout = VLayout(label, popup);
 
-    ^HLayout(view, nil);
-  }
-
-  parsePresets {arg presetsObj;
-    postln("parse presets:"+presetsObj);
+    ^this.parseAlignment(view, uiObj[\align]);
   }
 
   parseKnobUI {arg key, name, spec, uiObj;
@@ -171,7 +152,6 @@ IannisSynthMetadataParser {
     var label = StaticText();
     var valueLabel = StaticText();
     var knob = Knob();
-    // view.fixedWidth = 90;
     label.string = name;
     label.align = \center;
     valueLabel.align = \center;
@@ -190,7 +170,7 @@ IannisSynthMetadataParser {
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
 
-    ^view;
+    ^this.parseAlignment(view, uiObj[\align]);
   }
 
   parseSliderUI {arg key, name, spec, uiObj, orientation;
@@ -224,10 +204,107 @@ IannisSynthMetadataParser {
 
       label.align = \right;
       valueLabel.align = \left;
+      valueLabel.fixedWidth = 60;
+
       view.layout = HLayout(label, slider, valueLabel);
     }
 
-    ^view;
+    ^this.parseAlignment(view, uiObj[\align]);
   }
 
+  parseEnvADSRUI {arg key, name, uiObj;
+    var view = EnvelopeView();
+    var curves = 0!3;
+    var index = 0, previousY;
+    var nodeSpec = ControlSpec(0.001, 50, 2);
+    view.fixedHeight = 200;
+    view.fixedWidth = 580;
+    view.setEnv(Env.adsr());
+    view.curves = curves;
+    view.setEditable(0, false);
+    view.keepHorizontalOrder = true;
+    view.gridOn_(true);
+    view.grid = 0.1@0;
+    view.gridColor = Color.gray(0.8);
+    view.step = 0;
+
+    view.action = {arg env;
+      var newValues = env.value;
+      var envValues = ();
+      var times = env.value[0].differentiate;
+      var outputValue = [];
+
+      envValues[\attack] = nodeSpec.map(times[1]); // add attack
+      envValues[\decay] = nodeSpec.map(times[2]); // add decay
+      envValues[\sustain] = env.value[1][2]; // add sustain
+      envValues[\release] = nodeSpec.map(times[3]); // add release
+
+      env.setString(1, "attack = "++envValues[\attack].round(0.001));
+      env.setString(2, "decay = "++envValues[\decay].round(0.001)++"; sustain = "++envValues[\sustain].round(0.001));
+      env.setString(3, "release = "++envValues[\release].round(0.001));
+
+      // disable y movements for attack and release
+      newValues[1][1] = 1; // attack is always 1 on Y-axis
+      newValues[1][newValues[1].size-1] = 0; // release is always 0 on Y-axis
+
+      index = env.selection[0];
+
+      env.value = newValues;
+      
+      // update node value
+      outputValue = outputValue.add(envValues[\attack]);
+      outputValue = outputValue.add(envValues[\decay]);
+      outputValue = outputValue.add(envValues[\sustain]);
+      outputValue = outputValue.add(envValues[\release]);
+
+      node.set(\key, outputValue);
+    };
+
+    view.valueAction = [[0,0.01,0.1,0.2],[0,1,0.5,0]];
+
+    //
+    // change curve with ctrl+drag
+    //
+    view.metaAction = {arg env;
+      env.editable = false;
+      index = env.selection[0];
+    };
+
+    previousY = 0;
+    view.mouseDownAction = {arg v, x, y;
+      view.editable = true;
+      previousY = y/v.bounds.height;
+    };
+
+    view.mouseMoveAction = {arg v, x, y;
+      if ((view.editable.not) && (index > 0)) {
+        var deltaY = previousY - (y/v.bounds.height);
+        deltaY = deltaY * 15;
+        curves[index-1] = curves[index-1] + (deltaY);
+        view.curves = curves;
+
+        previousY = y/v.bounds.height;
+      }
+    };
+
+    // return
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseAlignment {arg view, align;
+    var retLayout;
+    var alignment = align?\center;
+
+    switch(alignment,
+      \left, {retLayout = HLayout(view, nil)},
+      \center, {retLayout = HLayout(nil, view, nil)},
+      \right, {retLayout = HLayout(nil, view)}
+    );
+
+    ^retLayout;
+  }
+
+  parsePresets {arg presetsObj;
+    postln("parse presets:"+presetsObj);
+  }
 }

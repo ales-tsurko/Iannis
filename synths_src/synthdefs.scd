@@ -218,6 +218,7 @@ s.boot;
               name: "Grain Envelope",
               ui: (
                 type: \popup,
+                align: \left,
                 items: [
                   (
                     name: "Rectangle",
@@ -320,7 +321,6 @@ s.boot;
             parameters: [(
               key: \env,
               name: "Envelope",
-              // spec: ...,
               ui: (
                 type: \env_adsr
               )
@@ -363,8 +363,8 @@ s.boot;
 );
 
 s.boot();
-p = IannisSynthMetadataParser(~metadata);
-v = p.parse();
+v = IannisSynthViewController(nil, ~metadata);
+v.parse();
 v.front();
 
 SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1, 
