@@ -99,9 +99,9 @@ IannisSynthMetadataParser {
     });
 
     switch(align,
-      \left, {returnLayout = HLayout(nil, view)},
+      \left, {returnLayout = HLayout(view, nil)},
       \center, {returnLayout = HLayout(nil, view, nil)},
-      \right, {returnLayout = HLayout(view, nil)}
+      \right, {returnLayout = HLayout(nil, view)}
     );
     ^returnLayout;
   }
@@ -119,6 +119,9 @@ IannisSynthMetadataParser {
       },
       \knob, {
         view = this.parseKnobUI(key, name, spec, uiObj);
+      },
+      \hslider, {
+        view = this.parseSliderUI(key, name, spec, uiObj, \horizontal);
       }
     );
 
@@ -186,6 +189,43 @@ IannisSynthMetadataParser {
     knob.valueAction = spec.asSpec.unmap(spec.asSpec.default);
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
+
+    ^view;
+  }
+
+  parseSliderUI {arg key, name, spec, uiObj, orientation;
+    var view = CompositeView();
+    var label = StaticText();
+    var valueLabel = StaticText();
+    var slider = Slider();
+    label.string = name;
+
+    // apply spec and action to knob
+    slider.action = {arg sl;
+      var newValue = spec.asSpec.map(sl.value);
+      node.set(key, newValue);
+      valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+    };
+
+    slider.valueAction = spec.asSpec.unmap(spec.asSpec.default);
+
+    // layout
+    if (orientation == \vertical) {
+      slider.fixedWidth = 25;
+      slider.fixedHeight = 160;
+
+      label.align = \center;
+      valueLabel.align = \center;
+      view.layout = VLayout(label, HLayout(slider), valueLabel);
+    } {
+      slider.orientation = orientation;
+      slider.fixedWidth = 160;
+      slider.fixedHeight = 25;
+
+      label.align = \right;
+      valueLabel.align = \left;
+      view.layout = HLayout(label, slider, valueLabel);
+    }
 
     ^view;
   }
