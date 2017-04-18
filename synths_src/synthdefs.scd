@@ -186,6 +186,7 @@ s.boot;
 ~metadata = (
   type: \synth,
   name: "Granulator",
+  id: "by.alestsurko.granulator",
   author: "Ales Tsurko",
   site: "http://alestsurko.by",
   description: "Granular sampler.",
@@ -356,8 +357,9 @@ s.boot;
       )
     ]
   ),
-  factory_presets: [(
+  presets: [(
     name: "Default",
+    isFactory: true,
     values: ()
   )]
 );
@@ -383,6 +385,6 @@ SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1,
   Out.ar(out, Pan2.ar(output, pan, amp));
 }, [\ir, \ir,
 	0, 0, 0, 0, 
-	nil, 0.01, 0.01, 0, nil, \ir],
+	0, 0.01, 0.01, 0, nil, \ir],
 	metadata: ~metadata
 ).writeDefFile(SynthDef.synthDefDir);

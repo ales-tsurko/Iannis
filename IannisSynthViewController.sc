@@ -1,5 +1,6 @@
 IannisSynthViewController : CompositeView {
-  var <synthName, <pagesView, <node, <metadata, 
+  var <synthName, <pagesView, <node, 
+  <metadata, <presetsManagerController,
   toolbarView, synthNameLabel;
 
   *new {arg node, metadata;
@@ -12,17 +13,21 @@ IannisSynthViewController : CompositeView {
     this.fixedWidth = 680;
     this.layout = VLayout();
     this.initToolbar();
+
   }
 
   initToolbar {
+    toolbarView = CompositeView();
+    toolbarView.fixedHeight = 90;
+
     synthNameLabel = StaticText();
     synthNameLabel.font = Font("Arial", 20);
 
-    toolbarView = CompositeView();
-    toolbarView.fixedHeight = 40;
+    presetsManagerController = IannisPresetsManagerController();
 
-    toolbarView.layout = HLayout(
-      synthNameLabel, nil
+    toolbarView.layout = VLayout(
+      HLayout(synthNameLabel, nil),
+      HLayout(nil, presetsManagerController, nil)
     );
 
     this.layout.add(toolbarView);
@@ -63,5 +68,9 @@ IannisSynthViewController : CompositeView {
   synthName_ {arg newName;
     synthName = newName;
     synthNameLabel.string = newName;
+  }
+
+  didFinishParsing {
+    // load user presets here
   }
 }

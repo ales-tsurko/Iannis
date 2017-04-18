@@ -5,9 +5,11 @@
       switch(key,
         \name, {this.parseName(metadata[\name])},
         \ui, {this.parseUI(metadata[\ui])},
-        \factory_presets, {this.parsePresets(metadata[\factory_presets])}
+        \presets, {this.parsePresets(metadata[\presets])}
       );
     });
+
+    this.didFinishParsing();
   }
 
   parseName {arg name;
@@ -305,6 +307,11 @@
   }
 
   parsePresets {arg presetsObj;
-    postln("parse presets:"+presetsObj);
+    presetsObj.do({arg obj;
+      var preset = IannisPreset(obj);
+      this.presetsManagerController.presetsManager.addPreset(preset);
+    });
+
+    this.presetsManagerController.presetsManager.presets.postln;
   }
 }
