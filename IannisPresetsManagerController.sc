@@ -133,11 +133,7 @@ IannisPresetsManagerController : CompositeView {
 
     removeButton.action = {arg but;
       if (but.value == 0) {
-        var presetsPath = this.presetsManager.userPresetsPath;
-        this.presetsManager.removePreset(this.presetsMenu.value); 
-        this.presetsMenu.removeAt(this.presetsMenu.value);
-        // update the presets file
-        this.presetsManager.writeUserPresetsToDisk(presetsPath);
+        this.presetsManager.removePreset(this.presetsMenu.value);
       };
     };
   }
