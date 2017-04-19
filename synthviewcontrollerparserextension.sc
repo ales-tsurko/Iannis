@@ -319,6 +319,47 @@
       }
     };
 
+    // update preset
+    view.mouseUpAction = {
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        var envValues = ();
+        var times = view.value[0].differentiate;
+        var value = ();
+
+        if (this.presetsManagerController.presetsManager.currentPreset.values[key].isNil) {
+          this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
+        };
+
+        envValues[\attack] = nodeSpec.map(times[1]); // add attack
+        envValues[\decay] = nodeSpec.map(times[2]); // add decay
+        envValues[\sustain] = view.value[1][2]; // add sustain
+        envValues[\release] = nodeSpec.map(times[3]); // add release
+
+        value[\env] = envValues;
+        value[\curves] = curves;
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = value;
+      };
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      if (value[\env].notNil) {
+        var x = [0];
+        var y = [0,1,value[\env][\sustain],0];
+        x = x.add(nodeSpec.asSpec.unmap(value[\env][\attack]));
+        x = x.add(nodeSpec.asSpec.unmap(value[\env][\decay]));
+        x = x.add(nodeSpec.asSpec.unmap(value[\env][\release]));
+        x = x.integrate;
+
+        view.valueAction = [x,y];
+      };
+
+      if (value[\curves].notNil) {
+        curves = value[\curves];
+        view.curves = value[\curves];
+      };
+    };
+
     // return
     ^this.parseAlignment(view, uiObj[\align]);
   }

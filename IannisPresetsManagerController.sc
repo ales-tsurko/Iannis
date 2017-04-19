@@ -187,5 +187,8 @@ IannisPresetsManagerController : CompositeView {
      };
      this.presetsManager.writeUserPresetsToDisk(path);
    };
+
+   // select the first preset in the menu
+   this.presetsMenu.valueAction = 0;
   }
 }
