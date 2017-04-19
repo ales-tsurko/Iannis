@@ -186,6 +186,15 @@ s.boot;
       isFactory: true,
       values: (
         // bufnum: "here/should/be/a/path/to/a/file",
+        env: (
+          env: (
+            attack: 0.1,
+            decay: 0.3,
+            sustain: 0.5,
+            release: 1
+          ),
+          curves: [-1,0,-2]
+        ),
         gran_env_bufnum: 1, // popup menu item index
         gran_dur: 1,
         pos: 0,
@@ -199,6 +208,15 @@ s.boot;
       name: "Another Preset",
       isFactory: true,
       values: (
+        env: (
+          env: (
+            attack: 2,
+            decay: 0.5,
+            sustain: 0.3,
+            release: 4
+          ),
+          curves: [-1,0,-2]
+        ),
         gran_env_bufnum: 0, // popup menu item index
         gran_dur: 2,
         pos: 0.1,
@@ -212,6 +230,15 @@ s.boot;
       name: "Preset 3",
       isFactory: true,
       values: (
+        env: (
+          env: (
+            attack: 0.005,
+            decay: 1,
+            sustain: 1,
+            release: 0.5
+          ),
+          curves: [0,0,2]
+        ),
         gran_env_bufnum: 2, // popup menu item index
         gran_dur: 0.1,
         pos: 0.5,

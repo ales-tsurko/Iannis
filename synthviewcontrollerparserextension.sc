@@ -280,7 +280,7 @@
       newValues[1][1] = 1; // attack is always 1 on Y-axis
       newValues[1][newValues[1].size-1] = 0; // release is always 0 on Y-axis
 
-      index = env.selection[0];
+      index = env.selection[0]?0;
 
       env.value = newValues;
       
