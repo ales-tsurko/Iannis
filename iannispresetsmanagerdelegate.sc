@@ -8,6 +8,18 @@
   }
 
   didLoadPreset {arg preset, index;
+    if (preset.isFactory) {
+      this.updateButton.enabled = false;
+      this.removeButton.enabled = false;
+    } {
+      this.updateButton.enabled = true;
+      this.removeButton.enabled = true;
+    };
+
+    // update UI
+    preset.values.keysValuesDo({arg key, value;
+      this.parentController.parameterBinder[key].value(value);
+    });
   }
 
   didWriteUserPresetsToDisk {
@@ -17,5 +29,8 @@
   }
 
   didUpdatePresetAtIndexWithPreset {arg index, preset;
+  }
+
+  didUpdateSelectedPresetWithCurrentData {
   }
 }

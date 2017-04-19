@@ -5,7 +5,7 @@
       switch(key,
         \name, {this.parseName(metadata[\name])},
         \ui, {this.parseUI(metadata[\ui])},
-        \presets, {this.parsePresets(metadata[\presets])}
+        \presets, {this.parseFactoryPresets(metadata[\presets])}
       );
     });
 
@@ -142,6 +142,17 @@
     popup.action = {arg p;
       var value = itemsAndValues.values[p.value];
       node.set(key, value);
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = p.value;
+
+      };
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      popup.valueAction = value;
     };
 
     view.layout = VLayout(label, popup);
@@ -166,9 +177,19 @@
       var newValue = spec.asSpec.map(k.value);
       node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
+      };
     };
 
     knob.valueAction = spec.asSpec.unmap(spec.asSpec.default);
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      knob.valueAction = spec.asSpec.unmap(value);
+    };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
 
@@ -187,9 +208,19 @@
       var newValue = spec.asSpec.map(sl.value);
       node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
+      };
     };
 
     slider.valueAction = spec.asSpec.unmap(spec.asSpec.default);
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      slider.valueAction = spec.asSpec.unmap(value);
+    };
 
     // layout
     if (orientation == \vertical) {
@@ -217,7 +248,7 @@
   parseEnvADSRUI {arg key, name, uiObj;
     var view = EnvelopeView();
     var curves = 0!3;
-    var index = 0, previousY;
+    var index = 0, previousY = 0;
     var nodeSpec = ControlSpec(0.001, 50, 2);
     view.fixedHeight = 200;
     view.fixedWidth = 580;
@@ -268,11 +299,10 @@
     // change curve with ctrl+drag
     //
     view.metaAction = {arg env;
-      env.editable = false;
+      view.editable = false;
       index = env.selection[0];
     };
 
-    previousY = 0;
     view.mouseDownAction = {arg v, x, y;
       view.editable = true;
       previousY = y/v.bounds.height;
@@ -306,12 +336,10 @@
     ^retLayout;
   }
 
-  parsePresets {arg presetsObj;
+  parseFactoryPresets {arg presetsObj;
     presetsObj.do({arg obj;
       var preset = IannisPreset(obj);
       this.presetsManagerController.presetsManager.addPreset(preset);
     });
-
-    this.presetsManagerController.presetsManager.presets.postln;
   }
 }

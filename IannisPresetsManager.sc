@@ -1,13 +1,13 @@
 IannisPresetsManager {
-  var <presets, <currentPreset, delegate, <userPresetsPath;
+  var <presets, <currentPreset, <selectedPreset,
+  delegate, <userPresetsPath;
 
-  *new {arg delegate, userPresetsPath;
-    ^super.new.init(delegate, userPresetsPath);
+  *new {arg delegate;
+    ^super.new.init(delegate);
   }
 
-  init {arg aDelegate, presetsPath;
+  init {arg aDelegate;
     delegate = aDelegate;
-    userPresetsPath = presetsPath;
   }
 
   addPreset {arg preset;
@@ -19,14 +19,15 @@ IannisPresetsManager {
     if (this.presets[index].isFactory.not) {
       delegate.didRemovePreset(presets.removeAt(index), index);
     } {
-      "Can't remove a factory preset".inform;
+      "Can't remove a factory preset".error;
     };
   }
 
   loadPreset {arg index;
-    currentPreset = this.presets[index];
+    currentPreset = this.presets[index].deepCopy;
+    selectedPreset = this.presets[index];
 
-    delegate.didLoadPreset(this.currentPreset, index);
+    delegate.didLoadPreset(this.selectedPreset, index);
   }
 
   updatePresetAtIndexWithPreset {arg index, preset;
@@ -35,9 +36,23 @@ IannisPresetsManager {
 
       delegate.didUpdatePresetAtIndexWithPreset(index, preset);
 
+      // as far as we know, that the preset is a user one,
+      // the presets file already written, so we can
+      // use this.userPresetsPath and write the file to the disk
       this.writeUserPresetsToDisk(this.userPresetsPath);
     } {
-      "Can't update a factory preset".inform;
+      "Can't update a factory preset".error;
+    };
+  }
+
+  updateSelectedPresetWithCurrentData {
+    if (this.selectedPreset.isFactory.not) {
+      this.selectedPreset.values = this.currentPreset.values;
+      this.writeUserPresetsToDisk(this.userPresetsPath);
+
+      delegate.didUpdateSelectedPresetWithCurrentData();
+    } {
+      "Can't update a factory preset".error;
     };
   }
 
@@ -58,27 +73,32 @@ IannisPresetsManager {
    ^this.presets.collect(_.data); 
   }
 
-  writeUserPresetsToDisk {
+  writeUserPresetsToDisk {arg path;
     try {
-      this.userData.writeBinaryArchive(this.userPresetsPath);
+      this.userData.writeBinaryArchive(path);
+
+      userPresetsPath = path;
 
       delegate.didWriteUserPresetsToDisk();
     } {arg err;
-      ("Data didn't written:" + err.errorString).error;
+      ("Data didn't written:\n" + err.errorString).error;
     }
   }
 
-  loadUserPresetsFromDisk {
+  loadUserPresetsFromDisk {arg path;
     try {
-      var data = this.readBinaryArchive(this.userPresetsPath);
-      data.do({
-        var preset = IannisPreset(data);
+      var data = Object.readBinaryArchive(path);
+
+      data.do({arg item;
+        var preset = IannisPreset(item);
         presets = presets.add(preset);
       });
 
+      userPresetsPath = path;
+
       delegate.didLoadUserPresetsFromDisk();
     } {arg err;
-      ("Data not loaded:" + err.errorString).error;
+      ("Data not loaded:\n" + err.errorString).error;
     }
   }
 }

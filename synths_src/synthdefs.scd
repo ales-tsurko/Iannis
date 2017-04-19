@@ -1,187 +1,10 @@
+(
 SynthDef.synthDefDir = "~/Desktop/Iannis/synths".standardizePath;
 
 s.boot;
 //
 // Granulator
 //
-// ~metadata = (
-  // type: \synth,
-  // name: "Granulator",
-  // author: "Ales Tsurko",
-  // site: "http://alestsurko.by",
-  // description: "Granular sampler.",
-  // ui: (
-    // pages: [
-      // // каждая страница -- отдельный таб
-      // (
-        // name: "OSC 1",
-        // groups: [
-          // (
-            // // если параметра name нет, то группа не будет
-            // // выделяться как группа
-            // // параметр name может быть пустой строкой "",
-            // // тогда группа будет визуально группой, но
-            // // без имени
-            // bufnum: (
-              // name: "Sample",
-              // spec: \bufnum,
-              // ui: (
-                // type: \recorder
-              // )
-            // )
-          // ),
-          // (
-            // name: "Grain Parameters",
-            // type: (
-              // name: "Type",
-              // // spec: ...,
-              // ui: (
-                // type: \switch_view,
-                // items: [
-                  // // Type I (Warp1)
-                  // (
-                    // name: "I",
-                    // rows: [(
-                      // align: \center,
-                      // items: [
-                        // (
-                          // grain_dur: (
-                            // name: "Duration",
-                            // // spec: ...,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // ),
-                        // (
-                          // pos: (
-                            // name: "Position",
-                            // spec: \unipolar,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // ),
-                        // (
-                          // density: (
-                            // name: "Density",
-                            // // spec: ...,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // ),
-                        // (
-                          // t1rand: (
-                            // name: "Randomness",
-                            // spec: \unipolar,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // )
-                      // ]
-                    // )]
-                  // ),
-// 
-                  // // Type II (TGrains3)
-                  // (
-                    // name: "II",
-                    // rows: [(
-                      // align: \center,
-                      // items: [
-                        // (
-                          // grain_dur: (
-                            // name: "Duration",
-                            // // spec: ...,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // ),
-                        // (
-                          // pos: (
-                            // name: "Position",
-                            // spec: \unipolar,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // ),
-                        // (
-                          // t2gatt: (
-                            // name: "Grain Attack",
-                            // // spec: ...,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // ),
-                          // t2gdec: (
-                            // name: "Grain Decay",
-                            // // spec: ...,
-                            // ui: (
-                              // type: \knob
-                            // )
-                          // )
-                        // )
-                      // ]
-                    // )],
-// 
-                    // trig: (
-                      // name: "Trigger Sequencer",
-                      // // spec: ...,
-                      // ui: (
-                        // type: \matrix_sequencer
-                      // )
-                    // )
-                  // ),
-                // ]
-              // ),
-            // ),
-          // ),
-          // (
-            // name: "Envelope",
-            // env: (
-              // name: "Envelope",
-              // // spec: ...,
-              // ui: (
-                // type: \env_adsr
-              // )
-            // )
-          // ),
-          // (
-            // name: "Output",
-            // row: (
-              // align: \right,
-              // items: [
-                // amp: (
-                  // name: "Amp",
-                  // spec: \amp,
-                  // ui: (
-                    // type: \hslider
-                  // )
-                // ),
-                // pan: (
-                  // name: "Pan",
-                  // spec: \pan,
-                  // ui: (
-                    // type: \hslider
-                  // )
-                // )
-              // ]
-            // )
-          // )
-        // ]
-      // )
-    // ]
-  // ),
-  // factory_presets: [
-    // (
-      // name: "Default",
-      // values: ()
-    // )
-  // ]
-// );
 
 ~metadata = (
   type: \synth,
@@ -215,7 +38,7 @@ s.boot;
           (
             name: "Grain Parameters",
             parameters: [(
-              key: \grain_env_bufnum,
+              key: \gran_env_bufnum,
               name: "Grain Envelope",
               ui: (
                 type: \popup,
@@ -282,7 +105,7 @@ s.boot;
               align: \center,
 
               parameters: [(
-                key: \grain_dur,
+                key: \gran_dur,
                 name: "Duration",
                 spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
                 ui: (
@@ -357,14 +180,51 @@ s.boot;
       )
     ]
   ),
-  presets: [(
-    name: "Default",
-    isFactory: true,
-    values: ()
-  )]
+  presets: [
+    (
+      name: "Default",
+      isFactory: true,
+      values: (
+        // bufnum: "here/should/be/a/path/to/a/file",
+        gran_env_bufnum: 1, // popup menu item index
+        gran_dur: 1,
+        pos: 0,
+        density: 4,
+        t1rand: 0.1,
+        amp: 0.9,
+        pan: 0
+      )
+    ),
+    (
+      name: "Another Preset",
+      isFactory: true,
+      values: (
+        gran_env_bufnum: 0, // popup menu item index
+        gran_dur: 2,
+        pos: 0.1,
+        density: 1,
+        t1rand: 0,
+        amp: 0.9,
+        pan: 0.1
+      )
+    ),
+    (
+      name: "Preset 3",
+      isFactory: true,
+      values: (
+        gran_env_bufnum: 2, // popup menu item index
+        gran_dur: 0.1,
+        pos: 0.5,
+        density: 8,
+        t1rand: 0.7,
+        amp: 0.9,
+        pan: -0.3
+      )
+    )
+  ]
 );
+)
 
-s.boot();
 v = IannisSynthViewController(nil, ~metadata);
 v.parse();
 v.front();
