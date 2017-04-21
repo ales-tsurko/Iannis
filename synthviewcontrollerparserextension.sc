@@ -120,6 +120,16 @@
     var newRecorder = IannisRecorderController("~/Desktop".standardizePath);
     newRecorder.action = {arg recorder;
       node.set(key, recorder.value);
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = recorder.samplePath;
+      };
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      newRecorder.samplePath = value;
     };
 
     ^newRecorder;

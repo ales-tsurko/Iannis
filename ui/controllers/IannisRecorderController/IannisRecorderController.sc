@@ -1,5 +1,5 @@
 IannisRecorderController : CompositeView {
-  var <recordingDir,
+  var <recordingDir, <samplePath,
   <value,
   chooseDirectoryButton,
   filesListView,
@@ -10,7 +10,7 @@ IannisRecorderController : CompositeView {
   recordButton, playButton,
   isLoopCheckBox,
   quantizeBox,
-  recorder;
+  <recorder;
 
   *new {arg dir;
     ^super.new.init(dir);
@@ -192,6 +192,10 @@ IannisRecorderController : CompositeView {
 
   filesListViewAction {arg listView;
     recorder.soundfile = recorder.soundfilesInDir[listView.value];
+    this.stopPlayingSample();
+  }
+  
+  stopPlayingSample {
     if (recorder.isPlaying) {
       fork {
         recorder.stopSampleImmediately();
@@ -203,6 +207,49 @@ IannisRecorderController : CompositeView {
     }
   }
 
+  samplePath_ {arg path;
+    var isFileExists = File.existsCaseSensitive(path);
+
+    if (isFileExists) {
+      this.stopPlayingSample();
+
+      samplePath = path;
+      recorder.recordingDir = path.dirname;
+    } {
+      this.showSoundFileNotFoundAlert(path);
+    };
+  }
+
+  showSoundFileNotFoundAlert {arg path;
+    var screenBounds = Window.screenBounds();
+    var rect = Rect(
+      screenBounds.width/2-150,
+      screenBounds.height/2-50,
+      300,
+      100
+    );
+    var window = Window("Error", rect, false);
+    var message = StaticText();
+    var okButton = Button();
+    okButton.fixedWidth = 90;
+    okButton.states = [["OK"]];
+    okButton.action = {arg but;
+      if (but.value == 0) {
+        window.close();
+      };
+    };
+
+    message.align = \center;
+
+    message.string = path.basename+"not found at path:\n"+path.dirname;
+
+    window.layout = VLayout(
+      message,
+      HLayout(nil, okButton, nil)
+    );
+    window.front;
+  }
+
   // delegate methods
   didUpdateSample {
     AppClock.sched(0.0, {
@@ -211,6 +258,8 @@ IannisRecorderController : CompositeView {
       sampleView.refresh();
 
       value = recorder.playerBuffer;
+      samplePath = recorder.soundfile.path;
+
       this.doAction();
     });
   }
@@ -222,6 +271,14 @@ IannisRecorderController : CompositeView {
       recorder.soundfilesInDir.do({arg item; 
         filesListView.items = filesListView.items.add(item.path.basename);
       });
+
+      // update selected index to current soundfile if the one exists
+      if (this.samplePath.notNil) {
+        if (this.samplePath.dirname == recorder.recordingDir) {
+          var index = filesListView.items.indexOfEqual(this.samplePath.basename);
+          filesListView.valueAction = index;
+        };
+      };
     });
   }
 
