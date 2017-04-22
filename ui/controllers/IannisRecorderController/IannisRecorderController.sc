@@ -224,9 +224,9 @@ IannisRecorderController : CompositeView {
     var screenBounds = Window.screenBounds();
     var rect = Rect(
       screenBounds.width/2-150,
-      screenBounds.height/2-50,
+      screenBounds.height/2-100,
       300,
-      100
+      200
     );
     var window = Window("Error", rect, false);
     var message = StaticText();
@@ -241,7 +241,7 @@ IannisRecorderController : CompositeView {
 
     message.align = \center;
 
-    message.string = path.basename+"not found at path:\n"+path.dirname;
+    message.string = path.basename+"not found at:\n"+path.dirname;
 
     window.layout = VLayout(
       message,
