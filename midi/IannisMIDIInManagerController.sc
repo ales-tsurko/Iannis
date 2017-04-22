@@ -1,8 +1,7 @@
 IannisMIDIInManagerController : CompositeView {
   var <parentController,
-  midiSourcesMenu, channelNumberBox,
-  <midiInputEnabled,
-  midiChannel, selectedDevice;
+  <midiSourcesMenu, <channelNumberBox,
+  <midiInputEnabled, <midiManager;
 
   *new {arg parentController;
     ^super.new.init(parentController);
@@ -13,10 +12,9 @@ IannisMIDIInManagerController : CompositeView {
 
     this.initMIDISourcesMenu();
     this.initChannelNumberBox();
-    this.initMIDIClient();
+    midiManager = IannisMIDIManager(this);
 
     midiSourcesMenu.valueAction = 0;
-    midiInputEnabled = false;
 
     ~midiInLabel = StaticText();
     ~midiInLabel.string = "MIDI Input:";
@@ -38,7 +36,7 @@ IannisMIDIInManagerController : CompositeView {
 
     midiSourcesMenu.action = {arg popup;
       if (popup.value.notNil) {
-        this.didSelectNewDevice(IannisMIDIClient.sources[popup.value-1]);
+        this.midiManager.selectedDevice = IannisMIDIClient.sources[popup.value-1];
       }
     };
   }
@@ -51,41 +49,7 @@ IannisMIDIInManagerController : CompositeView {
     channelNumberBox.clipHi = 16;
 
     channelNumberBox.action = {arg nb;
-			this.didUpdateMIDIChannel(nb.value);
+			this.midiManager.channel = nb.value;
     };
-  }
-
-  initMIDIClient {
-    IannisMIDIClient.addOnUpdateSourcesAction({this.didUpdateMIDISources()});
-
-    if (IannisMIDIClient.initialized.not) {
-      IannisMIDIClient.init();
-    };
-  }
-
-  didUpdateMIDISources {
-    var devicesNames = IannisMIDIClient.sources.collect(_.name);
-    AppClock.sched(0, {
-      midiSourcesMenu.items = devicesNames.insert(0, "None");
-    });
-  }
-
-  didSelectNewDevice {arg device;
-    if (device.isNil) {
-      this.didDisableMIDIInput();
-    } {
-      midiInputEnabled = true;
-      selectedDevice = device;
-      ("selected device:"+selectedDevice.name).postln;
-    }
-  }
-
-	didUpdateMIDIChannel {arg newChannel;
-		midiChannel = newChannel;
-	}
-
-  didDisableMIDIInput {
-    midiInputEnabled = false;
-    "MIDI input is disabled".postln;
   }
 }

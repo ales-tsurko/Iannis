@@ -4,6 +4,7 @@ IannisMIDIClient : MIDIClient {
 
   *init {arg inports, outports, verbose = true;
     MIDIClient.init(inports, outports, verbose);
+    MIDIIn.connectAll();
 
     midiSourcesListSnaphot = IannisMIDIClient.sources;
     
@@ -15,8 +16,9 @@ IannisMIDIClient : MIDIClient {
         IannisMIDIClient.list();
 
         if (IannisMIDIClient.sources.size > 0) {
-          if (midiSourcesListSnaphot.last.uid != IannisMIDIClient.sources.last.uid || midiSourcesListSnaphot.size != IannisMIDIClient.sources.size) {
+          if ((midiSourcesListSnaphot.last.uid != IannisMIDIClient.sources.last.uid) || (midiSourcesListSnaphot.size != IannisMIDIClient.sources.size)) {
             midiSourcesListSnaphot = IannisMIDIClient.sources();
+            MIDIIn.connectAll();
             onUpdateMIDISources.value();
           };
         };
@@ -34,8 +36,9 @@ IannisMIDIClient : MIDIClient {
   }
 
   *restart {
-    MIDIClient.restart();
     sourcesWatcher.stop();
+    MIDIClient.restart();
+    SystemClock.play(sourcesWatcher);
   }
 
   *addOnUpdateSourcesAction {arg func;

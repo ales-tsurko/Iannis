@@ -252,26 +252,24 @@ s.boot;
 );
 )
 
-v = IannisSynthViewController(nil, ~metadata);
-v.parse();
-v.front();
 
 SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1, 
   gran_dur = 1, pos = 0.0, density = 4, t1rand = 0.1,
   // trig, t2gpan = 0, t2gamp = 1, t2gatt, t2gdec,
-  env = #[0.005, 0.01, 1, 0.1], amp = 0.9, pan = 0.0, freq, gate = 1, out = 0;
+  env = #[0.005, 0.01, 1, 0.1], amp = 0.9, pan = 0.0, velocity, freq, gate = 1, out = 0;
 
   var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3]), gate, doneAction: 2);
+  var veloamp = velocity/127;
   var note = (freq.cpsmidi-60).midiratio;
   var output = Warp1.ar(1, bufnum, pos, note*BufRateScale.kr(bufnum), gran_dur, gran_env_bufnum, density, t1rand, 4);
 	// Note: Unlike PlayBuf, the TGrains3 rate is multiplied by BufRate, so you needn't do that yourself.
 	// var tgrains = TGrains3.ar(2, trig, bufnum, note, BufDur.kr(bufnum)*pos, grain_dur, t2gpan, t2gatt, t2gdec, 1, 4);
   // var output = Select.ar(type, [warp, tgrains]); // здесь выбор в соответствии с типом синтеза
-  output = output * envelope;
+  output = output * envelope * veloamp;
 
   Out.ar(out, Pan2.ar(output, pan, amp));
-}, [\ir, \ir,
+}, [\ir, nil,
 	0, 0, 0, 0, 
-	0, 0.01, 0.01, 0, nil, \ir],
+	nil, 0.01, 0.01, 0, 0, nil, \ir],
 	metadata: ~metadata
 ).writeDefFile(SynthDef.synthDefDir);

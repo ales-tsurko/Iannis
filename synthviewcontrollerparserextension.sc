@@ -123,13 +123,15 @@
 
       // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        this.presetsManagerController.presetsManager.currentPreset.values[key] = recorder.samplePath;
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
+        this.presetsManagerController.presetsManager.currentPreset.values[key][\path] = recorder.samplePath;
+        this.presetsManagerController.presetsManager.currentPreset.values[key][\value] = recorder.value;
       };
     };
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      newRecorder.samplePath = value;
+      newRecorder.samplePath = value[\path];
     };
 
     ^newRecorder;
@@ -300,7 +302,7 @@
       outputValue = outputValue.add(envValues[\sustain]);
       outputValue = outputValue.add(envValues[\release]);
 
-      node.set(\key, outputValue);
+      node.set(key, outputValue);
     };
 
     view.valueAction = [[0,0.01,0.1,0.2],[0,1,0.5,0]];
@@ -336,9 +338,9 @@
         var times = view.value[0].differentiate;
         var value = ();
 
-        if (this.presetsManagerController.presetsManager.currentPreset.values[key].isNil) {
-          this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
-        };
+        // if (this.presetsManagerController.presetsManager.currentPreset.values[key].isNil) {
+          // this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
+        // };
 
         envValues[\attack] = nodeSpec.map(times[1]); // add attack
         envValues[\decay] = nodeSpec.map(times[2]); // add decay

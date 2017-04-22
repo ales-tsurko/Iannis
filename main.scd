@@ -6,8 +6,22 @@ Quarks.uninstall("Iannis");
 // ---------------------------------------------------------
 )
 
-s.boot;
-SynthDef.synthDefDir = "~/Desktop/Iannis/synths".standardizePath;
+(
+  s.waitForBoot({
+    SynthDef.synthDefDir = "~/Desktop/Iannis/synths".standardizePath;
+
+    s.loadDirectory(SynthDef.synthDefDir);
+
+    s.sync;
+
+    SynthDescLib(\iannis_synth);
+    // init synthdescs for iannis' synthdefs
+    SynthDescLib.getLib(\iannis_synth).read(SynthDef.synthDefDir+/+"granulator.scsyndef");
+
+    // load iannis synthdesc lib into global lib
+    SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
+  });
+)
 
 TempoClock.default.tempo = 107/60;
 (
@@ -20,21 +34,14 @@ f = Signal.rectWindow(8192);
 e.loadCollection(f);
 )
 
-(
-s.loadDirectory(SynthDef.synthDefDir);
-SynthDescLib(\iannis_synth);
-// init synthdescs for iannis' synthdefs
-SynthDescLib.getLib(\iannis_synth).read(SynthDef.synthDefDir+/+"granulator.scsyndef");
-
-// load iannis synthdesc lib into global lib
-SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
-)
-
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
-IannisRecorderController("~/Desktop".standardizePath).front;
+// Synth view controller
 
-
+g = Group.new;
+v = IannisSynthViewController(g, \granulator);
+v.parse();
+v.front();
 
 // Tabbed view
 

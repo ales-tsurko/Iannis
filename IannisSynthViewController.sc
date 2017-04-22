@@ -3,15 +3,17 @@ IannisSynthViewController : CompositeView {
   <metadata, <presetsManagerController,
   <midiInManagerController,
   <parameterBinder,
+  <synthDefName,
   toolbarView, synthNameLabel;
 
-  *new {arg node, metadata;
-    ^super.new.init(node, metadata);
+  *new {arg node, synthDefName;
+    ^super.new.init(node, synthDefName);
   }
 
-  init {arg aNode, metad;
+  init {arg aNode, aSynthDefName;
     node = aNode;
-    metadata = metad;
+    synthDefName = aSynthDefName;
+    metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
     parameterBinder = ();
     this.fixedWidth = 680;
     this.layout = VLayout();
