@@ -1,9 +1,8 @@
 IannisMIDIInManagerController : CompositeView {
   var <parentController,
   midiSourcesMenu, channelNumberBox,
-  sourcesWatcher,
   <midiInputEnabled,
-  midiChannel, selectedDevice, midiSourcesListSnaphot;
+  midiChannel, selectedDevice;
 
   *new {arg parentController;
     ^super.new.init(parentController);
@@ -25,25 +24,21 @@ IannisMIDIInManagerController : CompositeView {
     ~channelNumberLabel.string = "Ch. num.:";
 
     this.layout = HLayout(
-      ~midiInLabel,
+      // ~midiInLabel,
       midiSourcesMenu,
       ~channelNumberLabel,
       channelNumberBox,
       nil
     );
-
-    this.onClose = {
-      sourcesWatcher.stop();
-    };
   }
 
   initMIDISourcesMenu {
     midiSourcesMenu = PopUpMenu();
-    midiSourcesMenu.fixedWidth = 200;
+    midiSourcesMenu.fixedWidth = 100;
 
     midiSourcesMenu.action = {arg popup;
       if (popup.value.notNil) {
-        this.didSelectNewDevice(midiSourcesListSnaphot[popup.value-1]);
+        this.didSelectNewDevice(IannisMIDIClient.sources[popup.value-1]);
       }
     };
   }
@@ -61,36 +56,15 @@ IannisMIDIInManagerController : CompositeView {
   }
 
   initMIDIClient {
-    if (MIDIClient.initialized.not) {
-      MIDIClient.init();
+    IannisMIDIClient.addOnUpdateSourcesAction({this.didUpdateMIDISources()});
+
+    if (IannisMIDIClient.initialized.not) {
+      IannisMIDIClient.init();
     };
-
-    midiSourcesListSnaphot = MIDIClient.sources;
-    this.didUpdateMIDISources();
-
-    // sources watcher
-    (
-      sourcesWatcher = Routine({
-        loop {
-          MIDIClient.list();
-
-          if (MIDIClient.sources().size > 0) {
-            if (midiSourcesListSnaphot.last.uid != MIDIClient.sources().last.uid || midiSourcesListSnaphot.size != MIDIClient.sources().size) {
-              midiSourcesListSnaphot = MIDIClient.sources();
-              this.didUpdateMIDISources();
-            };
-          };
-
-          2.wait;
-        }
-      });
-
-      SystemClock.play(sourcesWatcher);
-    )
   }
 
   didUpdateMIDISources {
-    var devicesNames = midiSourcesListSnaphot.collect(_.name);
+    var devicesNames = IannisMIDIClient.sources.collect(_.name);
     AppClock.sched(0, {
       midiSourcesMenu.items = devicesNames.insert(0, "None");
     });

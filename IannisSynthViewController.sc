@@ -1,6 +1,7 @@
 IannisSynthViewController : CompositeView {
   var <synthName, <pagesView, <node, 
   <metadata, <presetsManagerController,
+  <midiInManagerController,
   <parameterBinder,
   toolbarView, synthNameLabel;
 
@@ -15,7 +16,6 @@ IannisSynthViewController : CompositeView {
     this.fixedWidth = 680;
     this.layout = VLayout();
     this.initToolbar();
-
   }
 
   initToolbar {
@@ -26,10 +26,11 @@ IannisSynthViewController : CompositeView {
     synthNameLabel.font = Font("Arial", 20);
 
     presetsManagerController = IannisPresetsManagerController(this);
+    midiInManagerController = IannisMIDIInManagerController(this);
 
     toolbarView.layout = VLayout(
       HLayout(synthNameLabel, nil),
-      HLayout(nil, presetsManagerController, nil)
+      HLayout(presetsManagerController, nil, midiInManagerController)
     );
 
     this.layout.add(toolbarView);
