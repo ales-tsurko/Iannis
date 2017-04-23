@@ -22,24 +22,22 @@ Quarks.uninstall("Iannis");
   });
 )
 
-TempoClock.default.tempo = 107/60;
-(
-b = Buffer.read(s, "~/Music/SuperCollider/livebox/Samples/02_Elemental/013SineAmplitude.wav".standardizePath);
-c = Buffer.read(s, "~/Documents/Sounds/Drum loops/drumloop004BPM110(44,1kHz).wav".standardizePath);
-d = Buffer.read(s, "~/Documents/Sounds/Drum loops/drumloop001BPM137(48kHz).aif".standardizePath);
 
-e = Buffer.alloc(Server.default, 8192, 1);
-f = Signal.rectWindow(8192);
-e.loadCollection(f);
-)
+// Sequencer
+TempoClock.default.tempo = 107/60;
 
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
 // Synth view controller
-
-v = IannisSynthViewController(Group.new, \granulator);
+g = Group.new;
+v = IannisSynthViewController(g, \granulator);
 v.parse();
 v.front();
+
+a = Bus.control(s, 1);
+g.map(\pos, a);
+a.set({SinOsc.kr(1, 0, 1).range(0,0.3)}.play);
+s.numSynths;
 
 // Tabbed view
 

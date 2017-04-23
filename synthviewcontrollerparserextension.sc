@@ -280,18 +280,22 @@
 
     view.action = {arg env;
       var newValues = env.value;
-      var envValues = ();
       var times = env.value[0].differentiate;
       var outputValue = [];
 
-      envValues[\attack] = nodeSpec.map(times[1]); // add attack
-      envValues[\decay] = nodeSpec.map(times[2]); // add decay
-      envValues[\sustain] = env.value[1][2]; // add sustain
-      envValues[\release] = nodeSpec.map(times[3]); // add release
+      outputValue = outputValue.add(nodeSpec.map(times[1])); // add attack
+      outputValue = outputValue.add(nodeSpec.map(times[2])); // add decay
+      outputValue = outputValue.add(newValues[1][2]); // add sustain
+      outputValue = outputValue.add(nodeSpec.map(times[3])); // add release
+      outputValue = outputValue.addAll(curves);
 
-      env.setString(1, "attack = "++envValues[\attack].round(0.001));
-      env.setString(2, "decay = "++envValues[\decay].round(0.001)++"; sustain = "++envValues[\sustain].round(0.001));
-      env.setString(3, "release = "++envValues[\release].round(0.001));
+      // update node
+      node.set(key, outputValue);
+
+      // update UI
+      env.setString(1, "attack = "++outputValue[0].round(0.001));
+      env.setString(2, "decay = "++outputValue[1].round(0.001)++"; sustain = "++outputValue[2].round(0.001));
+      env.setString(3, "release = "++outputValue[3].round(0.001));
 
       // disable y movements for attack and release
       newValues[1][1] = 1; // attack is always 1 on Y-axis
@@ -301,15 +305,6 @@
 
       env.value = newValues;
       
-      // update node value
-      outputValue = outputValue.add(envValues[\attack]);
-      outputValue = outputValue.add(envValues[\decay]);
-      outputValue = outputValue.add(envValues[\sustain]);
-      outputValue = outputValue.add(envValues[\release]);
-      outputValue = outputValue.addAll(curves);
-
-      node.set(key, outputValue);
-
       // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = outputValue;
@@ -349,21 +344,6 @@
       }
     };
 
-    // update preset
-    // view.mouseUpAction = {
-      // if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        // var times = view.value[0].differentiate;
-        // var envValues = [];
-// 
-        // envValues = envValues.add(nodeSpec.map(times[1])); add attack
-        // envValues = envValues.add(nodeSpec.map(times[2])); add decay
-        // envValues = envValues.add(view.value[1][2]); add sustain
-        // envValues = envValues.add(nodeSpec.map(times[3])); add release
-// 
-        // this.presetsManagerController.presetsManager.currentPreset.values[key] = envValues.addAll(curves);
-      // };
-    // };
-
     // parameter bindings
     this.parameterBinder[key] = {arg value;
       var newValue = value.value();
@@ -374,10 +354,10 @@
       x = x.add(nodeSpec.asSpec.unmap(newValue[3])); // release
       x = x.integrate;
 
-      view.valueAction = [x,y];
-
-      curves = newValue.copyRange(4, newValue.size-1);
+      curves = newValue[4..6];
       view.curves = curves;
+
+      view.valueAction = [x,y];
     };
 
     // return
