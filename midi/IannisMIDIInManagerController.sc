@@ -1,7 +1,8 @@
 IannisMIDIInManagerController : CompositeView {
   var <parentController,
   <midiSourcesMenu, <channelNumberBox,
-  <midiInputEnabled, <midiManager;
+  <midiInputEnabled, <midiManager,
+  <panicButton;
 
   *new {arg parentController;
     ^super.new.init(parentController);
@@ -10,6 +11,7 @@ IannisMIDIInManagerController : CompositeView {
   init {arg viewController;
     parentController = viewController;
 
+    this.initPanicButton();
     this.initMIDISourcesMenu();
     this.initChannelNumberBox();
     midiManager = IannisMIDIManager(this);
@@ -26,8 +28,22 @@ IannisMIDIInManagerController : CompositeView {
       midiSourcesMenu,
       ~channelNumberLabel,
       channelNumberBox,
-      nil
+      nil,
+      panicButton
     );
+  }
+
+  initPanicButton {
+    panicButton = Button();
+    panicButton.fixedWidth = 24;
+    panicButton.fixedHeight = 24;
+    panicButton.states = [["!"]];
+
+    panicButton.action = {arg but;
+      if (but.value == 0) {
+        this.midiManager.reset();
+      };
+    };
   }
 
   initMIDISourcesMenu {
