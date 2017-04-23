@@ -119,19 +119,23 @@
   parseRecorderUI {arg key;
     var newRecorder = IannisRecorderController("~/Desktop".standardizePath);
     newRecorder.action = {arg recorder;
-      node.set(key, recorder.value);
+      var outputValue = [recorder.value.bufnum, recorder.samplePath];
+      node.set(key, outputValue);
 
       // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
-        this.presetsManagerController.presetsManager.currentPreset.values[key][\path] = recorder.samplePath;
-        this.presetsManagerController.presetsManager.currentPreset.values[key][\value] = recorder.value;
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = outputValue;
       };
     };
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      newRecorder.samplePath = value[\path];
+      var newValue = value.value();
+      if (newValue.isArray) {
+        newRecorder.samplePath = newValue[1];
+      } {
+        newRecorder.samplePath = newValue;
+      }
     };
 
     ^newRecorder;
@@ -150,6 +154,7 @@
     label.string = name;
     popup.fixedWidth = 150;
     popup.items = itemsAndValues.keys.asArray;
+    popup.allowsReselection = true;
 
     popup.action = {arg p;
       var value = itemsAndValues.values[p.value];
@@ -164,7 +169,7 @@
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      popup.valueAction = value;
+      popup.valueAction = value.value();
     };
 
     view.layout = VLayout(label, popup);
@@ -200,7 +205,7 @@
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      knob.valueAction = spec.asSpec.unmap(value);
+      knob.valueAction = spec.asSpec.unmap(value.value());
     };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
@@ -231,7 +236,7 @@
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      slider.valueAction = spec.asSpec.unmap(value);
+      slider.valueAction = spec.asSpec.unmap(value.value());
     };
 
     // layout
@@ -301,8 +306,14 @@
       outputValue = outputValue.add(envValues[\decay]);
       outputValue = outputValue.add(envValues[\sustain]);
       outputValue = outputValue.add(envValues[\release]);
+      outputValue = outputValue.addAll(curves);
 
       node.set(key, outputValue);
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = outputValue;
+      }
     };
 
     view.valueAction = [[0,0.01,0.1,0.2],[0,1,0.5,0]];
@@ -328,48 +339,45 @@
         view.curves = curves;
 
         previousY = y/v.bounds.height;
+
+        // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        curves.do({arg i, n;
+          this.presetsManagerController.presetsManager.currentPreset.values[key][n+4] = i;
+        });
+      }
       }
     };
 
     // update preset
-    view.mouseUpAction = {
-      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        var envValues = ();
-        var times = view.value[0].differentiate;
-        var value = ();
-
-        // if (this.presetsManagerController.presetsManager.currentPreset.values[key].isNil) {
-          // this.presetsManagerController.presetsManager.currentPreset.values[key] = ();
-        // };
-
-        envValues[\attack] = nodeSpec.map(times[1]); // add attack
-        envValues[\decay] = nodeSpec.map(times[2]); // add decay
-        envValues[\sustain] = view.value[1][2]; // add sustain
-        envValues[\release] = nodeSpec.map(times[3]); // add release
-
-        value[\env] = envValues;
-        value[\curves] = curves;
-        this.presetsManagerController.presetsManager.currentPreset.values[key] = value;
-      };
-    };
+    // view.mouseUpAction = {
+      // if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        // var times = view.value[0].differentiate;
+        // var envValues = [];
+// 
+        // envValues = envValues.add(nodeSpec.map(times[1])); add attack
+        // envValues = envValues.add(nodeSpec.map(times[2])); add decay
+        // envValues = envValues.add(view.value[1][2]); add sustain
+        // envValues = envValues.add(nodeSpec.map(times[3])); add release
+// 
+        // this.presetsManagerController.presetsManager.currentPreset.values[key] = envValues.addAll(curves);
+      // };
+    // };
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
-      if (value[\env].notNil) {
-        var x = [0];
-        var y = [0,1,value[\env][\sustain],0];
-        x = x.add(nodeSpec.asSpec.unmap(value[\env][\attack]));
-        x = x.add(nodeSpec.asSpec.unmap(value[\env][\decay]));
-        x = x.add(nodeSpec.asSpec.unmap(value[\env][\release]));
-        x = x.integrate;
+      var newValue = value.value();
+      var x = [0];
+      var y = [0,1,newValue[2]/*sustain*/,0];
+      x = x.add(nodeSpec.asSpec.unmap(newValue[0])); // attack
+      x = x.add(nodeSpec.asSpec.unmap(newValue[1])); // decay
+      x = x.add(nodeSpec.asSpec.unmap(newValue[3])); // release
+      x = x.integrate;
 
-        view.valueAction = [x,y];
-      };
+      view.valueAction = [x,y];
 
-      if (value[\curves].notNil) {
-        curves = value[\curves];
-        view.curves = value[\curves];
-      };
+      curves = newValue.copyRange(4, newValue.size-1);
+      view.curves = curves;
     };
 
     // return

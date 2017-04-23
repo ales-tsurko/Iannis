@@ -21,19 +21,6 @@
           if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
             var values = this.parentController.presetsManagerController.presetsManager.currentPreset.values.deepCopy;
             
-            if (values[\bufnum].notNil) {
-              values[\bufnum] = values[\bufnum][\value];
-            };
-
-            if (values[\env].notNil) {
-              values[\env] = [
-                values[\env][\env][\attack],
-                values[\env][\env][\decay],
-                values[\env][\env][\sustain],
-                values[\env][\env][\release]
-              ];
-            };
-
             values[\freq] = num.midicps;
             values[\velocity] = val;
             

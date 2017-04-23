@@ -186,15 +186,7 @@ s.boot;
       isFactory: true,
       values: (
         // bufnum: "here/should/be/a/path/to/a/file",
-        env: (
-          env: (
-            attack: 0.1,
-            decay: 0.3,
-            sustain: 0.5,
-            release: 1
-          ),
-          curves: [-1,0,-2]
-        ),
+        env: [0.1, 0.3, 0.5, 1, -1, 0, -2],
         gran_env_bufnum: 1, // popup menu item index
         gran_dur: 1,
         pos: 0,
@@ -208,15 +200,7 @@ s.boot;
       name: "Another Preset",
       isFactory: true,
       values: (
-        env: (
-          env: (
-            attack: 2,
-            decay: 0.5,
-            sustain: 0.3,
-            release: 4
-          ),
-          curves: [-1,0,-2]
-        ),
+        env: [2, 0.5, 0.3, 4, -1, 0, -2],
         gran_env_bufnum: 0, // popup menu item index
         gran_dur: 2,
         pos: 0.1,
@@ -229,39 +213,31 @@ s.boot;
     (
       name: "Preset 3",
       isFactory: true,
-      values: (
-        env: (
-          env: (
-            attack: 0.005,
-            decay: 1,
-            sustain: 1,
-            release: 0.5
-          ),
-          curves: [0,0,2]
-        ),
+      values:
+      (
+        env: [0.05, 1, 1, 0.5, 0, 0, 2],
         gran_env_bufnum: 2, // popup menu item index
         gran_dur: 0.1,
         pos: 0.5,
         density: 8,
         t1rand: 0.7,
         amp: 0.9,
-        pan: -0.3
+        pan: {rrand(-1.0, 1.0)}
       )
     )
   ]
 );
 )
 
-
-SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1, 
+SynthDef("granulator", {arg bufnum = #[0,0], gran_env_bufnum = -1, 
   gran_dur = 1, pos = 0.0, density = 4, t1rand = 0.1,
   // trig, t2gpan = 0, t2gamp = 1, t2gatt, t2gdec,
-  env = #[0.005, 0.01, 1, 0.1], amp = 0.9, pan = 0.0, velocity, freq, gate = 1, out = 0;
+  env = #[0.005, 0.01, 1, 0.1, 0, 0, 0], amp = 0.9, pan = 0.0, velocity, freq, gate = 1, out = 0;
 
-  var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3]), gate, doneAction: 2);
+  var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3], 1, env[4..6]), gate, doneAction: 2);
   var veloamp = velocity/127;
   var note = (freq.cpsmidi-60).midiratio;
-  var output = Warp1.ar(1, bufnum, pos, note*BufRateScale.kr(bufnum), gran_dur, gran_env_bufnum, density, t1rand, 4);
+  var output = Warp1.ar(1, bufnum[0], pos, note*BufRateScale.kr(bufnum[0]), gran_dur, gran_env_bufnum, density, t1rand, 4);
 	// Note: Unlike PlayBuf, the TGrains3 rate is multiplied by BufRate, so you needn't do that yourself.
 	// var tgrains = TGrains3.ar(2, trig, bufnum, note, BufDur.kr(bufnum)*pos, grain_dur, t2gpan, t2gatt, t2gdec, 1, 4);
   // var output = Select.ar(type, [warp, tgrains]); // здесь выбор в соответствии с типом синтеза
@@ -270,6 +246,6 @@ SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1,
   Out.ar(out, Pan2.ar(output, pan, amp));
 }, [\ir, nil,
 	0, 0, 0, 0, 
-	nil, 0.01, 0.01, 0, 0, nil, \ir],
+	0, 0.01, 0.01, 0, 0, nil, \ir],
 	metadata: ~metadata
 ).writeDefFile(SynthDef.synthDefDir);

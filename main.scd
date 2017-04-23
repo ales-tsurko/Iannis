@@ -1,5 +1,4 @@
 (
-// For development only
 // ---------------------------------------------------------
 Quarks.install("~/Desktop/Iannis".standardizePath);
 Quarks.uninstall("Iannis");
@@ -38,8 +37,7 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 
 // Synth view controller
 
-g = Group.new;
-v = IannisSynthViewController(g, \granulator);
+v = IannisSynthViewController(Group.new, \granulator);
 v.parse();
 v.front();
 
