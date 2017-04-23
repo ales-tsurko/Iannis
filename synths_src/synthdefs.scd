@@ -159,9 +159,9 @@ s.boot;
               align: \right,
 
               parameters: [(
-                key: \amp,
-                name: "Amp",
-                spec: \amp,
+                key: \gain,
+                name: "Gain",
+                spec: ControlSpec(0.ampdb, 24, \db, units: "dB"),
                 ui: (
                   type: \hslider
                 )
@@ -192,7 +192,7 @@ s.boot;
         pos: 0,
         density: 4,
         t1rand: 0.1,
-        amp: 0.9,
+        gain: 0.0,
         pan: 0
       )
     ),
@@ -206,7 +206,7 @@ s.boot;
         pos: 0.1,
         density: 1,
         t1rand: 0,
-        amp: 0.9,
+        gain: 0.0,
         pan: 0.1
       )
     ),
@@ -221,7 +221,7 @@ s.boot;
         pos: 0.5,
         density: 8,
         t1rand: 0.7,
-        amp: 0.9,
+        gain: 0.0,
         pan: {rrand(-1.0, 1.0)}
       )
     )
@@ -232,7 +232,7 @@ s.boot;
 SynthDef("granulator", {arg bufnum = #[0,0], gran_env_bufnum = -1, 
   gran_dur = 1, pos = 0.0, density = 4, t1rand = 0.1,
   // trig, t2gpan = 0, t2gamp = 1, t2gatt, t2gdec,
-  env = #[0.005, 0.01, 1, 0.1, 0, 0, 0], amp = 0.9, pan = 0.0, velocity, freq, gate = 1, out = 0;
+  env = #[0.005, 0.01, 1, 0.1, 0, 0, 0], gain = 0, pan = 0.0, velocity, freq, gate = 1, out = 0;
 
   var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3], 1, env[4..6]), gate, doneAction: 2);
   var veloamp = velocity/127;
@@ -243,7 +243,7 @@ SynthDef("granulator", {arg bufnum = #[0,0], gran_env_bufnum = -1,
   // var output = Select.ar(type, [warp, tgrains]); // здесь выбор в соответствии с типом синтеза
   output = output * envelope * veloamp;
 
-  Out.ar(out, Pan2.ar(output, pan, amp));
+  Out.ar(out, Pan2.ar(output, pan, gain.dbamp));
 }, [\ir, nil,
 	0, 0, 0, 0, 
 	0, 0.01, 0.01, 0, 0, nil, \ir],

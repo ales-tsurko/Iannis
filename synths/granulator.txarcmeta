@@ -64,9 +64,10 @@ o = [
 	"Envelope",  Event.prNew,  Array.prNew(4),  Event.prNew,  
 	Array.prNew(8),  "Output",  Array.prNew(1),  Event.prNew,  
 	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(16),  
-	Event.prNew,  Array.prNew(4),  "Amp",  Event.prNew,  
-	Array.prNew(16),  Event.prNew,  Array.prNew(4),  "Pan",  
-	"by.alestsurko.granulator",  "Ales Tsurko"
+	ControlSpec.prNew,  DbFaderWarp.prNew,  "dB",  Event.prNew,  
+	Array.prNew(4),  "Gain",  Event.prNew,  Array.prNew(16),  
+	Event.prNew,  Array.prNew(4),  "Pan",  "by.alestsurko.granulator",  
+	"Ales Tsurko"
 ];
 p = [
 	// Event
@@ -81,7 +82,7 @@ p = [
 		nil,  nil,  nil,  nil,  
 		'site',  o[24],  'ui',  o[25],  
 		nil,  nil,  'type',  'synth',  
-		'id',  o[120],  'author',  o[121] ],  
+		'id',  o[123],  'author',  o[124] ],  
 	// Array
 	2, [ o[3],  o[9],  o[15] ],  
 	// Event
@@ -100,7 +101,7 @@ p = [
 	7, [ nil,  nil,  nil,  nil,  
 		nil,  nil,  'env',  o[8],  
 		't1rand',  0.1,  'gran_env_bufnum',  1,  
-		'amp',  0.9,  'density',  4,  
+		'gain',  0.0,  'density',  4,  
 		'pan',  0,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  'pos',  0,  
@@ -124,7 +125,7 @@ p = [
 	13, [ nil,  nil,  nil,  nil,  
 		nil,  nil,  'env',  o[14],  
 		't1rand',  0,  'gran_env_bufnum',  0,  
-		'amp',  0.9,  'density',  1,  
+		'gain',  0.0,  'density',  1,  
 		'pan',  0.1,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  'pos',  0.1,  
@@ -148,7 +149,7 @@ p = [
 	19, [ nil,  nil,  nil,  nil,  
 		nil,  nil,  'env',  o[20],  
 		't1rand',  0.7,  'gran_env_bufnum',  2,  
-		'amp',  0.9,  'density',  8,  
+		'gain',  0.0,  'density',  8,  
 		'pan',  o[21],  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  'pos',  0.5,  
@@ -376,36 +377,44 @@ p = [
 		nil,  nil,  'isRow',  0,  
 		'parameters',  o[109],  nil,  nil ],  
 	// Array
-	109, [ o[110],  o[115] ],  
+	109, [ o[110],  o[118] ],  
 	// Event
 	110, [ array: o[111],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	111, [ nil,  nil,  'spec',  'amp',  
-		nil,  nil,  'ui',  o[112],  
-		'name',  o[114],  nil,  nil,  
-		nil,  nil,  'key',  'amp' ],  
+	111, [ nil,  nil,  'spec',  o[112],  
+		nil,  nil,  'ui',  o[115],  
+		'name',  o[117],  nil,  nil,  
+		nil,  nil,  'key',  'gain' ],  
+	// ControlSpec
+	112, [ minval: -inf,  maxval: 24,  
+		warp: o[113],  step: 0.0,  
+		default: -inf,  units: o[114],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	113, [ spec: o[112] ],  
 	// Event
-	112, [ array: o[113],  size: 1,  
+	115, [ array: o[116],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	113, [ nil,  nil,  'type',  'hslider' ],  
+	116, [ nil,  nil,  'type',  'hslider' ],  
 	// Event
-	115, [ array: o[116],  size: 4,  
+	118, [ array: o[119],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	116, [ nil,  nil,  'spec',  'pan',  
-		nil,  nil,  'ui',  o[117],  
-		'name',  o[119],  nil,  nil,  
+	119, [ nil,  nil,  'spec',  'pan',  
+		nil,  nil,  'ui',  o[120],  
+		'name',  o[122],  nil,  nil,  
 		nil,  nil,  'key',  'pan' ],  
 	// Event
-	117, [ array: o[118],  size: 1,  
+	120, [ array: o[121],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	118, [ nil,  nil,  'type',  'hslider' ]
+	121, [ nil,  nil,  'type',  'hslider' ]
 ];
 prUnarchive(o,p);

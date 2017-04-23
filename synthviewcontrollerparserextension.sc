@@ -254,7 +254,7 @@
 
       label.align = \right;
       valueLabel.align = \left;
-      valueLabel.fixedWidth = 60;
+      valueLabel.fixedWidth = 63;
 
       view.layout = HLayout(label, slider, valueLabel);
     }
@@ -330,7 +330,13 @@
       if ((view.editable.not) && (index > 0)) {
         var deltaY = previousY - (y/v.bounds.height);
         deltaY = deltaY * 15;
-        curves[index-1] = curves[index-1] + (deltaY);
+
+        if (index == 1) {
+          // if the segment is attack - inverse
+          deltaY = deltaY.neg;
+        };
+
+        curves[index-1] = curves[index-1] + deltaY;
         view.curves = curves;
 
         previousY = y/v.bounds.height;
