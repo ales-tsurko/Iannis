@@ -16,6 +16,7 @@ IannisSynthViewController : CompositeView {
     metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
     parameterBinder = ();
     this.fixedWidth = 680;
+    this.minHeight = 550;
     this.layout = VLayout();
     this.initToolbar();
   }

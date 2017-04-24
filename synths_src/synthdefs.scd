@@ -14,6 +14,9 @@ s.boot;
   site: "http://alestsurko.by",
   description: "Granular sampler.",
   ui: (
+    // theme: (
+      // // theme settings
+    // ),
     pages: [
       // каждая страница -- отдельный таб
       (

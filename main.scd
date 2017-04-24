@@ -66,4 +66,3 @@ z.layout = HLayout(m);
 
 t.addPage("tab 2", z);
 
-Server.freeAll;

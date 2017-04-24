@@ -1,5 +1,5 @@
 IannisTabbedView : CompositeView {
-  var currentIndex, <tabsContainer, tabs, <views, stackLayout;
+  var currentIndex, currentButton, previousButton, <tabsContainer, tabs, <views, stackLayout;
 
   *new {arg initialName, initialView;
     ^super.new.init(initialName, initialView);
@@ -39,9 +39,13 @@ IannisTabbedView : CompositeView {
     button.layout = HLayout(nil, buttonLabel, nil);
 
     tabs = tabs.add(button);
+    currentButton??{currentButton = button};
+    previousButton??{previousButton = button};
 
-    button.mouseDownAction = {arg button;
-      this.switchPage(this.currentIndex(button));
+    button.mouseDownAction = {arg but;
+      currentButton = but;
+      this.switchPage(this.currentIndex(but));
+      previousButton = but;
     };
 
     content.canvas = view;
@@ -55,14 +59,18 @@ IannisTabbedView : CompositeView {
   }
 
   currentIndex {arg button;
-    currentIndex = tabs.detectIndex({arg item;
-      item == button;
-    });
+    currentIndex = tabs.detectIndex(_ == button);
 
     ^currentIndex;
   }
 
   switchPage {arg index;
     stackLayout.index = index;
+    this.highlightCurrentButton();
+  }
+
+  highlightCurrentButton {
+    previousButton.background = Color.gray(0.6);
+    currentButton.background = Color.gray(0.75);
   }
 }
