@@ -29,7 +29,7 @@ TempoClock.default.tempo = 107/60;
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
 // Synth view controller
-g = Group.new;
+g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator);
 v.parse();
 v.front();

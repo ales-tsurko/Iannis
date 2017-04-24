@@ -31,6 +31,8 @@ IannisMIDIInManagerController : CompositeView {
       nil,
       panicButton
     );
+
+    this.deleteOnClose = false;
   }
 
   initPanicButton {
@@ -53,6 +55,7 @@ IannisMIDIInManagerController : CompositeView {
     midiSourcesMenu.action = {arg popup;
       if (popup.value.notNil) {
         this.midiManager.selectedDevice = IannisMIDIClient.sources[popup.value-1];
+        this.midiManager.reset();
       }
     };
   }
@@ -66,6 +69,7 @@ IannisMIDIInManagerController : CompositeView {
 
     channelNumberBox.action = {arg nb;
 			this.midiManager.channel = nb.value;
+      this.midiManager.reset();
     };
   }
 }

@@ -119,23 +119,18 @@
   parseRecorderUI {arg key;
     var newRecorder = IannisRecorderController("~/Desktop".standardizePath);
     newRecorder.action = {arg recorder;
-      var outputValue = [recorder.value.bufnum, recorder.samplePath];
-      node.set(key, outputValue);
+      node.set(key, recorder.value.bufnum);
 
-      // update preset
+      // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        this.presetsManagerController.presetsManager.currentPreset.values[key] = outputValue;
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = recorder.samplePath;
       };
     };
 
     // parameter bindings
     this.parameterBinder[key] = {arg value;
       var newValue = value.value();
-      if (newValue.isArray) {
-        newRecorder.samplePath = newValue[1];
-      } {
-        newRecorder.samplePath = newValue;
-      }
+      newRecorder.samplePath = newValue;
     };
 
     ^newRecorder;
@@ -160,10 +155,9 @@
       var value = itemsAndValues.values[p.value];
       node.set(key, value);
 
-      // update preset
+      // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = p.value;
-
       };
     };
 
@@ -195,7 +189,7 @@
       node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
 
-      // update preset
+      // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
       };
@@ -226,7 +220,7 @@
       node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
 
-      // update preset
+      // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
       };
@@ -305,7 +299,7 @@
 
       env.value = newValues;
       
-      // update preset
+      // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = outputValue;
       }
@@ -346,6 +340,9 @@
         curves.do({arg i, n;
           this.presetsManagerController.presetsManager.currentPreset.values[key][n+4] = i;
         });
+
+        // update node
+        node.set(key, this.presetsManagerController.presetsManager.currentPreset.values[key]);
       }
       }
     };

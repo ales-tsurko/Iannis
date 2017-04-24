@@ -2,7 +2,7 @@ IannisMIDIManager {
   var <>map, delegate, 
   <selectedDevice,
   <midiInputEnabled,
-  <channel, <voices;
+  <channel;
 
   *new {arg delegate;
     ^super.new.init(delegate);
@@ -13,7 +13,6 @@ IannisMIDIManager {
     midiInputEnabled = false;
     map = ();
     channel = 0;
-    voices = nil!127;
 
     this.initMIDIClient();
   }
@@ -50,6 +49,6 @@ IannisMIDIManager {
   }
 
   reset {
-    voices.do(_.release);
+    delegate.parentController.node.releaseVoices();
   }
 }

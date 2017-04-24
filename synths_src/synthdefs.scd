@@ -49,9 +49,8 @@ s.boot;
                     value: {
                       var buffer, signal;
                       var bufSize = 8192;
-                      buffer = Buffer.alloc(Server.default, bufSize, 1);
                       signal = Signal.rectWindow(bufSize);
-                      buffer.loadCollection(signal);
+                      buffer = Buffer.loadCollection(Server.default, signal);
 
                       // return
                       buffer.bufnum;
@@ -59,25 +58,15 @@ s.boot;
                   ),
                   (
                     name: "Hanning",
-                    value: {
-                      var buffer, signal;
-                      var bufSize = 8192;
-                      buffer = Buffer.alloc(Server.default, bufSize, 1);
-                      signal = Signal.hanningWindow(bufSize);
-                      buffer.loadCollection(signal);
-
-                      // return
-                      buffer.bufnum;
-                    }
+                    value: -1
                   ),
                   (
                     name: "Hamming",
                     value: {
                       var buffer, signal;
                       var bufSize = 8192;
-                      buffer = Buffer.alloc(Server.default, bufSize, 1);
                       signal = Signal.hammingWindow(bufSize);
-                      buffer.loadCollection(signal);
+                      buffer = Buffer.loadCollection(Server.default, signal);
 
                       // return
                       buffer.bufnum;
@@ -88,9 +77,8 @@ s.boot;
                     value: {
                       var buffer, signal;
                       var bufSize = 8192;
-                      buffer = Buffer.alloc(Server.default, bufSize, 1);
                       signal = Signal.welchWindow(bufSize);
-                      buffer.loadCollection(signal);
+                      buffer = Buffer.loadCollection(Server.default, signal);
 
                       // return
                       buffer.bufnum;
@@ -229,15 +217,15 @@ s.boot;
 );
 )
 
-SynthDef("granulator", {arg bufnum = #[0,0], gran_env_bufnum = -1, 
+SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1, 
   gran_dur = 1, pos = 0.0, density = 4, t1rand = 0.1,
   // trig, t2gpan = 0, t2gamp = 1, t2gatt, t2gdec,
   env = #[0.005, 0.01, 1, 0.1, 0, 0, 0], gain = 0, pan = 0.0, velocity, freq, gate = 1, out = 0;
 
-  var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3], 1, env[4..6]), gate, doneAction: 2);
   var veloamp = velocity/127;
   var note = (freq.cpsmidi-60).midiratio;
-  var output = Warp1.ar(1, bufnum[0], pos, note*BufRateScale.kr(bufnum[0]), gran_dur, gran_env_bufnum, density, t1rand, 4);
+  var envelope = EnvGen.kr(Env.adsr(env[0], env[1], env[2], env[3], 1, env[4..6]), gate, doneAction: 2);
+  var output = Warp1.ar(1, bufnum, pos, note*BufRateScale.kr(bufnum), gran_dur, gran_env_bufnum, density, t1rand, 4);
 	// Note: Unlike PlayBuf, the TGrains3 rate is multiplied by BufRate, so you needn't do that yourself.
 	// var tgrains = TGrains3.ar(2, trig, bufnum, note, BufDur.kr(bufnum)*pos, grain_dur, t2gpan, t2gatt, t2gdec, 1, 4);
   // var output = Select.ar(type, [warp, tgrains]); // здесь выбор в соответствии с типом синтеза
