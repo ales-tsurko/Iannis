@@ -13,7 +13,7 @@
     this.midiManager.map[\noteOff].free();
 
     if (this.midiManager.midiInputEnabled) {
-      this.parentController.node.voices??{this.parentController.node.voices = nil!127};
+      this.parentController.node.midiVoices??{this.parentController.node.midiVoices = nil!127};
       
       // NoteON
       this.midiManager.map[\noteOn] = MIDIFunc.noteOn({arg val, num, chan, src;
@@ -23,7 +23,7 @@
             
             values = values.addAll([\freq, num.midicps, \velocity, val]);
 
-            this.parentController.node.voices[num] = Synth(
+            this.parentController.node.midiVoices[num] = Synth(
               this.parentController.synthDefName,
               values, 
               this.parentController.node
@@ -36,7 +36,7 @@
       this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
         if (this.midiManager.selectedDevice.uid == src) {
           if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-            this.parentController.node.voices[num].release();
+            this.parentController.node.midiVoices[num].release();
           }
         }
       });

@@ -1,5 +1,5 @@
 (
-SynthDef.synthDefDir = "~/Desktop/Iannis/synths".standardizePath;
+SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
 s.boot;
 //

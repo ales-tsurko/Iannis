@@ -2,7 +2,7 @@ IannisNodeGroup : Group {
   var <getState, 
   // used as a container for the voices
   // instantiated by the midi client
-  <>voices;
+  <>midiVoices;
 
   set {arg ...args;
     super.set(*args);
@@ -16,7 +16,7 @@ IannisNodeGroup : Group {
     });
   }
 
-  releaseVoices {
-    this.voices.do(_.release);
+  releaseMIDIVoices {
+    this.midiVoices.do(_.release);
   }
 }

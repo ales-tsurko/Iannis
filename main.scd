@@ -7,7 +7,7 @@ Quarks.uninstall("Iannis");
 
 (
   s.waitForBoot({
-    SynthDef.synthDefDir = "~/Desktop/Iannis/synths".standardizePath;
+    SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
     s.loadDirectory(SynthDef.synthDefDir);
 
@@ -56,7 +56,7 @@ t.front();
 
 // adding a tab
 m = StaticText();
-m.string = "another tab";
+m.string = "another tab 3";
 
 z = CompositeView();
 z.fixedHeight = 300;

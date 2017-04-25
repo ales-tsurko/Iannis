@@ -49,6 +49,6 @@ IannisMIDIManager {
   }
 
   reset {
-    delegate.parentController.node.releaseVoices();
+    delegate.parentController.node.releaseMIDIVoices();
   }
 }
