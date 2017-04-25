@@ -31,7 +31,6 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 // Synth view controller
 g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator);
-v.parse();
 v.front();
 
 a = Bus.control(s, 1);

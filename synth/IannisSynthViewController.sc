@@ -19,6 +19,7 @@ IannisSynthViewController : CompositeView {
     this.minHeight = 550;
     this.layout = VLayout();
     this.initToolbar();
+    this.parse();
   }
 
   initToolbar {
