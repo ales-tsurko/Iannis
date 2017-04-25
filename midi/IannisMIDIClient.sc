@@ -18,6 +18,7 @@ IannisMIDIClient : MIDIClient {
         if (IannisMIDIClient.sources.size > 0) {
           if ((midiSourcesListSnaphot.last.uid != IannisMIDIClient.sources.last.uid) || (midiSourcesListSnaphot.size != IannisMIDIClient.sources.size)) {
             midiSourcesListSnaphot = IannisMIDIClient.sources();
+            MIDIClient.init();
             MIDIIn.connectAll();
             onUpdateMIDISources.value();
           };
