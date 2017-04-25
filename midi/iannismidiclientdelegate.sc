@@ -46,8 +46,12 @@
 
   didUpdateMIDISources {
     var devicesNames = IannisMIDIClient.sources.collect(_.name);
-    AppClock.sched(0, {
-      midiSourcesMenu.items = devicesNames.insert(0, "None");
-    });
+    midiSourcesMenu.items = devicesNames.insert(0, "None");
+
+    // autoselect previously disconnected device or select None
+    // on diconnection
+    this.midiManager!?{
+      midiSourcesMenu.valueAction = this.midiManager.selectedDeviceIndex;
+    };
   }
 }

@@ -1,6 +1,6 @@
 IannisMIDIManager {
   var <>map, delegate, 
-  <selectedDevice,
+  <selectedDevice, <selectedDisconnectedDevice,
   <midiInputEnabled,
   <channel;
 
@@ -29,16 +29,31 @@ IannisMIDIManager {
   }
 
   selectedDevice_ {arg device;
-    selectedDevice = device;
+    device!?{selectedDevice = device};
+
+    // selectedDevice = device;
     this.midiInputEnabled = device.notNil;
 
-    delegate.didSelectNewDevice(selectedDevice);
+    delegate.didSelectNewDevice(device);
   }
-  
+
+  selectedDeviceIndex {
+    var index;
+
+    selectedDevice!?{
+      index = IannisMIDIClient.sources.detectIndex({arg d;
+        d.uid == selectedDevice.uid;
+      });
+    };
+
+    index!?{^(index + 1)}??{^0};
+  }
+
   midiInputEnabled_ {arg newValue;
     midiInputEnabled = newValue;
 
     if (midiInputEnabled.not) {
+      this.reset();
       delegate.didDisableMIDIInput();
     }
   }

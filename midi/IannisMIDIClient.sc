@@ -28,7 +28,7 @@ IannisMIDIClient : MIDIClient {
       }
     });
 
-    SystemClock.play(sourcesWatcher);
+    AppClock.play(sourcesWatcher);
   }
 
   *disposeClint {
@@ -39,7 +39,7 @@ IannisMIDIClient : MIDIClient {
   *restart {
     sourcesWatcher.stop();
     MIDIClient.restart();
-    SystemClock.play(sourcesWatcher);
+    AppClock.play(sourcesWatcher);
   }
 
   *addOnUpdateSourcesAction {arg func;

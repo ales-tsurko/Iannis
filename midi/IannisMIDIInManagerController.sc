@@ -14,8 +14,9 @@ IannisMIDIInManagerController : CompositeView {
     this.initPanicButton();
     this.initMIDISourcesMenu();
     this.initChannelNumberBox();
-    midiManager = IannisMIDIManager(this);
 
+    midiManager = IannisMIDIManager(this);
+    
     midiSourcesMenu.valueAction = 0;
 
     ~midiInLabel = StaticText();
