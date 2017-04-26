@@ -10,6 +10,7 @@ IannisRecorderController : CompositeView {
   recordButton, playButton,
   isLoopCheckBox,
   quantizeBox,
+  <directoryWatcher,
   <recorder;
 
   *new {arg dir;
@@ -143,7 +144,18 @@ IannisRecorderController : CompositeView {
           nil
         )
       )
-    )
+    );
+
+    // directory watcher
+    directoryWatcher = IannisDirectoryWatcher(recordingDir, this);
+
+    this.toFrontAction = {arg v;
+      directoryWatcher.startWatch();
+    };
+
+    this.endFrontAction = {arg v;
+      directoryWatcher.stopWatch();
+    };
   }
 
   chooseDirectoryButtonAction {arg button;
@@ -217,6 +229,10 @@ IannisRecorderController : CompositeView {
       recorder.recordingDir = path.dirname;
     } {
       this.showSoundFileNotFoundAlert(path);
+      // trig recordingDir of recorder to update directory listing
+      path!?{
+        recorder.recordingDir = path.dirname;
+      };
     };
   }
 
@@ -273,9 +289,11 @@ IannisRecorderController : CompositeView {
       });
 
       // update selected index to current soundfile if the one exists
-      if (this.samplePath.notNil) {
-        if (this.samplePath.dirname == recorder.recordingDir) {
+      this.samplePath!?{
+        if ((File.existsCaseSensitive(this.samplePath)) && (this.samplePath.dirname == recorder.recordingDir)) {
           var index = filesListView.items.indexOfEqual(this.samplePath.basename);
+          index??{index = 0};
+
           filesListView.valueAction = index;
         };
       };
@@ -285,7 +303,16 @@ IannisRecorderController : CompositeView {
   didUpdateDirectory {
     AppClock.sched(0.0, {
       directoryLabel.string = recorder.recordingDir;
+      directoryWatcher.path = recorder.recordingDir;
     });
+  }
+
+  didChangeDirectoryContent {
+    // trigger samplePath setter action
+    // to restructure directory
+    this.samplePath!?{
+      this.samplePath = samplePath;
+    };
   }
 
   didStartRecord {
