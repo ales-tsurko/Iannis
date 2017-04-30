@@ -83,6 +83,11 @@ IannisRecorder {
     }
   }
 
+  deleteSoundFileAtIndex {arg index;
+    File.delete(soundfilesInDir[index].path);
+    soundfilesInDir.removeAt(index);
+  }
+
   writePlayerBuffer {
     fork {
       var numOfSamples, filePath;

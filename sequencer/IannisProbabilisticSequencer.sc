@@ -137,14 +137,14 @@ IannisProbabilisticSequencer {
           Plazy({
             var dur = length.next??{length.reset;length.next??{length=4;length.next}};
             var version = seed.next??{seed.reset;seed.next??{seed=2147483647.rand;seed.next}};
-            AppClock.sched(0.0, {this.time = 0});
+            AppClock.sched(0.0, {this.time = 0; nil});
 
             // main pattern
             Pfindur(dur, Ppar([
               Pseed(version, Pbindef(name)),
               // beat counter
               (play: {
-                AppClock.sched(0.0, {this.time = this.time + 1});
+                AppClock.sched(0.0, {this.time = this.time + 1; nil});
               }, 
               dur: 1)
             ] ++ mulAddEvents))
@@ -155,6 +155,7 @@ IannisProbabilisticSequencer {
             AppClock.sched(0.0, {
               onFinishActions.do(_.());
               this.stop();
+              nil;
             });
             // should return something
             1;

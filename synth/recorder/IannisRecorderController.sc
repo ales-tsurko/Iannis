@@ -86,6 +86,13 @@ IannisRecorderController : CompositeView {
       this.filesListViewAction(listView);
     };
 
+    // delete file
+    filesListView.keyDownAction = {arg view, char, mod, unicode, keycode, key;
+      if (key == 0x01000003) {
+        this.deleteFileAction(filesListView, filesListView.value);
+      }
+    };
+
     // play button
     playButton = Button.new;
     playButton.fixedWidth = 100;
@@ -206,7 +213,23 @@ IannisRecorderController : CompositeView {
     recorder.soundfile = recorder.soundfilesInDir[listView.value];
     this.stopPlayingSample();
   }
-  
+
+  deleteFileAction {arg view, index;
+    samplePath!?{
+      this.showDeleteFileAlert(samplePath.basename, index, {arg n;
+        recorder.deleteSoundFileAtIndex(n);
+
+        if (recorder.soundfilesInDir.size > 0) {
+          view.valueAction = (n-1).clip(0, view.items.size);
+        } {
+          samplePath = nil;
+          view.items = [];
+          nil;
+        }
+      });
+    };
+  }
+
   stopPlayingSample {
     if (recorder.isPlaying) {
       fork {
@@ -236,6 +259,56 @@ IannisRecorderController : CompositeView {
     };
   }
 
+  showDeleteFileAlert {arg fileName, index, okCallback;
+    var screenBounds = Window.screenBounds();
+    var rect = Rect(
+      screenBounds.width/2-125,
+      screenBounds.height/2-50,
+      250,
+      100
+    );
+    var window = Window("Warning", rect, false);
+    var message = StaticText();
+    var okButton = Button();
+    var cancelButton = Button();
+    window.alwaysOnTop = true;
+
+    message.string = "Are you sure you want to delete" + fileName++"?";
+    message.align = \center;
+
+    okButton.fixedWidth = 90;
+    okButton.states = [["OK"]];
+    okButton.action = {arg but;
+      if (but.value == 0) {
+        okCallback.value(index);
+        window.close();
+        this.directoryWatcher.startWatch();
+      };
+    };
+
+    cancelButton.fixedWidth = 90;
+    cancelButton.states = [["Cancel"]];
+    cancelButton.action = {arg but;
+      if (but.value == 0) {
+        window.close();
+        this.directoryWatcher.startWatch();
+      };
+    };
+
+    window.layout = VLayout(
+      message,
+      HLayout(
+        nil,
+        cancelButton,
+        okButton,
+        nil
+      )
+    );
+
+    window.front();
+    this.directoryWatcher.stopWatch();
+  }
+
   showSoundFileNotFoundAlert {arg path;
     var screenBounds = Window.screenBounds();
     var rect = Rect(
@@ -247,6 +320,7 @@ IannisRecorderController : CompositeView {
     var window = Window("Error", rect, false);
     var message = StaticText();
     var okButton = Button();
+    window.alwaysOnTop = true;
     okButton.fixedWidth = 90;
     okButton.states = [["OK"]];
     okButton.action = {arg but;
@@ -311,7 +385,7 @@ IannisRecorderController : CompositeView {
     // trigger samplePath setter action
     // to restructure directory
     this.samplePath!?{
-      this.samplePath = samplePath;
+      this.samplePath = recorder.soundfile.path;
     };
   }
 
@@ -319,24 +393,28 @@ IannisRecorderController : CompositeView {
     AppClock.sched(0.0, {
       playButton.value = 0;
       playButton.enabled = false;
+      nil;
     });
   }
 
   didStopRecord {
     AppClock.sched(0.0, {
       playButton.enabled = true;
+      nil;
     });
   }
 
   didStartPlaySample {
     AppClock.sched(0.0, {
       // code here
+      nil;
     });
   }
 
   didStopPlaySample {
     AppClock.sched(0.0, {
       if (playButton.value == 1) {playButton.value = 0};
+      nil;
     });
   }
 }

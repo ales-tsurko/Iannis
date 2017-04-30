@@ -115,9 +115,8 @@
     ^view;
   }
 
-
   parseRecorderUI {arg key;
-    var newRecorder = IannisRecorderController("~/Desktop".standardizePath);
+    var newRecorder = IannisRecorderController("".resolveRelative);
     newRecorder.action = {arg recorder;
       node.set(key, recorder.value.bufnum);
 
