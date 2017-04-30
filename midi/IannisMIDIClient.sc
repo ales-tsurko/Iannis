@@ -11,24 +11,18 @@ IannisMIDIClient : MIDIClient {
     onUpdateMIDISources.value();
 
     // sources watcher
-    sourcesWatcher = Routine({
-      loop {
-        IannisMIDIClient.list();
+    sourcesWatcher = SkipJack({
+      IannisMIDIClient.list();
 
-        if (IannisMIDIClient.sources.size > 0) {
-          if ((midiSourcesListSnaphot.last.uid != IannisMIDIClient.sources.last.uid) || (midiSourcesListSnaphot.size != IannisMIDIClient.sources.size)) {
-            midiSourcesListSnaphot = IannisMIDIClient.sources();
-            MIDIClient.init();
-            MIDIIn.connectAll();
-            onUpdateMIDISources.value();
-          };
+      if (IannisMIDIClient.sources.size > 0) {
+        if ((midiSourcesListSnaphot.last.uid != IannisMIDIClient.sources.last.uid) || (midiSourcesListSnaphot.size != IannisMIDIClient.sources.size)) {
+          midiSourcesListSnaphot = IannisMIDIClient.sources();
+          MIDIClient.init();
+          MIDIIn.connectAll();
+          onUpdateMIDISources.value();
         };
-
-        2.wait;
-      }
-    });
-
-    AppClock.play(sourcesWatcher);
+      };
+    }, 2);
   }
 
   *disposeClint {
@@ -39,7 +33,7 @@ IannisMIDIClient : MIDIClient {
   *restart {
     sourcesWatcher.stop();
     MIDIClient.restart();
-    AppClock.play(sourcesWatcher);
+    sourcesWatcher.start();
   }
 
   *addOnUpdateSourcesAction {arg func;

@@ -1,7 +1,7 @@
 IannisDirectoryWatcher {
   var path, <>delegate,
   directorySnapshot,
-  watcherRout;
+  watcher;
 
   *new {arg path, delegate;
     ^super.new.init(path, delegate);
@@ -21,25 +21,20 @@ IannisDirectoryWatcher {
   }
 
   startWatch {
-    if (watcherRout.isPlaying.not) {
-      watcherRout = Routine({
-        loop {
+    watcher??{
+      watcher = SkipJack({
           if (directorySnapshot != path.files.collect(_.fileName)) {
             delegate.didChangeDirectoryContent();
             directorySnapshot = path.files.collect(_.fileName);
           };
+        }, 3);
+    };
 
-          3.wait;
-        };
-      });
-      AppClock.play(watcherRout);
-    } {
-      ("Already watching"+this.path).inform;
-    }
+    watcher.start();
   }
 
   stopWatch {
-    watcherRout.stop();
+    watcher.stop();
   }
 
 }
