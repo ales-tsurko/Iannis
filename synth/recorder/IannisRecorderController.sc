@@ -217,6 +217,8 @@ IannisRecorderController : CompositeView {
   deleteFileAction {arg view, index;
     samplePath!?{
       this.showDeleteFileAlert(samplePath.basename, index, {arg n;
+        this.stopPlayingSample();
+
         recorder.deleteSoundFileAtIndex(n);
 
         if (recorder.soundfilesInDir.size > 0) {

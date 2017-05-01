@@ -27,7 +27,7 @@ IannisPresetsManager {
     currentPreset = this.presets[index].deepCopy;
     selectedPreset = this.presets[index];
 
-    delegate.didLoadPreset(this.currentPreset, index);
+    delegate.didLoadPreset(selectedPreset, index);
   }
 
   updatePresetAtIndexWithPreset {arg index, preset;

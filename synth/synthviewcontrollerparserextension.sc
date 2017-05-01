@@ -95,6 +95,24 @@
       \recorder, {
         view = this.parseRecorderUI(key);
       },
+      \button, {
+        view = this.parseButtonUI(key, uiObj);
+      },
+      \check, {
+        view = this.parseCheckUI(key, name, uiObj);
+      },
+      \number, {
+        view = this.parseNumberUI(key, name, spec, uiObj);
+      },
+      \hrslider, {
+        view = this.parseRangeSliderUI(key, name, spec, uiObj, \horizontal);
+      },
+      \vrslider, {
+        view = this.parseRangeSliderUI(key, name, spec, uiObj, \vertical);
+      },
+      \xy, {
+        view = this.parseXYUI(key, name, spec, uiObj);
+      },
       \popup, {
         view = this.parsePopupUI(key, name, uiObj);
       },
@@ -133,6 +151,211 @@
     };
 
     ^newRecorder;
+  }
+
+  parseButtonUI {arg key, uiObj;
+    var view = CompositeView();
+    var button = Button();
+    var states = [];
+
+    uiObj[\states].do({arg item;
+      states = states.add([item[\name]]);
+    });
+
+    button.fixedWidth = 150;
+    button.states = states;
+
+    button.action = {arg but;
+      var value = uiObj[\states][but.value][\value].value();
+
+      node.set(key, value);
+
+      // update preset
+      this.presetsManagerController.presetsManager.currentPreset!?{
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = but.value;
+      }
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      button.valueAction = value.value();
+    };
+
+    // layout
+    view.layout = VLayout(button);
+
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseCheckUI {arg key, name, uiObj;
+    var view = CompositeView();
+    var check = CheckBox();
+    check.string = uiObj[\name];
+
+    check.action = {arg ch;
+      var value = ch.value.asInteger;
+
+      node.set(key, value);
+
+      // update preset
+      this.presetsManagerController.presetsManager.currentPreset!?{
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = ch.value;
+      }
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      check.valueAction = value.value();
+    };
+
+    // layout
+    view.layout = VLayout(check);
+
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseNumberUI {arg key, name, spec, uiObj;
+    var view = CompositeView();
+    var number = NumberBox();
+    var label = StaticText();
+    label.string = name + "("++spec.asSpec.units++")";
+
+    number.fixedWidth = 65;
+    number.clipLo = spec.clipLo;
+    number.clipHi = spec.clipHi;
+
+    if (spec.asSpec.step == 0) {
+      number.step = 0.01;
+      number.scroll_step = 0.01;
+      number.maxDecimals = 4;
+    } {
+      if (spec.asSpec.step < 1) {
+        number.maxDecimals = 4;
+      } {
+        number.decimals = 0;
+      };
+
+      number.step = spec.asSpec.step;
+      number.scroll_step = spec.asSpec.step;
+    };
+
+    number.action = {arg nb;
+      var value = nb.value;
+
+      node.set(key, value);
+
+      // update preset
+      this.presetsManagerController.presetsManager.currentPreset!?{
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = nb.value;
+      };
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      number.valueAction = value.value();
+    };
+
+    // layout
+    view.layout = VLayout(label, number);
+
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseRangeSliderUI {arg key, name, spec, uiObj, orientation;
+    var view = CompositeView();
+    var slider = RangeSlider();
+    var label = StaticText();
+    var valueLabel = StaticText();
+    label.string = name + "("++spec.asSpec.units++")";
+
+    slider.action = {arg sl;
+      var value = 0!2;
+
+      value[0] = spec.asSpec.map(sl.lo);
+      value[1] = spec.asSpec.map(sl.hi);
+
+      node.set(key, value);
+
+      valueLabel.string = value[0].round(0.01).asString ++ ";" + value[1].round(0.01).asString;
+
+      // update preset
+      this.presetsManagerController.presetsManager.currentPreset!?{
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = value;
+      };
+    };
+
+    // parameter bindings
+    this.parameterBinder[key] = {arg value;
+      slider.lo = spec.asSpec.unmap(value.value[0]);
+      slider.hi = spec.asSpec.unmap(value.value[1]);
+
+      // don't know why, but it's working only when calling twice
+      // in other case the first value that was set, becomes a clipped
+      // version of the same parameter of the previous preset... looks
+      // like a bug in the RangeSlider. Also it's maybe a cause of calling
+      // tasks synchronously. Anyway, here it's working and it's call 
+      // action only once, so it's a fine solution.
+      slider.setSpanActive(
+        spec.asSpec.unmap(value.value[0]),
+        spec.asSpec.unmap(value.value[1])
+      );
+    };
+
+    // layout
+    if (orientation == \vertical) {
+      slider.fixedWidth = 25;
+      slider.fixedHeight = 160;
+
+      label.align = \center;
+      valueLabel.align = \center;
+      view.layout = VLayout(label, HLayout(slider), valueLabel);
+    } {
+      slider.orientation = orientation;
+      slider.fixedWidth = 160;
+      slider.fixedHeight = 25;
+
+      label.align = \left;
+      valueLabel.align = \right;
+
+      view.layout = VLayout(label, slider, valueLabel);
+    }
+
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseXYUI {arg key, name, spec, uiObj;
+    var view = CompositeView();
+    var xy = Slider2D();
+    var label = StaticText();
+    var valueLabel = StaticText();
+    label.string = name;
+
+    xy.fixedHeight = 160;
+
+    xy.action = {arg v;
+      var value = 0!2;
+
+      value[0] = spec[0].asSpec.map(v.x);
+      value[1] = spec[1].asSpec.map(v.y);
+
+      node.set(key, value);
+
+      valueLabel.string = value[0].round(0.01).asString + spec[0].asSpec.units ++ ";" + value[1].round(0.01).asString + spec[1].asSpec.units;
+
+      // update preset
+      this.presetsManagerController.presetsManager.currentPreset!?{
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = [v.x, v.y];
+      };
+    };
+
+    this.parameterBinder[key] = {arg value;
+      xy.setXYActive(value.value[0], value.value[1]);
+    };
+
+    // layout
+    view.layout = VLayout(label, xy, valueLabel);
+
+    ^this.parseAlignment(view, uiObj[\align]);
   }
 
   parsePopupUI {arg key, name, uiObj;

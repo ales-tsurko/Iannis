@@ -98,9 +98,9 @@ IannisRecorder {
       recordingBuffer.copyData(playerBuffer, numSamples: numOfSamples);
 
       Server.default.sync;
-
+      
       // write a file
-      filePath = recordingDir +/+ ("Recording-"++thisThread.seconds.asString).replace(".", "-") ++ ".aif";
+      filePath = recordingDir +/+ "Rec-"++UniqueID.next.asString++"_"++Date.getDate().asSortableString++".aif";
       playerBuffer.write(filePath, "aiff", "float");
 
       Server.default.sync;

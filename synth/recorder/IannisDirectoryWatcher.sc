@@ -20,21 +20,41 @@ IannisDirectoryWatcher {
     ^path.fullPath;
   }
 
+  // startWatch {
+    // watcher??{
+      // watcher = SkipJack({
+          // if (directorySnapshot != path.files.collect(_.fileName)) {
+            // delegate.didChangeDirectoryContent();
+            // directorySnapshot = path.files.collect(_.fileName);
+          // };
+        // }, 3);
+    // };
+// 
+    // watcher.start();
+  // }
+// 
+  // stopWatch {
+    // watcher.stop();
+  // }
   startWatch {
-    watcher??{
-      watcher = SkipJack({
+    if (watcher.isPlaying.not) {
+      watcher = Routine({
+        loop {
           if (directorySnapshot != path.files.collect(_.fileName)) {
             delegate.didChangeDirectoryContent();
             directorySnapshot = path.files.collect(_.fileName);
           };
-        }, 3);
-    };
 
-    watcher.start();
+          3.wait;
+        };
+      });
+      AppClock.play(watcher);
+    } {
+      ("Already watching"+this.path).inform;
+    }
   }
 
   stopWatch {
     watcher.stop();
   }
-
 }
