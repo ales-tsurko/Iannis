@@ -56,7 +56,7 @@ t.front();
 
 // adding a tab
 m = StaticText();
-m.string = "another tab 3";
+m.string = "another tab 2";
 
 z = CompositeView();
 z.fixedHeight = 300;

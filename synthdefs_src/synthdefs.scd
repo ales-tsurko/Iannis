@@ -37,83 +37,159 @@ s.boot;
             )]
           ),
 
-          // (
-            // name: "Elements test",
-            // parameters: [
-              // (
-                // key: \undefined,
-                // ui: (
-                  // type: \button,
-                  // align: \right,
-                  // states: [
-                    // (
-                      // name: "First",
-                      // value: {"first value generator".postln;1}
-                    // ),
-                    // (
-                      // name: "Second",
-                      // value: {"second value generator".postln;2}
-                    // ),
-                    // (
-                      // name: "Third",
-                      // value: {"third value generator".postln;3}
-                    // )
-                  // ]
-                // )
-              // ),
-// 
-              // (
-                // key: \undefined_1,
-                // ui: (
-                  // name: "Is true?",
-                  // type: \check
-                // )
-              // ),
-              // (
-                // key: \undefined_2,
-                // name: "Parameter 1",
-                // spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
-                // ui: (
-                  // type: \number
-                // )
-              // ),
-              // (
-                // key: \undefined_3,
-                // name: "Parameter 2",
-                // spec: ControlSpec(0, 255, \exp, 1, 4, "n"),
-                // ui: (
-                  // type: \number
-                // )
-              // ),
-              // (
-                // key: \undefined_4,
-                // name: "Parameter 3",
-                // spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
-                // ui: (
-                  // type: \vrslider
-                // )
-              // ),
-              // (
-                // key: \undefined_5,
-                // name: "Parameter 4",
-                // spec: ControlSpec(1, 1000, \exp, 1, 10, "ms"),
-                // ui: (
-                  // type: \hrslider
-                // )
-              // ),
-              // (
-                // key: \undefined_6,
-                // name: "Parameter 5",
-                // spec: [
-                  // ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
-                  // ControlSpec(100, 8000, \exp, 0.1, 400, "Hz")
-                // ],
-                // ui: (
-                  // type: \xy
-                // )
-              // )
-            // ]
-          // ),
+          (
+            name: "Elements test",
+            parameters: [
+              (
+                tabs: [
+                  (
+                    name: "First",
+                    parameters: [
+                      (
+                        key: \undefined,
+                        ui: (
+                          type: \button,
+                          align: \right,
+                          states: [
+                            (
+                              name: "First",
+                              value: {"first value generator".postln;1}
+                            ),
+                            (
+                              name: "Second",
+                              value: {"second value generator".postln;2}
+                            ),
+                            (
+                              name: "Third",
+                              value: {"third value generator".postln;3}
+                            )
+                          ]
+                        )
+                      ),
+
+                      (
+                        key: \undefined_1,
+                        name: "Is true?",
+                        ui: (
+                          type: \check
+                        )
+                      ),
+
+                      (
+                        key: \undefined_2,
+                        name: "Parameter 1",
+                        spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
+                        ui: (
+                          type: \number
+                        )
+                      ),
+
+                      (
+                        key: \undefined_3,
+                        name: "Parameter 2",
+                        spec: ControlSpec(0, 255, \exp, 1, 4, "n"),
+                        ui: (
+                          type: \number
+                        )
+                      ),
+
+                      (
+                        key: \undefined_4,
+                        name: "Parameter 3",
+                        spec: ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
+                        ui: (
+                          type: \vrslider
+                        )
+                      ),
+
+                      (
+                        key: \undefined_5,
+                        name: "Parameter 4",
+                        spec: ControlSpec(1, 1000, \exp, 1, 10, "ms"),
+                        ui: (
+                          type: \hrslider
+                        )
+                      ),
+
+                      (
+                        key: \undefined_6,
+                        name: "Parameter 5",
+                        spec: [
+                          ControlSpec(0.05, 3, \exp, 0, 0.1, "s"),
+                          ControlSpec(100, 8000, \exp, 0.1, 400, "Hz")
+                        ],
+                        ui: (
+                          type: \xy
+                        )
+                      )
+                    ]
+                  ),
+
+                  (
+                    name: "Second",
+                    parameters: [
+                      (
+                        key: \undefined_7,
+                        name: "Parameter",
+                        spec: \unipolar,
+                        ui: (
+                          type: \knob
+                        )
+                      ),
+
+                      (
+                        key: \undefined_8,
+                        name: "Parameter",
+                        spec: \unipolar,
+                        ui: (
+                          type: \vslider
+                        )
+                      )
+                    ]
+                  ),
+
+                  (
+                    name: "Third",
+                    parameters: [
+                      (
+                        isRow: 0,
+                        align: \center,
+                        parameters: [
+                          (
+                            key: \undefined_9,
+                            name: "Parameter 1",
+                            spec: \unipolar,
+                            ui: (
+                              type: \knob
+                            )
+                          ),
+
+                          (
+                            key: \undefined_10,
+                            name: "Parameter 2",
+                            spec: \unipolar,
+                            ui: (
+                              type: \knob
+                            )
+                          ),
+
+
+                          (
+                            key: \undefined_11,
+                            name: "Parameter 3",
+                            spec: \unipolar,
+                            ui: (
+                              type: \knob
+                            )
+                          ),
+                        ]
+                      )
+                    ]
+                  )
+                ]
+              )
+            ]
+          ),
 
           // Grain Parameters Group
           (
@@ -225,7 +301,7 @@ s.boot;
             name: "Output",
             parameters: [(
               isRow: 0,
-              align: \right,
+              align: \center,
 
               parameters: [(
                 key: \gain,

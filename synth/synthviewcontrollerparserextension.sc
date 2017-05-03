@@ -60,19 +60,52 @@
 
     // parse parameters
     groupObj[\parameters].do({arg parameter;
-      if (parameter[\isRow].isNil) {
-        var element = this.parseUIElement(parameter[\key], parameter[\name], parameter[\spec], parameter[\ui]);
-        newGroup.contentView.layout.add(element)
-      } {
-        // if is row
-        var align = parameter[\align];
-        var parameters = parameter[\parameters];
-        var row = this.parseRow(parameters, align);
-        newGroup.contentView.layout.add(row);
-      };
+      // if ((parameter[\isRow].isNil) && (parameter[\tabs].isNil)) {
+        // var element = this.parseUIElement(parameter[\key], parameter[\name], parameter[\spec], parameter[\ui]);
+        // newGroup.contentView.layout.add(element)
+      // };
+// 
+      // // if is row
+      // parameter[\isRow]!?{
+        // var align = parameter[\align];
+        // var parameters = parameter[\parameters];
+        // var row = this.parseRow(parameters, align);
+        // newGroup.contentView.layout.add(row);
+      // };
+// 
+      // // if is tabbed element
+      // parameter[\tabs]!?{
+        // var tabbedView = this.parseTabbedElement(parameter[\tabs]);
+        // newGroup.contentView.layout.add(tabbedView);
+      // };
+
+      var view = this.parseGroupParameter(parameter);
+      newGroup.contentView.layout.add(view);
     });
 
     this.addGroupViewToPageAtIndex(newGroup, pageIndex);
+  }
+
+  parseGroupParameter {arg parameter;
+    var view;
+
+    if ((parameter[\isRow].isNil) && (parameter[\tabs].isNil)) {
+      view = this.parseUIElement(parameter[\key], parameter[\name], parameter[\spec], parameter[\ui]);
+    };
+
+    // if is row
+    parameter[\isRow]!?{
+      var align = parameter[\align];
+      var parameters = parameter[\parameters];
+      view = this.parseRow(parameters, align);
+    };
+
+    // if is tabbed element
+    parameter[\tabs]!?{
+      view = this.parseTabbedElement(parameter[\tabs]);
+    };
+
+    ^view;
   }
 
   parseRow {arg parametersArr, align;
@@ -85,6 +118,28 @@
     });
 
     ^this.parseAlignment(view, align);
+  }
+
+  parseTabbedElement {arg tabs;
+    var view;
+    tabs.do({arg tab;
+      var name = tab[\name];
+      var container = CompositeView();
+      container.layout = VLayout();
+
+      view!?{
+        view.addPage(name, container);
+      }??{
+        view = IannisTabbedUIElement(name, container);
+      };
+
+      tab[\parameters].do({arg parameter;
+        var element = this.parseGroupParameter(parameter);
+        container.layout.add(element);
+      });
+    });
+
+    ^view;
   }
 
   parseUIElement {arg key, name, spec, uiObj;
@@ -190,7 +245,7 @@
   parseCheckUI {arg key, name, uiObj;
     var view = CompositeView();
     var check = CheckBox();
-    check.string = uiObj[\name];
+    check.string = name;
 
     check.action = {arg ch;
       var value = ch.value.asInteger;
@@ -308,17 +363,16 @@
 
       label.align = \center;
       valueLabel.align = \center;
-      view.layout = VLayout(label, HLayout(slider), valueLabel);
     } {
       slider.orientation = orientation;
       slider.fixedWidth = 160;
       slider.fixedHeight = 25;
 
       label.align = \left;
-      valueLabel.align = \right;
+      valueLabel.align = \left;
+    };
 
-      view.layout = VLayout(label, slider, valueLabel);
-    }
+    view.layout = VLayout(label, HLayout(slider), valueLabel);
 
     ^this.parseAlignment(view, uiObj[\align]);
   }
@@ -462,18 +516,16 @@
 
       label.align = \center;
       valueLabel.align = \center;
-      view.layout = VLayout(label, HLayout(slider), valueLabel);
     } {
       slider.orientation = orientation;
       slider.fixedWidth = 160;
       slider.fixedHeight = 25;
 
-      label.align = \right;
+      label.align = \left;
       valueLabel.align = \left;
-      valueLabel.fixedWidth = 63;
+    };
 
-      view.layout = HLayout(label, slider, valueLabel);
-    }
+    view.layout = VLayout(label, HLayout(slider), valueLabel);
 
     ^this.parseAlignment(view, uiObj[\align]);
   }
