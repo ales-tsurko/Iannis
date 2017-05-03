@@ -60,25 +60,6 @@
 
     // parse parameters
     groupObj[\parameters].do({arg parameter;
-      // if ((parameter[\isRow].isNil) && (parameter[\tabs].isNil)) {
-        // var element = this.parseUIElement(parameter[\key], parameter[\name], parameter[\spec], parameter[\ui]);
-        // newGroup.contentView.layout.add(element)
-      // };
-// 
-      // // if is row
-      // parameter[\isRow]!?{
-        // var align = parameter[\align];
-        // var parameters = parameter[\parameters];
-        // var row = this.parseRow(parameters, align);
-        // newGroup.contentView.layout.add(row);
-      // };
-// 
-      // // if is tabbed element
-      // parameter[\tabs]!?{
-        // var tabbedView = this.parseTabbedElement(parameter[\tabs]);
-        // newGroup.contentView.layout.add(tabbedView);
-      // };
-
       var view = this.parseGroupParameter(parameter);
       newGroup.contentView.layout.add(view);
     });
