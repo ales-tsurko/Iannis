@@ -163,6 +163,9 @@
       },
       \env_adsr, {
         view = this.parseEnvADSRUI(key, name, uiObj);
+      },
+      \custom, {
+        view = this.parseCustomUIElement(key, name, uiObj);
       }
     );
 
@@ -446,7 +449,7 @@
       node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
 
-      // update preset and synth values
+      // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
         this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
       };
@@ -460,6 +463,24 @@
     };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
+
+    ^this.parseAlignment(view, uiObj[\align]);
+  }
+
+  parseCustomUIElement {arg key, name, uiObj;
+    var view = uiObj[\init].value(key, name, uiObj);
+    view.action = {arg view;
+      var presetValue = uiObj[\action].value(view, key, node, uiObj);
+
+      // update preset
+      if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
+        this.presetsManagerController.presetsManager.currentPreset.values[key] = presetValue;
+      };
+    };
+
+    this.parameterBinder[key] = {arg value;
+      uiObj[\binder].value(view, value, uiObj);
+    };
 
     ^this.parseAlignment(view, uiObj[\align]);
   }

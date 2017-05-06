@@ -34,10 +34,19 @@ g = IannisNodeGroup();
 IannisSynthViewController(g, \granulator).front();
 )
 
-a = Bus.control(s, 1);
-g.map(\pos, a);
-a.set({SinOsc.kr(1, 0, 1).range(0,0.3)}.play);
-s.numSynths;
+a = NodeProxy(s, 1);
+
+p = g.getState[\pos]; // hold source value
+
+a.source = {SinOsc.kr(1, 0, 1).range(0.1, 0.6)};
+a.fadeTime = 3;
+
+g.set(\pos, a.bus.asMap);
+
+a.clear(4);
+
+// return to the source value
+g.set(\pos, p);
 
 // Tabbed view
 

@@ -183,6 +183,35 @@ s.boot;
                             )
                           ),
                         ]
+                      ),
+
+                      (
+                        key: \undefined_12,
+                        name: "Parameter 4",
+                        ui: (
+                          type: \custom,
+                          align: \center,
+                          init: {arg key, name, uiObj;
+                            var view = Knob();
+                            view.fixedHeight = 40;
+                            // should return the view, that have to be
+                            // a subclass of View
+                            view;
+                          },
+                          action: {arg view, key, node, uiObj;
+                            var value = view.value;
+
+                            node.set(key, value);
+
+                            // should return the value, that have to be
+                            // stored in preset
+                            value;
+                          },
+                          binder: {arg view, value, uiObj;
+                            // this function loading a value, stored in a preset
+                            view.value = value;
+                          }
+                        )
                       )
                     ]
                   )
