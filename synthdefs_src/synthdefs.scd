@@ -203,8 +203,8 @@ s.boot;
 
                             node.set(key, value);
 
-                            // should return the value, that have to be
-                            // stored in preset
+                            // should return the value, that you want to
+                            // store in preset
                             value;
                           },
                           binder: {arg view, value, uiObj;

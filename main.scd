@@ -75,3 +75,29 @@ z.layout = HLayout(m);
 
 t.addPage("tab 2", z);
 
+
+////
+
+~container = CompositeView();
+~container.front();
+~container.minWidth = 100;
+~container.minHeight = 100;
+~textView = TextView();
+~textView.syntaxColorize;
+~textView.string = this.cmdLine;
+
+~container.layout = VLayout(
+  ~textView
+);
+
+~codeEditor = WebView();
+~codeEditor.front();
+~codeEditor.url = "file:///Users/alestsurko/Desktop/Iannis/multipurpose/textview/index.html";
+~codeEditor.onJavaScriptMsg = {arg view, msg;
+  ("JS msg:" + msg).postln;
+};
+
+~codeEditor.evaluateJavaScript("console.log(editor.getValue())");
+~codeEditor.evaluateJavaScript("editor.setValue(\"~val = 2 + 2;\")");
+WebView.clearCache();
+~codeEditor.reload();

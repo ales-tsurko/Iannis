@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ACE</title>
+    <style type="text/css" media="screen">
+    @font-face {
+        font-family: 'fira_mono_regular';
+        src: url('fonts/firamono-regular-webfont.woff2') format('woff2'),
+             url('fonts/firamono-regular-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    #editor { 
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      font-family: 'fira_mono_regular'; 
+    }
+    </style>
+  </head>
+  <body>
+
+    <div id="editor">// Push Ctrl-R to interpret your code</div>
+
+    <script src="ace-builds-1.2.6/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds-1.2.6/src/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      ace.require("ace/ext/language_tools");
+      var editor = ace.edit("editor");
+      editor.getSession().setMode("ace/mode/super_collider");
+      editor.setTheme("ace/theme/tomorrow");
+      editor.getSession().setTabSize(2);
+      editor.setBehavioursEnabled(true);
+
+      // enable autocompletion and snippets
+      editor.setOptions({
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: true
+      });
+
+      // evaluation interface
+      editor.commands.addCommand({
+        name: 'evluate',
+        bindKey: {win: 'Ctrl-R', mac: 'Command-R'},
+        exec: function(editor) {
+          console.log(editor.getValue());
+        },
+        readOnly: true
+      });
+
+      // undo
+      editor.commands.addCommand({
+        name: 'undo',
+        bindKey: {win: 'Ctrl-Z', mac: 'Command-Z'},
+        exec: function(editor) {
+          editor.undo();
+        },
+        readOnly: true
+      });
+
+      // redo
+      editor.commands.addCommand({
+        name: 'redo',
+        bindKey: {win: 'Ctrl-Y', mac: 'Command-Y'},
+        exec: function(editor) {
+          editor.redo();
+        },
+        readOnly: true
+      });
+
+      // toggle comment
+      editor.commands.addCommand({
+        name: 'toggleComment',
+        bindKey: {win: 'Ctrl-/', mac: 'Command-/'},
+        exec: function(editor) {
+          editor.toggleCommentLines();
+        },
+        readOnly: true
+      });
+    </script>
+  </body>
+</html>
