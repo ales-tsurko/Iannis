@@ -90,14 +90,14 @@ t.addPage("tab 2", z);
   ~textView
 );
 
-~codeEditor = WebView();
-~codeEditor.front();
-~codeEditor.url = "file:///Users/alestsurko/Desktop/Iannis/multipurpose/textview/index.html";
-~codeEditor.onJavaScriptMsg = {arg view, msg;
-  ("JS msg:" + msg).postln;
-};
+~codeEditor = IannisAceWrapper().front();
 
-~codeEditor.evaluateJavaScript("console.log(editor.getValue())");
-~codeEditor.evaluateJavaScript("editor.setValue(\"~val = 2 + 2;\")");
+~codeEditor.getValue({arg str;
+  str.postln;
+});
+~codeEditor.setValue("2+2;")
+
+~codeEditor.evaluate();
+~codeEditor.evaluateSelection();
+
 WebView.clearCache();
-~codeEditor.reload();

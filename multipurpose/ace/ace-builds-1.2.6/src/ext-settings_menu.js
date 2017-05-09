@@ -208,6 +208,7 @@ var supportedModes = {
     SQL:         ["sql"],
     SQLServer:   ["sqlserver"],
     Stylus:      ["styl|stylus"],
+    SuperCollider:["sc|scd"],
     SVG:         ["svg"],
     Swift:       ["swift"],
     Tcl:         ["tcl"],

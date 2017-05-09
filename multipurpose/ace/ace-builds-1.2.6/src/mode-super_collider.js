@@ -358,7 +358,7 @@ define("ace/mode/super_collider",["require","exports","module","ace/lib/oop","ac
   var Mode = function() {
     this.HighlightRules = SuperColliderHighlightRules;
     this.$outdent = new MatchingBraceOutdent();
-    this.$behaviour = new CstyleBehaviour();
+    this.$behaviour = new CstyleBehaviour({braces: true});
     this.foldingRules = new FoldMode();
   };
   oop.inherits(Mode, TextMode);

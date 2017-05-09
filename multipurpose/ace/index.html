@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ACE</title>
+    <style type="text/css" media="screen">
+    @font-face {
+        font-family: 'fira_mono_regular';
+        src: url('fonts/firamono-regular-webfont.woff2') format('woff2'),
+             url('fonts/firamono-regular-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    #ace_settingsmenu {
+      font-family: 'fira_mono_regular';
+      font-size: 12;
+      opacity: 0.7;
+    }
+
+    #editor { 
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      font-family: 'fira_mono_regular'; 
+      line-height: 16px;
+    }
+    </style>
+  </head>
+  <body>
+
+    <div id="editor">/* 
+Ctrl-R to interpret the entire document or
+Shift-Enter to interpret a line or selection.
+Ctrl-` - switching between Vim/Normal mode.
+All the other keyboard shortcuts you'll find here:
+https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
+*/</div>
+
+    <script src="ace-builds-1.2.6/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ace-builds-1.2.6/src/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      ace.require("ace/ext/language_tools");
+      var editor = ace.edit("editor");
+      editor.getSession().setMode("ace/mode/super_collider");
+      editor.setTheme("ace/theme/tomorrow");
+      editor.getSession().setTabSize(2);
+      editor.setBehavioursEnabled(true);
+      editor.getSession().setUseSoftTabs(true);
+
+      // enable autocompletion and snippets
+      editor.setOptions({
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: true
+      });
+
+      // switch edit mode
+      editor.commands.addCommand({
+        name: 'switch_edit_mode',
+        bindKey: {win: 'Ctrl-`', mac: 'Command-`'},
+        exec: function(editor) {
+          if (!editor.getKeyboardHandler().$id) {
+            editor.setKeyboardHandler("ace/keyboard/vim");
+          } else {
+            editor.setKeyboardHandler();
+          }
+        },
+        readOnly: true
+      });
+
+      // evaluation interface
+      // evaluate all
+      editor.commands.addCommand({
+        name: 'evaluate_all',
+        bindKey: {win: 'Ctrl-R', mac: 'Command-R'},
+        exec: function(editor) {
+          console.log("<-!code_evaluation_triggered!->"+editor.getValue());
+        },
+        readOnly: true
+      });
+
+      // evaluate selection or line
+      editor.commands.addCommand({
+        name: 'evaluate_selection',
+        bindKey: {win: 'Shift-Enter', mac: 'Shift-Enter'},
+        exec: function(editor) {
+          var selectedText = editor.session.getTextRange(editor.getSelectionRange());
+          if (selectedText.length > 0) {
+            // return selection
+            console.log("<-!code_evaluation_triggered!->"+selectedText);
+          } else {
+            var currentLineNumber = editor.selection.getCursor().row;
+            var currentLineText = editor.session.getLine(currentLineNumber);
+            // return current line
+            console.log("<-!code_evaluation_triggered!->"+currentLineText);
+          }
+        },
+        readOnly: true
+      });
+    </script>
+  </body>
+</html>
