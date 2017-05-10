@@ -31,8 +31,10 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 // Synth view controller
 (
 g = IannisNodeGroup();
-IannisSynthViewController(g, \granulator).front();
+v = IannisSynthViewController(g, \granulator).front();
+m = IannisSynthMapParameter(\pos, "Position", v).front();
 )
+
 
 a = NodeProxy(s, 1);
 
@@ -75,29 +77,3 @@ z.layout = HLayout(m);
 
 t.addPage("tab 2", z);
 
-
-////
-
-~container = CompositeView();
-~container.front();
-~container.minWidth = 100;
-~container.minHeight = 100;
-~textView = TextView();
-~textView.syntaxColorize;
-~textView.string = this.cmdLine;
-
-~container.layout = VLayout(
-  ~textView
-);
-
-~codeEditor = IannisAceWrapper().front();
-
-~codeEditor.getValue({arg str;
-  str.postln;
-});
-~codeEditor.setValue("2+2;")
-
-~codeEditor.evaluate();
-~codeEditor.evaluateSelection();
-
-WebView.clearCache();

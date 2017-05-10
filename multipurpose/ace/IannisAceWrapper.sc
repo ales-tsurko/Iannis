@@ -1,6 +1,13 @@
 IannisAceWrapper : WebView {
-  var currentCode, condition;
-
+  var text, condition,
+  <>onEvaluate, <>onEvaluateSelection;
+  /* 
+  Ctrl-R to evaluate the entire document or
+  Shift-Enter to evaluate a line or selection.
+  Ctrl-` - switching between Vim/Normal mode.
+  All the other keyboard shortcuts you'll find here:
+  https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
+  */
   *new {
     ^super.new.init()
   }
@@ -17,16 +24,22 @@ IannisAceWrapper : WebView {
 
   parseConsoleMessage {arg msg;
     case 
-    // evaluate
+    // evaluate all
     {msg.contains("<-!code_evaluation_triggered!->")} {
       var code = msg.replace("<-!code_evaluation_triggered!->");
-      code.interpretPrint;
+      this.onEvaluate.value(code);
+      AppClock.sched(0, {condition.unhang()});
+    }
+    // evaluate a selection or line
+    {msg.contains("<-!selection_evaluation_triggered!->")} {
+      var code = msg.replace("<-!selection_evaluation_triggered!->");
+      this.onEvaluateSelection.value(code);
       AppClock.sched(0, {condition.unhang()});
     }
     // get value
     {msg.contains("<-!get_value_triggered!->")} {
       var code = msg.replace("<-!get_value_triggered!->");
-      currentCode = code;
+      text = code;
       AppClock.sched(0, {condition.unhang()});
     }
     // else
@@ -36,17 +49,18 @@ IannisAceWrapper : WebView {
   }
 
   setValue {arg newValue;
-    this.evaluateJavaScript("editor.setValue(\""++newValue++"\")");
+    var convertedString = newValue.replace("\n", "\\n").asSymbol.asCompileString;
+    this.evaluateJavaScript("editor.setValue("++convertedString++")");
   }
 
-  // update the currentCode, then calls the passed
-  // callback (if any) with the currentCode as argument
+  // update the text, then calls the passed
+  // callback (if any) with the text as argument
   getValue {arg callback;
     AppClock.play(
       Routine({
         this.evaluateJavaScript("console.log(\"<-!get_value_triggered!->\"+editor.getValue())");
         condition.hang();
-        callback!?{callback.value(currentCode)};
+        callback!?{callback.value(text)};
       });
     );
   }
@@ -66,14 +80,14 @@ IannisAceWrapper : WebView {
   evaluateSelection {arg callback;
     AppClock.play(
       Routine({
-        var jsString = "var selectedText = editor.session.getTextRange(editor.getSelectionRange());
-        if (selectedText.length > 0) {
-          console.log(\"<-!code_evaluation_triggered!->\"+selectedText);
+        var jsString = "var text = editor.session.getTextRange(editor.getSelectionRange());
+        if (text.length > 0) {
+          console.log(\"<-!selection_evaluation_triggered!->\"+text);
         } else {
           var currentLineNumber = editor.selection.getCursor().row;
           var currentLineText = editor.session.getLine(currentLineNumber);
           // return current line
-          console.log(\"<-!code_evaluation_triggered!->\"+currentLineText);
+          console.log(\"<-!selection_evaluation_triggered!->\"+currentLineText);
         }";
 
         this.evaluateJavaScript(jsString);

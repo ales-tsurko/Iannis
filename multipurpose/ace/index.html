@@ -30,13 +30,7 @@
   </head>
   <body>
 
-    <div id="editor">/* 
-Ctrl-R to interpret the entire document or
-Shift-Enter to interpret a line or selection.
-Ctrl-` - switching between Vim/Normal mode.
-All the other keyboard shortcuts you'll find here:
-https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
-*/</div>
+    <div id="editor"></div>
 
     <script src="ace-builds-1.2.6/src/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ace-builds-1.2.6/src/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
@@ -89,12 +83,12 @@ https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
           var selectedText = editor.session.getTextRange(editor.getSelectionRange());
           if (selectedText.length > 0) {
             // return selection
-            console.log("<-!code_evaluation_triggered!->"+selectedText);
+            console.log("<-!selection_evaluation_triggered!->"+selectedText);
           } else {
             var currentLineNumber = editor.selection.getCursor().row;
             var currentLineText = editor.session.getLine(currentLineNumber);
             // return current line
-            console.log("<-!code_evaluation_triggered!->"+currentLineText);
+            console.log("<-!selection_evaluation_triggered!->"+currentLineText);
           }
         },
         readOnly: true
