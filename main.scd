@@ -36,6 +36,9 @@ m = IannisSynthMapParameter(\pos, "Position", v).front();
 )
 
 
+IannisAceWrapper().front;
+WebView.clearCache();
+
 a = NodeProxy(s, 1);
 
 p = g.getState[\pos]; // hold source value

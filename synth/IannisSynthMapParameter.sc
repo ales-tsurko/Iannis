@@ -107,11 +107,10 @@ IannisSynthMapParameter : CompositeView {
     textView.onLoadFinished = {arg wv;
       wv.setValue(
         "/*\n"
-        "Ctrl-R to evaluate the entire block or\n"
+        "Ctrl-R to evaluate the entire document or\n"
         "Shift-Enter to evaluate a line or selection.\n"
         "Ctrl-` - switching between Vim/Normal mode.\n"
-        "All the other keyboard shortcuts you'll find here:\n"
-        "https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts\n"
+        "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
         "*/"
       );
     };
