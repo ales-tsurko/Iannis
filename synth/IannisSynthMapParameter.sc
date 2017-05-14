@@ -2,10 +2,11 @@ IannisSynthMapParameter : CompositeView {
   var <key, <name, <parentSynthController,
   <nodeProxy,
   nameLabel,
-  <parametersView,
+  parametersView,
   <textView,
   closeButton,
   evaluateButton,
+  editButton,
   onOffButton,
   xfadeNumberBox;
   
@@ -27,13 +28,14 @@ IannisSynthMapParameter : CompositeView {
     this.initXFadeNumberBox();
     this.initParametersView();
     this.initTextView();
+    this.initEditButton();
 
     ~xFadeLabel = StaticText();
     ~xFadeLabel.string = "XFade Time (s):";
 
     this.layout = VLayout(
       HLayout(
-        closeButton, nameLabel, evaluateButton,
+        closeButton, nameLabel, editButton, evaluateButton,
         nil,
         ~xFadeLabel, xfadeNumberBox, onOffButton
       ),
@@ -68,6 +70,24 @@ IannisSynthMapParameter : CompositeView {
         });
       }
     };
+  }
+
+  initEditButton {
+    editButton = Button();
+    editButton.fixedWidth = 100;
+    editButton.states = [["Edit"], ["Compact"]];
+
+    editButton.action = {arg but;
+      if (but.value == 0) {
+        textView.visible = false;
+        evaluateButton.visible = false;
+      } {
+        textView.visible = true;
+        evaluateButton.visible = true;
+      };
+    };
+
+    editButton.doAction();
   }
 
   initEvaluateButton {
