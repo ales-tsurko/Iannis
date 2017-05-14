@@ -3,6 +3,7 @@ IannisSynthViewController : CompositeView {
   <metadata, <presetsManagerController,
   <midiInManagerController,
   <parameterBinder,
+  <elements,
   <synthDefName,
   toolbarView, synthNameLabel;
 
@@ -15,6 +16,7 @@ IannisSynthViewController : CompositeView {
     synthDefName = aSynthDefName;
     metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
     parameterBinder = ();
+    elements = ();
     this.fixedWidth = 680;
     this.minHeight = 550;
     this.layout = VLayout();

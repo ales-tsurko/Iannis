@@ -117,8 +117,8 @@ IannisPresetsManagerController : CompositeView {
     window.layout = VLayout(
       nameField,
       HLayout(
-        okButton,
-        cancelButton
+        cancelButton,
+        okButton
       )
     );
 

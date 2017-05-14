@@ -32,12 +32,15 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 (
 g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator).front();
-m = IannisSynthMapParameter(\pos, "Position", v).front();
+c = ScrollView();
+m = IannisSynthMapParameter(\pos, "Position", v);
+c.canvas = m;
+c.front();
 )
 
 
 IannisAceWrapper().front;
-WebView.clearCache();
+IannisAceWrapper.clearCache();
 
 a = NodeProxy(s, 1);
 

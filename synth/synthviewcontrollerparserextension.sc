@@ -189,6 +189,8 @@
       newRecorder.samplePath = newValue;
     };
 
+    this.elements[key] = newRecorder;
+
     ^newRecorder;
   }
 
@@ -223,6 +225,7 @@
     // layout
     view.layout = VLayout(button);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -250,6 +253,7 @@
     // layout
     view.layout = VLayout(check);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -297,6 +301,7 @@
     // layout
     view.layout = VLayout(label, number);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -358,6 +363,7 @@
 
     view.layout = VLayout(label, HLayout(slider), valueLabel);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -393,6 +399,7 @@
     // layout
     view.layout = VLayout(label, xy, valueLabel);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -428,6 +435,7 @@
 
     view.layout = VLayout(label, popup);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -464,6 +472,7 @@
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -482,6 +491,7 @@
       uiObj[\binder].value(view, value, uiObj);
     };
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -529,6 +539,7 @@
 
     view.layout = VLayout(label, HLayout(slider), valueLabel);
 
+    this.elements[key] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -639,6 +650,7 @@
       view.valueAction = [x,y];
     };
 
+    this.elements[key] = view;
     // return
     ^this.parseAlignment(view, uiObj[\align]);
   }

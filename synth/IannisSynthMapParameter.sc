@@ -2,6 +2,7 @@ IannisSynthMapParameter : CompositeView {
   var <key, <name, <parentSynthController,
   <nodeProxy,
   nameLabel,
+  <parametersView,
   <textView,
   closeButton,
   evaluateButton,
@@ -17,17 +18,18 @@ IannisSynthMapParameter : CompositeView {
     name = aName;
     parentSynthController = aDelegate;
 
-    nodeProxy = NodeProxy(Server.default);
+    nodeProxy = NodeProxy();
 
     this.initNameLabel();
     this.initCloseButton();
     this.initEvaluateButton();
     this.initOnOffButton();
     this.initXFadeNumberBox();
+    this.initParametersView();
     this.initTextView();
 
     ~xFadeLabel = StaticText();
-    ~xFadeLabel.string = "XFade Time:";
+    ~xFadeLabel.string = "XFade Time (s):";
 
     this.layout = VLayout(
       HLayout(
@@ -35,6 +37,7 @@ IannisSynthMapParameter : CompositeView {
         nil,
         ~xFadeLabel, xfadeNumberBox, onOffButton
       ),
+      parametersView,
       textView
     );
   }
@@ -53,6 +56,14 @@ IannisSynthMapParameter : CompositeView {
     closeButton.action = {arg but;
       if (but.value == 0) {
         this.showCloseAlert({
+          var val = this.parentSynthController
+          .presetsManagerController
+          .presetsManager
+          .currentPreset
+          .values[key];
+          this.parentSynthController.parameterBinder[key].value(val);
+          this.parentSynthController.elements[key].enabled = true;
+          this.nodeProxy.clear(0.1);
           this.close();
         });
       }
@@ -83,11 +94,24 @@ IannisSynthMapParameter : CompositeView {
       if (but.value == 1) {
         // off
         // set real/fixed value
+          var val = this.parentSynthController
+          .presetsManagerController
+          .presetsManager
+          .currentPreset
+          .values[key];
+          this.parentSynthController.node.set(key, val);
+          this.parentSynthController.elements[key].enabled = true;
       } {
         // on
         // set the modulation again
+        this.parentSynthController.elements[key].enabled = false;
+        nodeProxy.bus!?{
+          this.parentSynthController.node.set(key, nodeProxy.bus.asMap);
+        }
       };
     };
+
+    onOffButton.doAction();
   }
 
   initXFadeNumberBox {
@@ -99,6 +123,11 @@ IannisSynthMapParameter : CompositeView {
     xfadeNumberBox.action = {arg num;
       nodeProxy.fadeTime = num.value;
     };
+  }
+
+  initParametersView {
+    parametersView = CompositeView();
+    parametersView.layout = VLayout();
   }
 
   initTextView {
@@ -122,11 +151,21 @@ IannisSynthMapParameter : CompositeView {
     textView.onEvaluateSelection = {arg code;
       code.interpretPrint;
     };
+
+    textView.onHardStop = {
+      ("hard stop").postln;
+    };
   }
 
   evaluateCodeAction {arg code;
+    // create UI
+    this.parseCode(code);
+
+    // update NodeProxy
     nodeProxy.source = code.compile();
-    parentSynthController.node.set(key, nodeProxy.bus.asMap);
+    if (onOffButton.value == 0) {
+      parentSynthController.node.set(key, nodeProxy.bus.asMap);
+    }
   }
 
   showCloseAlert {arg okCallback;

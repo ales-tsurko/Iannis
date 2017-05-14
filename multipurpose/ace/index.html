@@ -105,6 +105,16 @@
         readOnly: true
       });
 
+      // hard stop (Cmd-.)
+      editor.commands.addCommand({
+        name: 'hardStop',
+        bindKey: {win: 'Ctrl-.', mac: 'Command-.'},
+        exec: function(editor) {
+          console.log("<-!hard_stop_triggered!->");
+        },
+        readOnly: true
+      });
+
       // show keyboard shortcuts
       editor.commands.addCommand({
           name: "showKeyboardShortcuts",

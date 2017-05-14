@@ -1,12 +1,13 @@
 IannisAceWrapper : WebView {
   var text, condition,
-  <>onEvaluate, <>onEvaluateSelection;
+  <>onEvaluate,
+  <>onEvaluateSelection,
+  <>onHardStop;
   /* 
   Ctrl-R to evaluate the entire document or
   Shift-Enter to evaluate a line or selection.
   Ctrl-` - switching between Vim/Normal mode.
-  All the other keyboard shortcuts you'll find here:
-  https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts
+  Ctrl-Alt-H - show keyboard shortcuts.
   */
   *new {
     ^super.new.init()
@@ -34,6 +35,11 @@ IannisAceWrapper : WebView {
     {msg.contains("<-!selection_evaluation_triggered!->")} {
       var code = msg.replace("<-!selection_evaluation_triggered!->");
       this.onEvaluateSelection.value(code);
+      AppClock.sched(0, {condition.unhang()});
+    }
+    //hard stop
+    {msg.contains("<-!hard_stop_triggered!->")} {
+      this.onHardStop.value();
       AppClock.sched(0, {condition.unhang()});
     }
     // get value
@@ -95,6 +101,17 @@ IannisAceWrapper : WebView {
         condition.hang();
         callback!?{callback.value()};
       });
+    );
+  }
+
+  // hard stop (Cmd-.)
+  hardStop {arg callback;
+    AppClock.play(
+      Routine({
+        this.evaluateJavaScript("console.log(\"<-!hard_stop_triggered!->\")");
+        condition.hang();
+        callback!?{callback.value()};
+      })
     );
   }
 }
