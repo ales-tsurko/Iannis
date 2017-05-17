@@ -120,6 +120,7 @@
     view.fixedHeight = 130;
     content.layout = HLayout();
     content.fixedHeight = 130;
+    // content.background = Color.gray(0.77);
 
     ^view;
   }

@@ -1,5 +1,5 @@
 IannisSynthMapParameter : CompositeView {
-  var <key, <name, <parentSynthController,
+  var <key, <name, <parentSynthPage,
   <nodeProxy,
   nameLabel,
   parametersView,
@@ -8,16 +8,17 @@ IannisSynthMapParameter : CompositeView {
   evaluateButton,
   editButton,
   onOffButton,
-  xfadeNumberBox;
+  xFadeNumberBox,
+  xFadeLabel;
   
-  *new {arg key, name, parentSynthController;
-    ^super.new.init(key, name, parentSynthController);
+  *new {arg key, name, parentSynthPage;
+    ^super.new.init(key, name, parentSynthPage);
   }
 
   init {arg aKey, aName, aDelegate;
     key = aKey;
     name = aName;
-    parentSynthController = aDelegate;
+    parentSynthPage = aDelegate;
 
     nodeProxy = NodeProxy();
 
@@ -26,18 +27,17 @@ IannisSynthMapParameter : CompositeView {
     this.initEvaluateButton();
     this.initOnOffButton();
     this.initXFadeNumberBox();
+    this.initXFadeLabel();
     this.initParametersView();
     this.initTextView();
     this.initEditButton();
 
-    ~xFadeLabel = StaticText();
-    ~xFadeLabel.string = "XFade Time (s):";
 
     this.layout = VLayout(
       HLayout(
         closeButton, nameLabel, editButton, evaluateButton,
         nil,
-        ~xFadeLabel, xfadeNumberBox, onOffButton
+        xFadeLabel, xFadeNumberBox, onOffButton
       ),
       parametersView,
       textView
@@ -49,6 +49,11 @@ IannisSynthMapParameter : CompositeView {
     nameLabel.string = name;
   }
 
+  initXFadeLabel {
+    xFadeLabel = StaticText();
+    xFadeLabel.string = "XFade Time (s):";
+  }
+
   initCloseButton {
     closeButton = Button();
     closeButton.fixedWidth = 18;
@@ -58,14 +63,34 @@ IannisSynthMapParameter : CompositeView {
     closeButton.action = {arg but;
       if (but.value == 0) {
         this.showCloseAlert({
-          var val = this.parentSynthController
+          // get the source value
+          var val = this.parentSynthPage
+          .parentSynthController
           .presetsManagerController
           .presetsManager
           .currentPreset
           .values[key];
-          this.parentSynthController.parameterBinder[key].value(val);
-          this.parentSynthController.elements[key].enabled = true;
+
+          // assign the source value
+          this.parentSynthPage
+          .parentSynthController
+          .parameterBinder[key]
+          .value(val);
+
+          // enable the element
+          this.parentSynthPage
+          .parentSynthController
+          .elements[key]
+          .enabled = true;
+
+          // clear the proxy
           this.nodeProxy.clear(0.1);
+
+          // update parameters list
+          this.parentSynthPage.availableParameters = this.parentSynthPage.availableParameters.add(key);
+
+          this.parentSynthPage.parametersListView.items = this.parentSynthPage.availableParameters;
+
           this.close();
         });
       }
@@ -81,9 +106,13 @@ IannisSynthMapParameter : CompositeView {
       if (but.value == 0) {
         textView.visible = false;
         evaluateButton.visible = false;
+        xFadeLabel.visible = false;
+        xFadeNumberBox.visible = false;
       } {
         textView.visible = true;
         evaluateButton.visible = true;
+        xFadeLabel.visible = true;
+        xFadeNumberBox.visible = true;
       };
     };
 
@@ -114,19 +143,20 @@ IannisSynthMapParameter : CompositeView {
       if (but.value == 1) {
         // off
         // set real/fixed value
-          var val = this.parentSynthController
+          var val = this.parentSynthPage
+          .parentSynthController
           .presetsManagerController
           .presetsManager
           .currentPreset
           .values[key];
-          this.parentSynthController.node.set(key, val);
-          this.parentSynthController.elements[key].enabled = true;
+          this.parentSynthPage.parentSynthController.node.set(key, val);
+          this.parentSynthPage.parentSynthController.elements[key].enabled = true;
       } {
         // on
         // set the modulation again
-        this.parentSynthController.elements[key].enabled = false;
+        this.parentSynthPage.parentSynthController.elements[key].enabled = false;
         nodeProxy.bus!?{
-          this.parentSynthController.node.set(key, nodeProxy.bus.asMap);
+          this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
         }
       };
     };
@@ -135,12 +165,12 @@ IannisSynthMapParameter : CompositeView {
   }
 
   initXFadeNumberBox {
-    xfadeNumberBox = NumberBox();
-    xfadeNumberBox.fixedWidth = 60;
-    xfadeNumberBox.clipLo = 0.0;
-    xfadeNumberBox.clipHi = 60;
+    xFadeNumberBox = NumberBox();
+    xFadeNumberBox.fixedWidth = 60;
+    xFadeNumberBox.clipLo = 0.0;
+    xFadeNumberBox.clipHi = 60;
 
-    xfadeNumberBox.action = {arg num;
+    xFadeNumberBox.action = {arg num;
       nodeProxy.fadeTime = num.value;
     };
   }
@@ -148,10 +178,12 @@ IannisSynthMapParameter : CompositeView {
   initParametersView {
     parametersView = CompositeView();
     parametersView.layout = VLayout();
+    // parametersView.background = Color.gray(0.77);
   }
 
   initTextView {
     textView = IannisAceWrapper();
+    textView.fixedHeight = 170;
 
     textView.onLoadFinished = {arg wv;
       wv.setValue(
@@ -184,7 +216,7 @@ IannisSynthMapParameter : CompositeView {
     // update NodeProxy
     nodeProxy.source = code.compile();
     if (onOffButton.value == 0) {
-      parentSynthController.node.set(key, nodeProxy.bus.asMap);
+      this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
     }
   }
 

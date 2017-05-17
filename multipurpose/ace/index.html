@@ -117,14 +117,14 @@
 
       // show keyboard shortcuts
       editor.commands.addCommand({
-          name: "showKeyboardShortcuts",
-          bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
-          exec: function(editor) {
-              ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
-                  module.init(editor);
-                  editor.showKeyboardShortcuts()
-              })
-          }
+        name: "showKeyboardShortcuts",
+        bindKey: {win: "Ctrl-Alt-H", mac: "Command-Alt-H"},
+        exec: function(editor) {
+          ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+            module.init(editor);
+            editor.showKeyboardShortcuts()
+          })
+        }
       });
     </script>
   </body>
