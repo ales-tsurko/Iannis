@@ -35,9 +35,9 @@ IannisSynthMapParameter : CompositeView {
 
     this.layout = VLayout(
       HLayout(
-        closeButton, nameLabel, editButton, evaluateButton,
+        closeButton, nameLabel, onOffButton, editButton, evaluateButton,
         nil,
-        xFadeLabel, xFadeNumberBox, onOffButton
+        xFadeLabel, xFadeNumberBox
       ),
       parametersView,
       textView
@@ -114,6 +114,16 @@ IannisSynthMapParameter : CompositeView {
         xFadeLabel.visible = true;
         xFadeNumberBox.visible = true;
       };
+      // update preset value
+      this.parentSynthPage
+      .parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .setMapMode(
+        this.key,
+        but.value
+      );
     };
 
     editButton.doAction();
@@ -126,9 +136,7 @@ IannisSynthMapParameter : CompositeView {
 
     evaluateButton.action = {arg but;
       if (but.value == 0) {
-        textView.getValue({arg codeString;
-          this.evaluateCodeAction(codeString);
-        });
+        this.evaluate();
       } 
     };
   }
@@ -157,8 +165,20 @@ IannisSynthMapParameter : CompositeView {
         this.parentSynthPage.parentSynthController.elements[key].enabled = false;
         nodeProxy.bus!?{
           this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
-        }
+        };
+
       };
+
+      // update preset value
+      this.parentSynthPage
+      .parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .setMapState(
+        this.key,
+        but.value
+      );
     };
 
     onOffButton.doAction();
@@ -172,6 +192,17 @@ IannisSynthMapParameter : CompositeView {
 
     xFadeNumberBox.action = {arg num;
       nodeProxy.fadeTime = num.value;
+      
+      // update preset value
+      this.parentSynthPage
+      .parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .setMapXFade(
+        this.key,
+        num.value
+      );
     };
   }
 
@@ -182,6 +213,18 @@ IannisSynthMapParameter : CompositeView {
   }
 
   initTextView {
+    var updatePresetFunc = {arg tv;
+      tv.getValue({arg code;
+        this.parentSynthPage
+        .parentSynthController
+        .presetsManagerController
+        .presetsManager
+        .currentPreset.setMapCode(
+          this.key,
+          code
+        );
+      });
+    };
     textView = IannisAceWrapper();
     textView.fixedHeight = 170;
 
@@ -198,14 +241,26 @@ IannisSynthMapParameter : CompositeView {
 
     textView.onEvaluate = {arg code;
       this.evaluateCodeAction(code);
+      // update preset value
+      updatePresetFunc.value(textView);
     };
 
     textView.onEvaluateSelection = {arg code;
       code.interpretPrint;
+      // update preset value
+      updatePresetFunc.value(textView);
     };
 
     textView.onHardStop = {
       ("hard stop").postln;
+    };
+
+    // update preset on focus changes
+    textView.focusGainedAction = {arg tv;
+      updatePresetFunc.value(tv);
+    };
+    textView.focusLostAction = {arg tv;
+      updatePresetFunc.value(tv);
     };
   }
 
@@ -218,6 +273,12 @@ IannisSynthMapParameter : CompositeView {
     if (onOffButton.value == 0) {
       this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
     }
+  }
+
+  evaluate {
+    textView.getValue({arg codeString;
+      this.evaluateCodeAction(codeString);
+    });
   }
 
   showCloseAlert {arg okCallback;
@@ -267,4 +328,20 @@ IannisSynthMapParameter : CompositeView {
     window.front();
   }
 
+  onLoadPreset {arg preset;
+    preset.map[this.key]!?{
+      var code = preset.getMapCode(key)?"";
+      var xfade = preset.getMapXFade(key)?0;
+      var state = preset.getMapState(key)?0;
+      var mode = preset.getMapMode(key)?0;
+
+      xFadeNumberBox.valueAction = xfade;
+      onOffButton.valueAction = state;
+      editButton.valueAction = mode;
+      textView.onLoadFinished = {arg tv;
+        tv.setValue(code);
+        this.evaluate();
+      };
+    };
+  }
 }

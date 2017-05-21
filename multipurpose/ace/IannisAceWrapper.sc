@@ -55,7 +55,14 @@ IannisAceWrapper : WebView {
   }
 
   setValue {arg newValue;
-    var convertedString = newValue.replace("\n", "\\n").asSymbol.asCompileString;
+    var convertedString;
+
+    newValue!?{
+      convertedString = newValue.replace("\n", "\\n").asSymbol.asCompileString;
+    }??{
+      convertedString = "";
+    };
+
     this.evaluateJavaScript("editor.setValue("++convertedString++")");
   }
 

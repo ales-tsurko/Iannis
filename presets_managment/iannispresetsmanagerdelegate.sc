@@ -26,10 +26,13 @@
       this.removeButton.enabled = true;
     };
 
-    // update UI
+    // update main view
     preset.values.keysValuesDo({arg key, value;
       this.parentController.parameterBinder[key].value(value);
     });
+
+    // update map view
+    this.parentController.mapView.onLoadPreset(preset);
   }
 
   didWriteUserPresetsToDisk {

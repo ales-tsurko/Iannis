@@ -3,6 +3,7 @@ IannisSynthMapPage : CompositeView {
   <>availableParameters,
   parametersMenuButton,
   <parametersListView, 
+  parametersViews,
   addParameterButton;
 
   *new {arg parentSynthController;
@@ -11,16 +12,23 @@ IannisSynthMapPage : CompositeView {
 
   init {arg parent;
     parentSynthController = parent;
+    parametersViews = [];
 
     this.initParametersMenuButton();
+    this.fetchAvailableParameters();
     this.initParametersListView();
     this.initAddParameterButton();
-    this.fetchAvailableParameters();
 
     this.layout = VLayout(
-      HLayout(parametersMenuButton, nil),
+      HLayout(nil, parametersMenuButton),
       nil
     );
+
+    ~currentPreset = parent
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+    this.onLoadPreset(~currentPreset);
   }
 
   initParametersMenuButton {
@@ -36,7 +44,6 @@ IannisSynthMapPage : CompositeView {
   initParametersListView {
     parametersListView = ListView();
 
-    this.fetchAvailableParameters();
     parametersListView.items = this.availableParameters;
 
     parametersListView.selectionMode = \extended;
@@ -71,8 +78,7 @@ IannisSynthMapPage : CompositeView {
   addParameterAction {
     parametersListView.selection.do({arg index;
       var key = this.availableParameters[index].asSymbol;
-      var view = IannisSynthMapParameter(key, key.asString, this);
-      this.layout.insert(view, this.layout.children.size);
+      this.addParameterForKey(key);
     });
 
     // remove just added parameter from the list
@@ -82,16 +88,6 @@ IannisSynthMapPage : CompositeView {
 
     // update parameters list
     parametersListView.items = availableParameters;
-  }
-
-  fetchAvailableParameters {
-    availableParameters = parentSynthController
-    .presetsManagerController
-    .presetsManager
-    .currentPreset
-    .values
-    .keys
-    .asArray;
   }
 
   showParameterChooser {
@@ -114,5 +110,53 @@ IannisSynthMapPage : CompositeView {
     window.front;
     window.endFullScreen;
     window.onClose = {parametersMenuButton.enabled = true};
+  }
+
+  addParameterForKey {arg key;
+    var view = IannisSynthMapParameter(key, key.asString, this);
+    parametersViews = parametersViews.add(view);
+    this.layout.insert(view, this.layout.children.size);
+  }
+
+  removeAllParameters {
+    parametersViews.do({arg view; view.remove()});
+    this.fetchAvailableParameters();
+  }
+
+  fetchAvailableParameters {
+    var preset = parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+
+    preset!?{
+      availableParameters = preset.values.keys.asArray;
+    }??{
+      availableParameters = []
+    };
+  }
+
+  onLoadPreset {arg preset;
+    preset!?{
+      this.removeAllParameters();
+
+      preset.map!?{
+        preset.map.keysDo({arg key;
+          this.addParameterForKey(key);
+
+          // remove just added parameter from the availableParameters
+          availableParameters = availableParameters.removeAt(
+            availableParameters.indexOf(key)
+          );
+
+          // update parameters list view
+          parametersListView.items = availableParameters;
+        });
+
+        parametersViews.do({arg view;
+          view.onLoadPreset(preset);
+        });
+      }
+    }
   }
 }

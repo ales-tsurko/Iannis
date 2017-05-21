@@ -5,7 +5,7 @@ IannisSynthViewController : CompositeView {
   <parameterBinder,
   <elements,
   <synthDefName,
-  mapView,
+  <mapView,
   toolbarView, synthNameLabel;
 
   *new {arg node, synthDefName;
@@ -22,10 +22,9 @@ IannisSynthViewController : CompositeView {
     this.minHeight = 550;
     this.layout = VLayout();
     this.initToolbar();
+    mapView = IannisSynthMapPage(this);
     this.parse();
 
-    // init parameters map view
-    mapView = IannisSynthMapPage(this);
     this.pagesView.addPage("Map", mapView);
   }
 

@@ -36,7 +36,12 @@
     parameters.do({arg parameter;
       if (parameter.size > 0) {
        var parameterView = this.parseParameter(parameter);
-       parameterRowView.canvas.layout.add(parameterView, align: \center);
+       parameterRowView.canvas
+       .layout
+       .insert(
+         parameterView, 
+         parameterRowView.canvas.layout.children.size
+       );
       }
     });
 
@@ -118,7 +123,7 @@
     view.hasVerticalScroller = false;
     view.canvas = content;
     view.fixedHeight = 130;
-    content.layout = HLayout();
+    content.layout = HLayout(nil);
     content.fixedHeight = 130;
     // content.background = Color.gray(0.77);
 
