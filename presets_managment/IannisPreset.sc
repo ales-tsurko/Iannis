@@ -84,4 +84,16 @@ IannisPreset {
   getMapMode {arg key;
     ^this.map[key][\mode];
   }
+
+  setMapUIValueForKey {arg mapKey, parameterKey, value;
+    this.initMapForKeyIfNeeded(mapKey);
+    this.map[mapKey][\ui]??{this.map[mapKey][\ui] = ()};
+    this.map[mapKey][\ui][parameterKey] = value;
+
+    data[\map] = map;
+  }
+
+  getMapUIValues {arg key;
+    ^this.map[key][\ui];
+  }
 }

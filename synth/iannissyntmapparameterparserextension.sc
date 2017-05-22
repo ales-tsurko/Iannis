@@ -135,6 +135,17 @@
     var label = StaticText();
     var valueLabel = StaticText();
     var knob = Knob();
+    var currentPreset = this.parentSynthPage
+    .parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+    var selectedPreset = this.parentSynthPage
+    .parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .selectedPreset;
+
     label.string = name?"";
     label.align = \center;
     valueLabel.align = \center;
@@ -144,23 +155,30 @@
 
     // apply spec and action to knob
     knob.action = {arg k;
+      var preset;
       var newValue = spec.map(k.value);
       nodeProxy.set(key, newValue);
 
       valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
 
       // update preset
-      // if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
-        // this.presetsManagerController.presetsManager.currentPreset.values[key] = newValue;
-      // };
+      currentPreset!?{
+        currentPreset.setMapUIValueForKey(this.key, key, newValue);
+      };
     };
 
-    knob.valueAction = spec.unmap(spec.default);
+    knob.valueAction = selectedPreset!?{
+      var value = selectedPreset.getMapUIValues(this.key)[key];
+      spec.unmap(value);
+    }??{
+      var value = spec.default;
+      spec.unmap(value);
+    };
 
     // parameter bindings
-    // this.parameterBinder[key] = {arg value;
-      // knob.valueAction = spec.asSpec.unmap(value.value());
-    // };
+    this.parameterBinder[key] = {arg value;
+      knob.valueAction = spec.unmap(value.value());
+    };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
 

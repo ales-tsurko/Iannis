@@ -1,5 +1,8 @@
 IannisSynthMapParameter : CompositeView {
-  var <key, <name, <parentSynthPage,
+  var <key,
+  <name,
+  <parentSynthPage,
+  <parameterBinder,
   <nodeProxy,
   nameLabel,
   parametersView,
@@ -19,6 +22,7 @@ IannisSynthMapParameter : CompositeView {
     key = aKey;
     name = aName;
     parentSynthPage = aDelegate;
+    parameterBinder = ();
 
     nodeProxy = NodeProxy();
 
@@ -341,7 +345,25 @@ IannisSynthMapParameter : CompositeView {
       textView.onLoadFinished = {arg tv;
         tv.setValue(code);
         this.evaluate();
+
+        // it seems, this actually never used
+        // loading of the preset values done in
+        // the parameter UI creation method (makeParameterView)
+        this.loadPresetDataForUserDefinedUI(preset);
       };
     };
   }
+
+  loadPresetDataForUserDefinedUI {arg preset;
+    preset.getMapUIValues(key)!?{
+      var obj = preset.getMapUIValues(key);
+
+      obj.keysValuesDo({arg key, value;
+        this.parameterBinder[key]!?{
+          this.parameterBinder[key].value(value);
+        };
+      });
+    };
+  }
+
 }
