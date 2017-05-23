@@ -46,8 +46,8 @@ IannisPreset {
   }
 
   getMapCode {arg key;
-    this.initMapForKeyIfNeeded(key);
-    ^this.map[key][\code];
+    var output = this.map[key]!?{this.map[key][\code]};
+    ^output;
   }
 
   setMapXFade {arg key, value;
@@ -59,8 +59,8 @@ IannisPreset {
   }
 
   getMapXFade {arg key;
-    this.initMapForKeyIfNeeded(key);
-    ^this.map[key][\xfade];
+    var output = this.map[key]!?{this.map[key][\xfade]};
+    ^output;
   }
 
   setMapState {arg key, value;
@@ -72,8 +72,8 @@ IannisPreset {
   }
 
   getMapState {arg key;
-    this.initMapForKeyIfNeeded(key);
-    ^this.map[key][\state];
+    var output = this.map[key]!?{this.map[key][\state]};
+    ^output;
   }
 
   setMapMode {arg key, value;
@@ -85,8 +85,8 @@ IannisPreset {
   }
 
   getMapMode {arg key;
-    this.initMapForKeyIfNeeded(key);
-    ^this.map[key][\mode];
+    var output = this.map[key]!?{this.map[key][\mode]};
+    ^output;
   }
 
   setMapUIValueForKey {arg mapKey, parameterKey, value;
@@ -98,7 +98,7 @@ IannisPreset {
   }
 
   getMapUIValues {arg key;
-    this.initMapForKeyIfNeeded(key);
-    ^this.map[key][\ui];
+    var output = this.map[key]!?{this.map[key][\ui]};
+    ^output;
   }
 }
