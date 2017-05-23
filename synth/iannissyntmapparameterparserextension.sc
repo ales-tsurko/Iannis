@@ -168,7 +168,12 @@
     };
 
     knob.valueAction = selectedPreset!?{
-      var value = selectedPreset.getMapUIValues(this.key)[key];
+      var value; 
+      selectedPreset.getMapUIValues(this.key)!?{
+        value = selectedPreset.getMapUIValues(this.key)[key];
+      }??{
+        value = spec.default;
+      };
       spec.unmap(value);
     }??{
       var value = spec.default;

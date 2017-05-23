@@ -67,13 +67,13 @@ IannisSynthMapParameter : CompositeView {
     closeButton.action = {arg but;
       if (but.value == 0) {
         this.showCloseAlert({
-          // get the source value
-          var val = this.parentSynthPage
+          var preset = this.parentSynthPage
           .parentSynthController
           .presetsManagerController
           .presetsManager
-          .currentPreset
-          .values[key];
+          .currentPreset;
+          // get the source value
+          var val = preset.values[key];
 
           // assign the source value
           this.parentSynthPage
@@ -94,6 +94,9 @@ IannisSynthMapParameter : CompositeView {
           this.parentSynthPage.availableParameters = this.parentSynthPage.availableParameters.add(key);
 
           this.parentSynthPage.parametersListView.items = this.parentSynthPage.availableParameters;
+
+          // remove key from the map of the current preset
+          preset.map[key] = nil;
 
           this.close();
         });

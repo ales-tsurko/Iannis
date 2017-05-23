@@ -46,6 +46,7 @@ IannisPreset {
   }
 
   getMapCode {arg key;
+    this.initMapForKeyIfNeeded(key);
     ^this.map[key][\code];
   }
 
@@ -58,6 +59,7 @@ IannisPreset {
   }
 
   getMapXFade {arg key;
+    this.initMapForKeyIfNeeded(key);
     ^this.map[key][\xfade];
   }
 
@@ -70,6 +72,7 @@ IannisPreset {
   }
 
   getMapState {arg key;
+    this.initMapForKeyIfNeeded(key);
     ^this.map[key][\state];
   }
 
@@ -82,6 +85,7 @@ IannisPreset {
   }
 
   getMapMode {arg key;
+    this.initMapForKeyIfNeeded(key);
     ^this.map[key][\mode];
   }
 
@@ -94,6 +98,7 @@ IannisPreset {
   }
 
   getMapUIValues {arg key;
+    this.initMapForKeyIfNeeded(key);
     ^this.map[key][\ui];
   }
 }

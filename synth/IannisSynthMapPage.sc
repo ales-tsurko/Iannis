@@ -11,11 +11,15 @@ IannisSynthMapPage : CompositeView {
   }
 
   init {arg parent;
+    var currentPreset = parent
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+
     parentSynthController = parent;
     parametersViews = [];
 
     this.initParametersMenuButton();
-    this.fetchAvailableParameters();
     this.initParametersListView();
     this.initAddParameterButton();
 
@@ -24,11 +28,7 @@ IannisSynthMapPage : CompositeView {
       nil
     );
 
-    ~currentPreset = parent
-    .presetsManagerController
-    .presetsManager
-    .currentPreset;
-    this.onLoadPreset(~currentPreset);
+    this.onLoadPreset(currentPreset);
   }
 
   initParametersMenuButton {
@@ -42,8 +42,14 @@ IannisSynthMapPage : CompositeView {
   }
 
   initParametersListView {
+    var currentPreset = parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+
     parametersListView = ListView();
 
+    this.fetchAvailableParametersFromPreset(currentPreset);
     parametersListView.items = this.availableParameters;
 
     parametersListView.selectionMode = \extended;
@@ -118,39 +124,36 @@ IannisSynthMapPage : CompositeView {
     this.layout.insert(view, this.layout.children.size);
   }
 
-  removeAllParameters {
-    parametersViews.do({arg view; view.remove()});
-    this.fetchAvailableParameters();
-  }
-
-  fetchAvailableParameters {
-    var preset = parentSynthController
-    .presetsManagerController
-    .presetsManager
-    .currentPreset;
-
+  fetchAvailableParametersFromPreset {arg preset;
     preset!?{
       availableParameters = preset.values.keys.asArray;
+      preset.map!?{
+        preset.map.keysDo({arg key;
+          // make the parameter unavalaible if it's presented in the map
+          availableParameters.removeAt(
+            availableParameters.indexOf(key)
+          );
+        });
+      };
     }??{
-      availableParameters = []
+      availableParameters = [];
     };
   }
 
   onLoadPreset {arg preset;
     preset!?{
-      this.removeAllParameters();
+      // clean up view
+      parametersViews.do({arg view; view.remove()});
+      this.fetchAvailableParametersFromPreset(preset);
 
       preset.map!?{
         preset.map.keysDo({arg key;
           this.addParameterForKey(key);
 
-          // remove just added parameter from the availableParameters
-          availableParameters = availableParameters.removeAt(
-            availableParameters.indexOf(key)
-          );
-
           // update parameters list view
-          parametersListView.items = availableParameters;
+          parametersListView!?{
+            parametersListView.items = availableParameters;
+          };
         });
 
         parametersViews.do({arg view;

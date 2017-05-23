@@ -245,20 +245,22 @@ IannisRecorderController : CompositeView {
   }
 
   samplePath_ {arg path;
-    var isFileExists = File.existsCaseSensitive(path);
+    path!?{
+      var isFileExists = File.existsCaseSensitive(path);
 
-    if (isFileExists) {
-      this.stopPlayingSample();
+      if (isFileExists) {
+        this.stopPlayingSample();
 
-      samplePath = path;
-      recorder.recordingDir = path.dirname;
-    } {
-      this.showSoundFileNotFoundAlert(path);
-      // trig recordingDir of recorder to update directory listing
-      path!?{
+        samplePath = path;
         recorder.recordingDir = path.dirname;
+      } {
+        this.showSoundFileNotFoundAlert(path);
+        // trig recordingDir of recorder to update directory listing
+        path!?{
+          recorder.recordingDir = path.dirname;
+        };
       };
-    };
+    }
   }
 
   showDeleteFileAlert {arg fileName, index, okCallback;
