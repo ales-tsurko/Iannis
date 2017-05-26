@@ -175,7 +175,7 @@
   parseRecorderUI {arg key;
     var newRecorder = IannisRecorderController("".resolveRelative);
     newRecorder.action = {arg recorder;
-      node.set(key, recorder.value.bufnum);
+      this.updateNodeValue(key, recorder.value.bufnum);
 
       // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
@@ -208,8 +208,7 @@
 
     button.action = {arg but;
       var value = uiObj[\states][but.value][\value].value();
-
-      node.set(key, value);
+      this.updateNodeValue(key, value);
 
       // update preset
       this.presetsManagerController.presetsManager.currentPreset!?{
@@ -237,7 +236,7 @@
     check.action = {arg ch;
       var value = ch.value.asInteger;
 
-      node.set(key, value);
+      this.updateNodeValue(key, value);
 
       // update preset
       this.presetsManagerController.presetsManager.currentPreset!?{
@@ -285,7 +284,7 @@
     number.action = {arg nb;
       var value = nb.value;
 
-      node.set(key, value);
+      this.updateNodeValue(key, value);
 
       // update preset
       this.presetsManagerController.presetsManager.currentPreset!?{
@@ -318,9 +317,9 @@
       value[0] = spec.asSpec.map(sl.lo);
       value[1] = spec.asSpec.map(sl.hi);
 
-      node.set(key, value);
-
       valueLabel.string = value[0].round(0.01).asString ++ ";" + value[1].round(0.01).asString;
+
+      this.updateNodeValue(key, value);
 
       // update preset
       this.presetsManagerController.presetsManager.currentPreset!?{
@@ -382,9 +381,9 @@
       value[0] = spec[0].asSpec.map(v.x);
       value[1] = spec[1].asSpec.map(v.y);
 
-      node.set(key, value);
-
       valueLabel.string = value[0].round(0.01).asString + spec[0].asSpec.units ++ ";" + value[1].round(0.01).asString + spec[1].asSpec.units;
+
+      this.updateNodeValue(key, value);
 
       // update preset
       this.presetsManagerController.presetsManager.currentPreset!?{
@@ -420,7 +419,8 @@
 
     popup.action = {arg p;
       var value = itemsAndValues.values[p.value];
-      node.set(key, value);
+
+      this.updateNodeValue(key, value);
 
       // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
@@ -454,8 +454,8 @@
     // apply spec and action to knob
     knob.action = {arg k;
       var newValue = spec.asSpec.map(k.value);
-      node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+      this.updateNodeValue(key, newValue);
 
       // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
@@ -505,8 +505,9 @@
     // apply spec and action to knob
     slider.action = {arg sl;
       var newValue = spec.asSpec.map(sl.value);
-      node.set(key, newValue);
       valueLabel.string = newValue.round(0.01) + spec.asSpec.units;
+      
+      this.updateNodeValue(key, newValue);
 
       // update preset and synth values
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
@@ -571,7 +572,7 @@
       outputValue = outputValue.addAll(curves);
 
       // update node
-      node.set(key, outputValue);
+      this.updateNodeValue(key, outputValue);
 
       // update UI
       env.setString(1, "attack = "++outputValue[0].round(0.001));
@@ -629,7 +630,7 @@
         });
 
         // update node
-        node.set(key, this.presetsManagerController.presetsManager.currentPreset.values[key]);
+        this.updateNodeValue(key, this.presetsManagerController.presetsManager.currentPreset.values[key]);
       }
       }
     };
@@ -674,4 +675,19 @@
       this.presetsManagerController.presetsManager.addPreset(preset);
     });
   }
+
+  updateNodeValue {arg key, value;
+      // unfortunatelly, it's impossible to write just
+      // if (object.notNil && object.isOn) {  }
+      // so:
+      this.mapView.parametersMaps[key]!?{
+        if (this.mapView.parametersMaps[key].isOn) {
+          this.mapView.parametersMaps[key].nodeProxy.set(\selfvalue, value);
+        } {
+          node.set(key, value);
+        }
+      }??{
+        node.set(key, value);
+      }
+    }
 }

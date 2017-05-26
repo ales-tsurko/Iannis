@@ -3,7 +3,7 @@ IannisSynthMapPage : CompositeView {
   <>availableParameters,
   parametersMenuButton,
   <parametersListView, 
-  parametersViews,
+  <parametersMaps,
   addParameterButton;
 
   *new {arg parentSynthController;
@@ -17,7 +17,7 @@ IannisSynthMapPage : CompositeView {
     .currentPreset;
 
     parentSynthController = parent;
-    parametersViews = [];
+    parametersMaps = ();
 
     this.initParametersMenuButton();
     this.initParametersListView();
@@ -120,7 +120,7 @@ IannisSynthMapPage : CompositeView {
 
   addParameterForKey {arg key;
     var view = IannisSynthMapParameter(key, key.asString, this);
-    parametersViews = parametersViews.add(view);
+    parametersMaps[key] = view;
     this.layout.insert(view, this.layout.children.size);
   }
 
@@ -143,7 +143,7 @@ IannisSynthMapPage : CompositeView {
   onLoadPreset {arg preset;
     preset!?{
       // clean up view
-      parametersViews.do({arg view; view.remove()});
+      parametersMaps.valuesDo({arg view; view.remove()});
       this.fetchAvailableParametersFromPreset(preset);
 
       preset.map!?{
@@ -156,7 +156,7 @@ IannisSynthMapPage : CompositeView {
           };
         });
 
-        parametersViews.do({arg view;
+        parametersMaps.valuesDo({arg view;
           view.onLoadPreset(preset);
         });
       }

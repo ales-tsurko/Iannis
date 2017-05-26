@@ -11,6 +11,7 @@ IannisSynthMapParameter : CompositeView {
   evaluateButton,
   editButton,
   onOffButton,
+  <isOn,
   xFadeNumberBox,
   xFadeLabel;
   
@@ -23,6 +24,7 @@ IannisSynthMapParameter : CompositeView {
     name = aName;
     parentSynthPage = aDelegate;
     parameterBinder = ();
+    isOn = false;
 
     nodeProxy = NodeProxy();
 
@@ -165,15 +167,18 @@ IannisSynthMapParameter : CompositeView {
           .currentPreset
           .values[key];
           this.parentSynthPage.parentSynthController.node.set(key, val);
-          this.parentSynthPage.parentSynthController.elements[key].enabled = true;
+          // this.parentSynthPage.parentSynthController.elements[key].enabled = true;
+
+          isOn = false;
       } {
         // on
         // set the modulation again
-        this.parentSynthPage.parentSynthController.elements[key].enabled = false;
+        // this.parentSynthPage.parentSynthController.elements[key].enabled = false;
         nodeProxy.bus!?{
           this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
         };
 
+        isOn = true;
       };
 
       // update preset value
