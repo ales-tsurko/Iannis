@@ -484,7 +484,7 @@
       this.mapView.parametersMaps[key]!?{
         if (this.mapView.parametersMaps[key].isOn) {
           var aKey = \selfvalue;
-          var aNode = this.mapView.parametersMaps[key].nodeProxy;
+          var aNode = this.mapView.parametersMaps[key].proxiesGroup;
           presetValue = uiObj[\action].value(view, aKey, aNode, uiObj);
         } {
           presetValue = uiObj[\action].value(view, key, node, uiObj);
@@ -694,7 +694,7 @@
       // so:
       this.mapView.parametersMaps[key]!?{
         if (this.mapView.parametersMaps[key].isOn) {
-          this.mapView.parametersMaps[key].nodeProxy.set(\selfvalue, value);
+          this.mapView.parametersMaps[key].proxiesGroup.set(\selfvalue, value);
         } {
           node.set(key, value);
         }

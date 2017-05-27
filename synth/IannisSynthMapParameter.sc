@@ -3,7 +3,8 @@ IannisSynthMapParameter : CompositeView {
   <name,
   <parentSynthPage,
   <parameterBinder,
-  <nodeProxy,
+  <proxies,
+  <proxiesGroup,
   nameLabel,
   parametersView,
   <textView,
@@ -26,7 +27,14 @@ IannisSynthMapParameter : CompositeView {
     parameterBinder = ();
     isOn = false;
 
-    nodeProxy = NodeProxy();
+    proxiesGroup = Group();
+    // 127.do is faster than Array.fill
+    proxies = [];
+    127.do({
+      var proxy = NodeProxy();
+      proxies = proxies.add(proxy);
+      proxy.group = proxiesGroup;
+    });
 
     this.initNameLabel();
     this.initCloseButton();
@@ -89,8 +97,8 @@ IannisSynthMapParameter : CompositeView {
           .elements[key]
           .enabled = true;
 
-          // clear the proxy
-          this.nodeProxy.clear(0.1);
+          // clear the proxies
+          this.proxies.do({arg np; np.clear(0.1)});
 
           // update parameters list
           this.parentSynthPage.availableParameters = this.parentSynthPage.availableParameters.add(key);
@@ -172,12 +180,6 @@ IannisSynthMapParameter : CompositeView {
           isOn = false;
       } {
         // on
-        // set the modulation again
-        // this.parentSynthPage.parentSynthController.elements[key].enabled = false;
-        nodeProxy.bus!?{
-          this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
-        };
-
         isOn = true;
       };
 
@@ -203,7 +205,7 @@ IannisSynthMapParameter : CompositeView {
     xFadeNumberBox.clipHi = 60;
 
     xFadeNumberBox.action = {arg num;
-      nodeProxy.fadeTime = num.value;
+      this.proxies.do({arg np; np.fadeTime = num.value});
       
       // update preset value
       this.parentSynthPage
@@ -281,10 +283,7 @@ IannisSynthMapParameter : CompositeView {
     this.parseCode(code);
 
     // update NodeProxy
-    nodeProxy.source = code.compile();
-    if (onOffButton.value == 0) {
-      this.parentSynthPage.parentSynthController.node.set(key, nodeProxy.bus.asMap);
-    }
+    this.proxies.do({arg np; np.source = code.compile()});
   }
 
   evaluate {
@@ -374,4 +373,30 @@ IannisSynthMapParameter : CompositeView {
     };
   }
 
+  // MIDI
+  onNoteOn {arg noteNumber, velocity;
+    var proxy = this.proxies[noteNumber];
+
+    if (isOn) {
+      var voice = this.parentSynthPage
+      .parentSynthController
+      .node
+      .midiVoices[noteNumber];
+
+      // set map to the voice
+      voice.set(key, proxy.bus.asMap);
+    };
+
+    // send API keys to the proxy
+    proxy.set(\selfnote, noteNumber.midicps);
+    proxy.set(\selfvelocity, velocity.linlin(0, 127, 0, 1));
+    proxy.set(\selfgate, 1);
+    // [noteNumber, velocity].postln;
+  }
+
+  onNoteOff {arg noteNumber;
+    // send API keys to the proxy
+    this.proxies[noteNumber].set(\selfgate, 0);
+    this.proxies[noteNumber].set(\selfvelocity, 0);
+  }
 }

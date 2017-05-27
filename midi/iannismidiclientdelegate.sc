@@ -28,6 +28,11 @@
               values, 
               this.parentController.node
             );
+
+            // call map parameter bindings
+            this.parentController.mapView.parametersMaps.do({arg map;
+              map.onNoteOn(num, val);
+            });
           }
         }
       });
@@ -37,6 +42,10 @@
         if (this.midiManager.selectedDevice.uid == src) {
           if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
             this.parentController.node.midiVoices[num].release();
+            // call map parameter bindings
+            this.parentController.mapView.parametersMaps.do({arg map;
+              map.onNoteOff(num);
+            });
           }
         }
       });

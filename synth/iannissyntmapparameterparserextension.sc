@@ -157,7 +157,7 @@
     knob.action = {arg k;
       var preset;
       var newValue = spec.map(k.value);
-      nodeProxy.set(key, newValue);
+      proxiesGroup.set(key, newValue);
 
       valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
 
