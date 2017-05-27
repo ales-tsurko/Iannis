@@ -479,7 +479,19 @@
   parseCustomUIElement {arg key, name, uiObj;
     var view = uiObj[\init].value(key, name, uiObj);
     view.action = {arg view;
-      var presetValue = uiObj[\action].value(view, key, node, uiObj);
+      var presetValue;
+
+      this.mapView.parametersMaps[key]!?{
+        if (this.mapView.parametersMaps[key].isOn) {
+          var aKey = \selfvalue;
+          var aNode = this.mapView.parametersMaps[key].nodeProxy;
+          presetValue = uiObj[\action].value(view, aKey, aNode, uiObj);
+        } {
+          presetValue = uiObj[\action].value(view, key, node, uiObj);
+        }
+      }??{
+          presetValue = uiObj[\action].value(view, key, node, uiObj);
+      };
 
       // update preset
       if (this.presetsManagerController.presetsManager.currentPreset.notNil) {
