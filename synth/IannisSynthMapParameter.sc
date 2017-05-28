@@ -91,14 +91,9 @@ IannisSynthMapParameter : CompositeView {
           .parameterBinder[key]
           .value(val);
 
-          // enable the element
-          this.parentSynthPage
-          .parentSynthController
-          .elements[key]
-          .enabled = true;
-
           // clear the proxies
-          this.proxies.do({arg np; np.clear(0.1)});
+          this.proxiesGroup.free();
+          this.proxies.do({arg np; np.free(0.1)});
 
           // update parameters list
           this.parentSynthPage.availableParameters = this.parentSynthPage.availableParameters.add(key);
@@ -165,34 +160,32 @@ IannisSynthMapParameter : CompositeView {
     onOffButton.states = [["On"], ["Off"]];
 
     onOffButton.action = {arg but;
+      var preset = this.parentSynthPage
+      .parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset;
+
       if (but.value == 1) {
         // off
         // set real/fixed value
-          var val = this.parentSynthPage
-          .parentSynthController
-          .presetsManagerController
-          .presetsManager
-          .currentPreset
-          .values[key];
-          this.parentSynthPage.parentSynthController.node.set(key, val);
-          // this.parentSynthPage.parentSynthController.elements[key].enabled = true;
+        var val = preset.values[key];
+        this.parentSynthPage.parentSynthController.node.set(key, val);
 
-          isOn = false;
+        isOn = false;
       } {
         // on
         isOn = true;
       };
 
       // update preset value
-      this.parentSynthPage
-      .parentSynthController
-      .presetsManagerController
-      .presetsManager
-      .currentPreset
-      .setMapState(
+      preset.setMapState(
         this.key,
         but.value
       );
+
+      // update selfvalue
+      this.proxiesGroup.set(\selfvalue, preset.values[key]);
     };
 
     onOffButton.doAction();
@@ -223,17 +216,17 @@ IannisSynthMapParameter : CompositeView {
   initParametersView {
     parametersView = CompositeView();
     parametersView.layout = VLayout();
-    // parametersView.background = Color.gray(0.77);
   }
 
   initTextView {
-    var updatePresetFunc = {arg tv;
-      tv.getValue({arg code;
-        this.parentSynthPage
+    var preset = this.parentSynthPage
         .parentSynthController
         .presetsManagerController
         .presetsManager
-        .currentPreset.setMapCode(
+        .currentPreset;
+    var updatePresetFunc = {arg tv;
+      tv.getValue({arg code;
+        preset.setMapCode(
           this.key,
           code
         );
@@ -249,7 +242,9 @@ IannisSynthMapParameter : CompositeView {
         "Shift-Enter to evaluate a line or selection.\n"
         "Ctrl-` - switching between Vim/Normal mode.\n"
         "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
-        "*/"
+        "*/\n"
+        "\n"
+        "'selfvalue'.kr;"
       );
     };
 
@@ -279,11 +274,26 @@ IannisSynthMapParameter : CompositeView {
   }
 
   evaluateCodeAction {arg code;
+    var preset = this.parentSynthPage
+    .parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+    var compiled;
+
     // create UI
     this.parseCode(code);
 
+    compiled = code.compile();
+
     // update NodeProxy
-    this.proxies.do({arg np; np.source = code.compile()});
+    this.proxies.do({arg np; 
+      np.source = compiled;
+      np.set(\selfvalue, preset.values[key]);
+    });
+
+    // update selfvalue
+    this.proxiesGroup.set(\selfvalue, preset.values[key]);
   }
 
   evaluate {
@@ -353,10 +363,11 @@ IannisSynthMapParameter : CompositeView {
         tv.setValue(code);
         this.evaluate();
 
-        // it seems, this actually never used
+        // it seems, this actually never used.
         // loading of the preset values done in
         // the parameter UI creation method (makeParameterView)
         this.loadPresetDataForUserDefinedUI(preset);
+
       };
     };
   }
