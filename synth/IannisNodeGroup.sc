@@ -4,10 +4,17 @@ IannisNodeGroup : Group {
   // instantiated by the midi client
   <>midiVoices;
 
+  *new {arg target, addAction = 'addToHead';
+    ^super.new(target, addAction).init();
+  }
+
+  init {
+    midiVoices = nil!127;
+    getState = ();
+  }
+
   set {arg ...args;
     super.set(*args);
-
-    getState??{getState = ()};
 
     args.do({arg item, n;
       if (n.even) {

@@ -81,6 +81,13 @@ IannisSynthMapPage : CompositeView {
     };
   }
 
+  cleanUp {
+    parametersMaps.do({arg param;
+      param.proxiesGroup.free();
+      param.proxies.do({arg np; np.free(0.1)});
+    });
+  }
+
   addParameterAction {
     parametersListView.selection.do({arg index;
       var key = this.availableParameters[index].asSymbol;

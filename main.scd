@@ -19,6 +19,9 @@ Quarks.uninstall("Iannis");
 
     // load iannis synthdesc lib into global lib
     SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
+
+    // survive CmdPeriod
+    TempoClock.default.permanent = true;
   });
 )
 
@@ -33,6 +36,15 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator).front();
 )
+
+p = ProxySpace(Server.default);
+
+p.put(0, {(2+2).postln});
+p.put(1, {SinOsc.ar*0.3!2});
+p[1].stop
+
+p.clear;
+p.pop;
 
 // Tabbed view
 

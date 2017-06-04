@@ -1,12 +1,16 @@
 IannisSynthViewController : CompositeView {
-  var <synthName, <pagesView, <node, 
-  <metadata, <presetsManagerController,
+  var <synthName, 
+  <pagesView, 
+  <node, 
+  <metadata, 
+  <presetsManagerController,
   <midiInManagerController,
   <parameterBinder,
   <elements,
   <synthDefName,
   <mapView,
-  toolbarView, synthNameLabel;
+  toolbarView, 
+  synthNameLabel;
 
   *new {arg node, synthDefName;
     ^super.new.init(node, synthDefName);
@@ -26,6 +30,7 @@ IannisSynthViewController : CompositeView {
     this.parse();
 
     this.pagesView.addPage("Map", mapView);
+    this.onClose = {this.cleanUp()};
   }
 
   initToolbar {
@@ -52,6 +57,12 @@ IannisSynthViewController : CompositeView {
     pagesView = IannisTabbedView(name, view);
 
     this.layout.add(pagesView);
+  }
+
+  cleanUp {
+    midiInManagerController.cleanUp();
+    mapView.cleanUp();
+    node.free();
   }
 
   addPage {arg name;

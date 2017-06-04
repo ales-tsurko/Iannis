@@ -28,12 +28,18 @@ IannisSynthMapParameter : CompositeView {
     isOn = false;
 
     proxiesGroup = Group();
+    // ignore CmdPeriod
+    CmdPeriod.remove(proxiesGroup);
+
     // 127.do is faster than Array.fill
     proxies = [];
     127.do({
       var proxy = NodeProxy();
       proxies = proxies.add(proxy);
       proxy.group = proxiesGroup;
+
+      // ignore CmdPeriod
+      CmdPeriod.remove(proxy);
     });
 
     this.initNameLabel();
@@ -238,9 +244,8 @@ IannisSynthMapParameter : CompositeView {
     textView.onLoadFinished = {arg wv;
       wv.setValue(
         "/*\n"
-        "Ctrl-R to evaluate the entire document or\n"
-        "Shift-Enter to evaluate a line or selection.\n"
-        "Ctrl-` - switching between Vim/Normal mode.\n"
+        "Ctrl-R to evaluate the entire document.\n"
+        "Ctrl-` - switch between Vim/Normal mode.\n"
         "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
         "*/\n"
         "\n"
@@ -388,21 +393,22 @@ IannisSynthMapParameter : CompositeView {
   onNoteOn {arg noteNumber, velocity;
     var proxy = this.proxies[noteNumber];
 
-    if (isOn) {
-      var voice = this.parentSynthPage
-      .parentSynthController
-      .node
-      .midiVoices[noteNumber];
+    proxy.bus!?{
+      if (isOn) {
+        var voice = this.parentSynthPage
+        .parentSynthController
+        .node
+        .midiVoices[noteNumber];
 
-      // set map to the voice
-      voice.set(key, proxy.bus.asMap);
-    };
+        // set map to the voice
+        voice.set(key, proxy.bus.asMap);
+      };
 
-    // send API keys to the proxy
-    proxy.set(\selfnote, noteNumber.midicps);
-    proxy.set(\selfvelocity, velocity.linlin(0, 127, 0, 1));
-    proxy.set(\selfgate, 1);
-    // [noteNumber, velocity].postln;
+      // send API keys to the proxy
+      proxy.set(\selfnote, noteNumber.midicps);
+      proxy.set(\selfvelocity, velocity.linlin(0, 127, 0, 1));
+      proxy.set(\selfgate, 1);
+    }
   }
 
   onNoteOff {arg noteNumber;

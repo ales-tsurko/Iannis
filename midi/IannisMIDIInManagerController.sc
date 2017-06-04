@@ -1,7 +1,9 @@
 IannisMIDIInManagerController : CompositeView {
   var <parentController,
-  <midiSourcesMenu, <channelNumberBox,
-  <midiInputEnabled, <midiManager,
+  <midiSourcesMenu, 
+  <channelNumberBox,
+  <midiInputEnabled, 
+  <midiManager,
   <panicButton;
 
   *new {arg parentController;
@@ -72,5 +74,10 @@ IannisMIDIInManagerController : CompositeView {
 			this.midiManager.channel = nb.value;
       this.midiManager.reset();
     };
+  }
+
+  cleanUp {
+    this.midiManager.map[\noteOn].free();
+    this.midiManager.map[\noteOff].free();
   }
 }
