@@ -1,6 +1,9 @@
 IannisMIDIManager {
-  var <>map, delegate, 
-  <selectedDevice, <selectedDisconnectedDevice,
+  var <>map,
+  <voicesManager,
+  delegate, 
+  <selectedDevice,
+  <selectedDisconnectedDevice,
   <midiInputEnabled,
   <channel;
 
@@ -13,6 +16,7 @@ IannisMIDIManager {
     midiInputEnabled = false;
     map = ();
     channel = 0;
+    voicesManager = IannisVoicesManager();
 
     this.initMIDIClient();
   }
@@ -64,6 +68,6 @@ IannisMIDIManager {
   }
 
   reset {
-    delegate.parentController.node.releaseMIDIVoices();
+    this.voicesManager.releaseAll();
   }
 }

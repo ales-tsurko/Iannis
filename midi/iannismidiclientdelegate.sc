@@ -49,7 +49,7 @@
           );
 
           // add it to the voices array
-          this.parentController.node.addVoice(num, newVoice);
+          this.midiManager.voicesManager.addVoice(num, newVoice);
 
           // ignore CmdPeriod for the new voice
           CmdPeriod.remove(newVoice);
@@ -70,7 +70,7 @@
     this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          this.parentController.node.releaseVoice(num);
+          this.midiManager.voicesManager.releaseVoice(num);
           // call map parameter bindings
           this.parentController.mapView.parametersMaps.do({arg map;
             map.onNoteOff(num);

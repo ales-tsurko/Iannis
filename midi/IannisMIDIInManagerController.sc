@@ -79,5 +79,6 @@ IannisMIDIInManagerController : CompositeView {
   cleanUp {
     this.midiManager.map[\noteOn].free();
     this.midiManager.map[\noteOff].free();
+    this.midiManager.reset();
   }
 }
