@@ -109,6 +109,7 @@ IannisSynthMapParameter : CompositeView {
           // remove key from the map of the current preset
           preset.map[key] = nil;
 
+          parentSynthPage.willCloseParameter(key);
           this.close();
         });
       }

@@ -169,4 +169,8 @@ IannisSynthMapPage : CompositeView {
       }
     }
   }
+
+  willCloseParameter {arg key;
+    parametersMaps[key] = nil;
+  }
 }
