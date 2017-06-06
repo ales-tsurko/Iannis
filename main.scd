@@ -36,6 +36,7 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator).front();
 )
+v.midiInManagerController.midiManager.voicesManager.allowedNumberOfVoices = 1;
 
 p = ProxySpace(Server.default);
 

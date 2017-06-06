@@ -41,18 +41,13 @@
 
           values = values.addAll([\freq, num.midicps, \velocity, val]);
 
-          // init new voice
-          newVoice = Synth(
+          // add it to the voices array
+          this.midiManager.voicesManager.initVoice(
+            num,
             this.parentController.synthDefName,
-            values, 
+            values,
             this.parentController.node
           );
-
-          // add it to the voices array
-          this.midiManager.voicesManager.addVoice(num, newVoice);
-
-          // ignore CmdPeriod for the new voice
-          CmdPeriod.remove(newVoice);
 
           // call map parameter bindings
           this.parentController.mapView.parametersMaps.do({arg map;
