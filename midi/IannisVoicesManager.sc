@@ -1,5 +1,6 @@
 IannisVoicesManager {
-  var <>allowedNumberOfVoices, // 1 - mono, 0 - legato
+  var <>allowedNumberOfVoices,
+  <>monophonicMode, // \normal or \legato
   voices;
 
   *new {arg numberOfVoices = 4;
@@ -8,13 +9,15 @@ IannisVoicesManager {
 
   init {arg voicesNum;
     allowedNumberOfVoices = voicesNum;
+    monophonicMode = \legato;
     voices = [];
   }
 
   initVoice {arg keyNum, synthDefName, values, group;
     case
     // monophonic
-    {allowedNumberOfVoices == 1} {
+    // legato
+    {allowedNumberOfVoices == 1 && monophonicMode == \legato} {
       if (voices.size == 0) {
         this.pushVoiceIntoArray(keyNum, synthDefName, values, group);
       } {
@@ -24,7 +27,7 @@ IannisVoicesManager {
         voices[1].set(*values);
       };
     }
-    // polyphonic
+    // polyphonic and retrigger monophonic (\normal monophonicMode)
     {true} {
       this.pushVoiceIntoArray(keyNum, synthDefName, values, group);
 
@@ -49,8 +52,8 @@ IannisVoicesManager {
 
   releaseVoice {arg keyNum;
     case
-    // monophonic
-    {allowedNumberOfVoices == 1} {
+    // monophonic \legato
+    {allowedNumberOfVoices == 1 && monophonicMode == \legato} {
       // release the voice if its current keynum
       // is equal to previous keynum
       if (voices[0] == keyNum) {
@@ -58,7 +61,7 @@ IannisVoicesManager {
         voices = [];
       }
     }
-    // polyphonic
+    // polyphonic and retrigger monophonic (\normal monophonicMode)
     {true} {
       var numIndex = voices.indexOf(keyNum);
       numIndex!?{
