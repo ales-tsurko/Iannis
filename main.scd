@@ -26,6 +26,7 @@ Quarks.uninstall("Iannis");
 )
 
 
+
 // Sequencer
 TempoClock.default.tempo = 107/60;
 
@@ -38,6 +39,20 @@ v = IannisSynthViewController(g, \granulator).front();
 )
 v.midiInManagerController.midiManager.voicesManager.allowedNumberOfVoices = 1;
 v.midiInManagerController.midiManager.voicesManager.monophonicMode = \normal;
+
+
+
+g.do({arg synth;
+  synth.release;
+});
+
+a = OSCFunc({arg msg;
+  msg[0].postln;
+}, '/g_queryTree.reply', g.server.addr).oneShot;
+a.clear();
+OSCFunc().freeAll
+g.server.sendMsg("/g_queryTree", g.nodeID);
+a.free
 
 p = ProxySpace(Server.default);
 

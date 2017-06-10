@@ -1,6 +1,9 @@
 IannisVoicesManager {
   var <>allowedNumberOfVoices,
-  <>monophonicMode, // \normal or \legato
+  <>monophonicMode = \legato, // \normal or \legato
+  <sustainPedalIsOn = false,
+  shouldReleaseVoicesOnSustainOff = false,
+  voicesToReleaseOnSustainOff,
   voices;
 
   *new {arg numberOfVoices = 4;
@@ -9,11 +12,11 @@ IannisVoicesManager {
 
   init {arg voicesNum;
     allowedNumberOfVoices = voicesNum;
-    monophonicMode = \legato;
     voices = [];
+    voicesToReleaseOnSustainOff = [];
   }
 
-  initVoice {arg keyNum, synthDefName, values, group;
+  noteOn {arg keyNum, synthDefName, values, group;
     case
     // monophonic
     // legato
@@ -32,37 +35,50 @@ IannisVoicesManager {
       this.pushVoiceIntoArray(keyNum, synthDefName, values, group);
 
       if (voices.size > (allowedNumberOfVoices*2)) {
+        var removingVoice;
         // remove keynum
         voices.removeAt(0);
         // free the voice and remove it
         voices[0].free();
-        voices.removeAt(0);
+        removingVoice = voices.removeAt(0);
+
+        if (sustainPedalIsOn) {
+          voicesToReleaseOnSustainOff = voicesToReleaseOnSustainOff
+          .reject({arg voice; voice == removingVoice});
+        }
       }
     };
   }
 
   pushVoiceIntoArray {arg keyNum, synthDefName, values, group;
-    var newVoice = Synth(
-      synthDefName,
-      values, 
-      group
-    );
-    voices = voices.addAll([keyNum, newVoice]);
+    voices.indexOf(keyNum)??{
+      var newVoice = Synth(
+        synthDefName,
+        values, 
+        group
+      );
+      voices = voices.addAll([keyNum, newVoice]);
+    };
   }
 
-  releaseVoice {arg keyNum;
+  noteOff {arg keyNum;
     case
     // monophonic \legato
     {allowedNumberOfVoices == 1 && monophonicMode == \legato} {
       // release the voice if its current keynum
       // is equal to previous keynum
-      if (voices[0] == keyNum) {
+      if (voices[0] == keyNum && this.sustainPedalIsOn.not) {
         voices[1].release();
         voices = [];
       }
     }
     // polyphonic and retrigger monophonic (\normal monophonicMode)
-    {true} {
+    {this.sustainPedalIsOn} {
+      forBy(1, voices.size, 2) {arg i;
+        voicesToReleaseOnSustainOff = voicesToReleaseOnSustainOff.add(voices[i]);
+      }
+    }
+    {this.sustainPedalIsOn.not} {
       var numIndex = voices.indexOf(keyNum);
       numIndex!?{
         // remove keyNum
@@ -75,16 +91,26 @@ IannisVoicesManager {
     };
   }
 
+  sustainPedalIsOn_ {arg newValue;
+    sustainPedalIsOn = newValue;
+
+    if (sustainPedalIsOn.not) {
+      voicesToReleaseOnSustainOff.do({arg voice;
+        voice.release();
+      });
+
+      voicesToReleaseOnSustainOff = [];
+    }
+  }
+
   getVoice {arg keyNum;
     var numIndex = voices.indexOf(keyNum);
     ^voices[numIndex+1];
   }
 
   releaseAll {
-    voices.do({arg item, n;
-      if (n.odd) {
-        item.release();
-      }
-    });
+    forBy (1, voices.size, 2) {arg i; 
+      voices[i].release();
+    };
   }
 }

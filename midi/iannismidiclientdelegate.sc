@@ -18,6 +18,9 @@
 
       // NoteOFF
       this.initNoteOffMIDIFunc();
+
+      // Sustain Pedal
+      this.initSustainPedalMIDIFunc();
     }
   }
 
@@ -42,7 +45,7 @@
           values = values.addAll([\freq, num.midicps, \velocity, val]);
 
           // add it to the voices array
-          this.midiManager.voicesManager.initVoice(
+          this.midiManager.voicesManager.noteOn(
             num,
             this.parentController.synthDefName,
             values,
@@ -65,7 +68,7 @@
     this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          this.midiManager.voicesManager.releaseVoice(num);
+          this.midiManager.voicesManager.noteOff(num);
           // call map parameter bindings
           this.parentController.mapView.parametersMaps.do({arg map;
             map.onNoteOff(num);
@@ -76,5 +79,18 @@
 
     // ignore CmdPeriod
     this.midiManager.map[\noteOff].permanent = true;
+  }
+
+  initSustainPedalMIDIFunc {
+    this.midiManager.map[\sustainPedal] = MIDIFunc.cc({arg val, num, chan, src;
+
+      if (this.midiManager.selectedDevice.uid == src) {
+        if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
+          this.midiManager.voicesManager.sustainPedalIsOn = (val == 127);
+        }
+      };
+    }, 64);
+
+    this.midiManager.map[\sustainPedal].permanent = true;
   }
 }
