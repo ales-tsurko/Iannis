@@ -11,6 +11,8 @@
   didSelectNewDevice {arg device;
     this.midiManager.map[\noteOn].free();
     this.midiManager.map[\noteOff].free();
+    this.midiManager.map[\sustainPedal].free();
+    this.midiManager.map[\bend].free();
 
     if (this.midiManager.midiInputEnabled) {
       // NoteON
@@ -21,6 +23,9 @@
 
       // Sustain Pedal
       this.initSustainPedalMIDIFunc();
+
+      // Pitch Bend
+      this.initPitchBendMIDIFunc();
     }
   }
 
@@ -92,5 +97,18 @@
     }, 64);
 
     this.midiManager.map[\sustainPedal].permanent = true;
+  }
+
+  initPitchBendMIDIFunc {
+    this.midiManager.map[\bend] = MIDIFunc.bend({arg val, chan, src;
+      if (this.midiManager.selectedDevice.uid == src) {
+        if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
+          var value = (val>>7)&0xFF;
+          this.midiManager.voicesManager.pitchBend(value);
+        }
+      };
+    });
+
+    this.midiManager.map[\bend].permanent = true;
   }
 }

@@ -2,7 +2,7 @@ IannisVoicesManager {
   var <>allowedNumberOfVoices,
   <>monophonicMode = \legato, // \normal or \legato
   <sustainPedalIsOn = false,
-  shouldReleaseVoicesOnSustainOff = false,
+  <>pitchBendSemitones = 2,
   voicesToReleaseOnSustainOff,
   voices;
 
@@ -101,6 +101,22 @@ IannisVoicesManager {
 
       voicesToReleaseOnSustainOff = [];
     }
+  }
+
+  pitchBend {arg value;
+    var pbMidiValue = value.linlin(0, 127, pitchBendSemitones.neg, pitchBendSemitones);
+    if (value == 64) {pbMidiValue = 0};
+    pbMidiValue.postln;
+
+    forBy (0, voices.size, 2) {arg i;
+      var keyNum = voices[i];
+      keyNum!?{
+        var voice = voices[i+1];
+        var freq = (keyNum + pbMidiValue).midicps;
+
+        voice.set(\freq, freq);
+      };
+    };
   }
 
   getVoice {arg keyNum;

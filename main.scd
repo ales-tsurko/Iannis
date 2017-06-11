@@ -39,7 +39,11 @@ v = IannisSynthViewController(g, \granulator).front();
 )
 v.midiInManagerController.midiManager.voicesManager.allowedNumberOfVoices = 1;
 v.midiInManagerController.midiManager.voicesManager.monophonicMode = \normal;
-
+f = MIDIFunc.cc({arg ...args;
+  args.postln;
+});
+f.learn;
+f.free();
 
 
 g.do({arg synth;
