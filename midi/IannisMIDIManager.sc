@@ -72,4 +72,31 @@ IannisMIDIManager {
     this.voicesManager.releaseAll();
   }
 
+  addMIDIControllerForParameter {arg key, sourceUID, ccNum, channel, synthViewData;
+    this.map[\cc][key]!?{
+      if (this.map[\cc][key][\ccinfo] != [sourceUID, ccNum, channel]) {
+
+        this.map[\cc][key][\func].free();
+        this.map[\cc][key] = nil;
+      };
+
+      // return non-nil value
+      1;
+    }??{
+      // init new MIDI function for controller
+      var newFunc = MIDIFunc.cc({arg val, num, chan, src;
+        var spec = synthViewData[key][\spec];
+        var view = synthViewData[key][\view];
+        var value = spec.asSpec.map(val/127);
+        AppClock.sched(0, {
+          synthViewData[key][\updater].value(value);
+        });
+      }, ccNum, channel, sourceUID);
+
+      // update data
+      this.map[\cc][key] = ();
+      this.map[\cc][key][\func] = newFunc;
+      this.map[\cc][key][\ccinfo] = [sourceUID, ccNum, channel];
+    }
+  }
 }

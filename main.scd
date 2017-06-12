@@ -43,12 +43,6 @@ v.midiInManagerController.midiManager.voicesManager.monophonicMode = \normal;
 v.midiLearnModeEnabled = true;
 v.midiLearnModeEnabled = false;
 
-f = MIDIFunc.cc({arg ...args;
-  args.postln;
-});
-f.learn;
-f.free();
-
 
 g.do({arg synth;
   synth.release;

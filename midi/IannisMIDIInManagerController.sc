@@ -4,7 +4,8 @@ IannisMIDIInManagerController : CompositeView {
   <channelNumberBox,
   <midiInputEnabled, 
   <midiManager,
-  <panicButton;
+  <panicButton,
+  learningFunc;
 
   *new {arg parentController;
     ^super.new.init(parentController);
@@ -86,43 +87,20 @@ IannisMIDIInManagerController : CompositeView {
     });
     this.midiManager.reset();
   }
-
+  
   startLearn {
-    midiManager.map[\learningfunc] = MIDIFunc.cc({arg val, num, chan, src;
+    learningFunc = MIDIFunc.cc({arg val, num, chan, src;
       var key = this.parentController.selectedElementKey;
+      var data = this.parentController.data;
 
       key!?{
-        this.midiManager.map[\cc][key]!?{
-          if (this.midiManager.map[\cc][key][\ccinfo] != [src, num, chan]) {
-
-          this.midiManager.map[\cc][key][\func].free();
-          this.midiManager.map[\cc][key] = nil;
-          };
-
-          // return non-nil value
-          1;
-        }??{
-          // init new MIDI function for controller
-          var newFunc = MIDIFunc.cc({arg va, nu, cha, source;
-            var spec = this.parentController.data[key][\spec];
-            var view = this.parentController.data[key][\view];
-            var value = spec.asSpec.map(va/127);
-            AppClock.sched(0, {
-              this.parentController.data[key][\updater].value(value);
-            });
-          }, num, chan, src);
-
-          // update data
-          this.midiManager.map[\cc][key] = ();
-          this.midiManager.map[\cc][key][\func] = newFunc;
-          this.midiManager.map[\cc][key][\ccinfo] = [src, num, chan];
-        };
-      };
+        this.midiManager.addMIDIControllerForParameter(key, src, num, chan, data);
+      }
     });
   }
 
   stopLearn {
-    midiManager.map[\learningfunc].free();
-    midiManager.map[\learningfunc] = nil;
+    learningFunc.free();
+    learningFunc = nil;
   }
 }
