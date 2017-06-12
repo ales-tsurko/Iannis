@@ -9,7 +9,7 @@ IannisSynthViewController : CompositeView {
   <synthDefName,
   <mapView,
   <selectedElementKey,
-  <>midiLearnModeEnabled = true,
+  <midiLearnModeEnabled = false,
   toolbarView, 
   synthNameLabel;
 
@@ -94,6 +94,16 @@ IannisSynthViewController : CompositeView {
     synthNameLabel.string = newName;
   }
 
+  midiLearnModeEnabled_ {arg newValue;
+    midiLearnModeEnabled = newValue;
+
+    if (midiLearnModeEnabled) {
+      this.midiInManagerController.startLearn();
+    } {
+      this.midiInManagerController.stopLearn();
+    };
+  }
+
   didFinishParsing {
     this.presetsManagerController.parentControllerDidFinishParsing();
 
@@ -108,7 +118,6 @@ IannisSynthViewController : CompositeView {
           previousColor = v.background;
           v.background = Color.gray(0.9);
           selectedElementKey = key; 
-          this.selectedElementKey.postln;
         };
       };
 

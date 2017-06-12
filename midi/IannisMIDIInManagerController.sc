@@ -79,6 +79,50 @@ IannisMIDIInManagerController : CompositeView {
   cleanUp {
     this.midiManager.map[\noteOn].free();
     this.midiManager.map[\noteOff].free();
+    this.midiManager.map[\bend].free();
+    this.midiManager.map[\sustainPedal].free();
+    this.midiManager.map[\cc].valuesDo({arg src;
+      src[\func].free();
+    });
     this.midiManager.reset();
+  }
+
+  startLearn {
+    midiManager.map[\learningfunc] = MIDIFunc.cc({arg val, num, chan, src;
+      var key = this.parentController.selectedElementKey;
+
+      key!?{
+        this.midiManager.map[\cc][key]!?{
+          if (this.midiManager.map[\cc][key][\ccinfo] != [src, num, chan]) {
+
+          this.midiManager.map[\cc][key][\func].free();
+          this.midiManager.map[\cc][key] = nil;
+          };
+
+          // return non-nil value
+          1;
+        }??{
+          // init new MIDI function for controller
+          var newFunc = MIDIFunc.cc({arg va, nu, cha, source;
+            var spec = this.parentController.data[key][\spec];
+            var view = this.parentController.data[key][\view];
+            var value = spec.asSpec.map(va/127);
+            AppClock.sched(0, {
+              this.parentController.data[key][\updater].value(value);
+            });
+          }, num, chan, src);
+
+          // update data
+          this.midiManager.map[\cc][key] = ();
+          this.midiManager.map[\cc][key][\func] = newFunc;
+          this.midiManager.map[\cc][key][\ccinfo] = [src, num, chan];
+        };
+      };
+    });
+  }
+
+  stopLearn {
+    midiManager.map[\learningfunc].free();
+    midiManager.map[\learningfunc] = nil;
   }
 }

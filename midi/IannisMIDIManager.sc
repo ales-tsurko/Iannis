@@ -15,6 +15,7 @@ IannisMIDIManager {
     delegate = aDelegate;
     midiInputEnabled = false;
     map = ();
+    map[\cc] = ();
     channel = 0;
     voicesManager = IannisVoicesManager();
 
@@ -70,4 +71,5 @@ IannisMIDIManager {
   reset {
     this.voicesManager.releaseAll();
   }
+
 }

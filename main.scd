@@ -37,8 +37,10 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator).front();
 )
+
 v.midiInManagerController.midiManager.voicesManager.allowedNumberOfVoices = 1;
 v.midiInManagerController.midiManager.voicesManager.monophonicMode = \normal;
+v.midiLearnModeEnabled = true;
 v.midiLearnModeEnabled = false;
 
 f = MIDIFunc.cc({arg ...args;

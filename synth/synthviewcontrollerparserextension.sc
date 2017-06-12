@@ -127,6 +127,7 @@
     var view;
 
     this.data[key] = ();
+    this.data[key][\spec] = spec?ControlSpec();
 
     switch(
       uiObj[\type],
