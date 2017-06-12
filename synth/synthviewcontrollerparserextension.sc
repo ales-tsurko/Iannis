@@ -126,6 +126,8 @@
   parseUIElement {arg key, name, spec, uiObj;
     var view;
 
+    this.data[key] = ();
+
     switch(
       uiObj[\type],
       \recorder, {
@@ -184,12 +186,12 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       var newValue = value.value();
       newRecorder.samplePath = newValue;
     };
 
-    this.elements[key] = newRecorder;
+    this.data[key][\view] = newRecorder;
 
     ^newRecorder;
   }
@@ -217,14 +219,14 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       button.valueAction = value.value();
     };
 
     // layout
     view.layout = VLayout(button);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -245,14 +247,14 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       check.valueAction = value.value();
     };
 
     // layout
     view.layout = VLayout(check);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -293,14 +295,14 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       number.valueAction = value.value();
     };
 
     // layout
     view.layout = VLayout(label, number);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -328,7 +330,7 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       slider.lo = spec.asSpec.unmap(value.value[0]);
       slider.hi = spec.asSpec.unmap(value.value[1]);
 
@@ -362,7 +364,7 @@
 
     view.layout = VLayout(label, HLayout(slider), valueLabel);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -391,14 +393,14 @@
       };
     };
 
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       xy.setXYActive(value.value[0], value.value[1]);
     };
 
     // layout
     view.layout = VLayout(label, xy, valueLabel);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -429,13 +431,13 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       popup.valueAction = value.value();
     };
 
     view.layout = VLayout(label, popup);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -466,13 +468,13 @@
     knob.valueAction = spec.asSpec.unmap(spec.asSpec.default);
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       knob.valueAction = spec.asSpec.unmap(value.value());
     };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -499,11 +501,11 @@
       };
     };
 
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       uiObj[\binder].value(view, value, uiObj);
     };
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -530,7 +532,7 @@
     slider.valueAction = spec.asSpec.unmap(spec.asSpec.default);
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       slider.valueAction = spec.asSpec.unmap(value.value());
     };
 
@@ -552,7 +554,7 @@
 
     view.layout = VLayout(label, HLayout(slider), valueLabel);
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     ^this.parseAlignment(view, uiObj[\align]);
   }
 
@@ -648,7 +650,7 @@
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    this.data[key][\updater] = {arg value;
       var newValue = value.value();
       var x = [0];
       var y = [0,1,newValue[2]/*sustain*/,0];
@@ -663,7 +665,7 @@
       view.valueAction = [x,y];
     };
 
-    this.elements[key] = view;
+    this.data[key][\view] = view;
     // return
     ^this.parseAlignment(view, uiObj[\align]);
   }

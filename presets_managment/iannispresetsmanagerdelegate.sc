@@ -28,7 +28,10 @@
 
     // update main view
     preset.values.keysValuesDo({arg key, value;
-      this.parentController.parameterBinder[key].value(value);
+      var data = this.parentController.data[key];
+      data!?{
+        data[\updater].value(value);
+      };
     });
 
     // update map view

@@ -5,10 +5,11 @@ IannisSynthViewController : CompositeView {
   <metadata, 
   <presetsManagerController,
   <midiInManagerController,
-  <parameterBinder,
-  <elements,
+  <data,
   <synthDefName,
   <mapView,
+  <selectedElementKey,
+  <>midiLearnModeEnabled = true,
   toolbarView, 
   synthNameLabel;
 
@@ -20,8 +21,7 @@ IannisSynthViewController : CompositeView {
     node = aNode;
     synthDefName = aSynthDefName;
     metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
-    parameterBinder = ();
-    elements = ();
+    data = ();
     this.fixedWidth = 680;
     this.minHeight = 550;
     this.layout = VLayout();
@@ -96,5 +96,27 @@ IannisSynthViewController : CompositeView {
 
   didFinishParsing {
     this.presetsManagerController.parentControllerDidFinishParsing();
+
+    // midi learn related
+    this.data.keysDo({arg key;
+      var view = this.data[key][\view];
+      var previousColor;
+      view.canFocus = true;
+      
+      view.focusGainedAction = {arg v;
+        if (this.midiLearnModeEnabled) {
+          previousColor = v.background;
+          v.background = Color.gray(0.9);
+          selectedElementKey = key; 
+          this.selectedElementKey.postln;
+        };
+      };
+
+      view.focusLostAction = {arg v;
+        v.background = previousColor?Color.clear();
+        selectedElementKey = nil;
+        previousColor = nil;
+      };
+    });
   }
 }
