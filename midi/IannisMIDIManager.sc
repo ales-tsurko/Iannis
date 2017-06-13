@@ -85,18 +85,40 @@ IannisMIDIManager {
     }??{
       // init new MIDI function for controller
       var newFunc = MIDIFunc.cc({arg val, num, chan, src;
-        var spec = synthViewData[key][\spec];
-        var view = synthViewData[key][\view];
-        var value = spec.asSpec.map(val/127);
-        AppClock.sched(0, {
-          synthViewData[key][\updater].value(value);
-        });
-      }, ccNum, channel, sourceUID);
+        if ([src, num, chan] == this.map[\cc][key][\ccinfo]) {
+          var spec = synthViewData[key][\spec];
+          var value = spec.asSpec.map(val/127);
+          AppClock.sched(0, {
+            synthViewData[key][\updater].value(value);
+          });
+        };
+      });
 
       // update data
       this.map[\cc][key] = ();
       this.map[\cc][key][\func] = newFunc;
       this.map[\cc][key][\ccinfo] = [sourceUID, ccNum, channel];
     }
+  }
+
+  removeMIDIController {arg key;
+    this.map[\cc][key][\func].free();
+    this.map[\cc][key] = nil;
+  }
+
+  updateMIDIControllerParameters {arg key, sourceUID, ccNum, channel;
+    this.map[\cc][key]!?{
+      sourceUID!?{
+        this.map[\cc][key][\ccinfo][0] = sourceUID;
+      };
+
+      ccNum!?{
+        this.map[\cc][key][\ccinfo][1] = ccNum;
+      };
+
+      channel!?{
+        this.map[\cc][key][\ccinfo][2] = channel;
+      }
+    };
   }
 }

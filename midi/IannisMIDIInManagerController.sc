@@ -20,6 +20,8 @@ IannisMIDIInManagerController : CompositeView {
 
     midiManager = IannisMIDIManager(this);
     
+    this.initLearningFunc();
+
     midiSourcesMenu.valueAction = 0;
 
     ~midiInLabel = StaticText();
@@ -37,6 +39,19 @@ IannisMIDIInManagerController : CompositeView {
     );
 
     this.deleteOnClose = false;
+  }
+
+  initLearningFunc {
+    learningFunc = MIDIFunc.cc({arg val, num, chan, src;
+      var key = this.parentController.selectedElementKey;
+      var data = this.parentController.data;
+
+      key!?{
+        this.midiManager.addMIDIControllerForParameter(key, src, num, chan, data);
+      }
+    });
+
+    learningFunc.disable();
   }
 
   initPanicButton {
@@ -89,18 +104,10 @@ IannisMIDIInManagerController : CompositeView {
   }
   
   startLearn {
-    learningFunc = MIDIFunc.cc({arg val, num, chan, src;
-      var key = this.parentController.selectedElementKey;
-      var data = this.parentController.data;
-
-      key!?{
-        this.midiManager.addMIDIControllerForParameter(key, src, num, chan, data);
-      }
-    });
+    learningFunc.enable();
   }
 
   stopLearn {
-    learningFunc.free();
-    learningFunc = nil;
+    learningFunc.disable();
   }
 }

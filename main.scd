@@ -42,7 +42,10 @@ v.midiInManagerController.midiManager.voicesManager.allowedNumberOfVoices = 1;
 v.midiInManagerController.midiManager.voicesManager.monophonicMode = \normal;
 v.midiLearnModeEnabled = true;
 v.midiLearnModeEnabled = false;
+v.midiInManagerController.midiManager.updateMIDIControllerParameters(\pos, ccNum: 1);
 
+m = IannisMIDIMapPage(v);
+m.front();
 
 g.do({arg synth;
   synth.release;
