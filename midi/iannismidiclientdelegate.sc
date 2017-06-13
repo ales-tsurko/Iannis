@@ -1,4 +1,4 @@
-+ IannisMIDIInManagerController {
++ IannisSynthMIDIViewController {
 
   didDisableMIDIInput {
 
@@ -110,5 +110,26 @@
     });
 
     this.midiManager.map[\bend].permanent = true;
+  }
+
+  didAddMIDIControllerToMap {arg key, sourceUID, ccNum, channel;
+    this.addParameter(key, sourceUID, ccNum, channel);
+  }
+
+  didRemoveMIDIControllerFromMap {arg key;
+  }
+
+  didUpdateMIDIControllerInMap {arg key, sourceUID, ccNum, channel;
+    sourceUID!?{
+      parameters[key].sourceUID = sourceUID;
+    };
+
+    ccNum!?{
+      parameters[key].ccNum = ccNum;
+    };
+
+    channel!?{
+      parameters[key].channel = channel;
+    };
   }
 }

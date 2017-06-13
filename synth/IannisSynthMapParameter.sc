@@ -398,7 +398,7 @@ IannisSynthMapParameter : CompositeView {
       if (isOn) {
         var voice = this.parentSynthPage
         .parentSynthController
-        .midiInManagerController
+        .midiView
         .midiManager
         .voicesManager
         .getVoice(noteNumber);

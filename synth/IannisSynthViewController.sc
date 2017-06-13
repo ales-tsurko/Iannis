@@ -4,10 +4,10 @@ IannisSynthViewController : CompositeView {
   <node, 
   <metadata, 
   <presetsManagerController,
-  <midiInManagerController,
   <data,
   <synthDefName,
   <mapView,
+  <midiView,
   <selectedElementKey,
   <midiLearnModeEnabled = false,
   toolbarView, 
@@ -27,9 +27,11 @@ IannisSynthViewController : CompositeView {
     this.layout = VLayout();
     this.initToolbar();
     mapView = IannisSynthMapPage(this);
+    midiView = IannisSynthMIDIViewController(this);
     this.parse();
 
     this.pagesView.addPage("Map", mapView);
+    this.pagesView.addPage("MIDI", midiView);
     this.onClose = {this.cleanUp()};
   }
 
@@ -41,11 +43,10 @@ IannisSynthViewController : CompositeView {
     synthNameLabel.font = Font("Arial", 20);
 
     presetsManagerController = IannisPresetsManagerController(this);
-    midiInManagerController = IannisMIDIInManagerController(this);
 
     toolbarView.layout = VLayout(
       HLayout(synthNameLabel, nil),
-      HLayout(presetsManagerController, nil, midiInManagerController)
+      HLayout(presetsManagerController, nil)
     );
 
     this.layout.add(toolbarView);
@@ -60,7 +61,7 @@ IannisSynthViewController : CompositeView {
   }
 
   cleanUp {
-    midiInManagerController.cleanUp();
+    midiView.cleanUp();
     mapView.cleanUp();
     node.free();
   }
@@ -98,9 +99,9 @@ IannisSynthViewController : CompositeView {
     midiLearnModeEnabled = newValue;
 
     if (midiLearnModeEnabled) {
-      this.midiInManagerController.startLearn();
+      this.midiView.midiManager.startLearn();
     } {
-      this.midiInManagerController.stopLearn();
+      this.midiView.midiManager.stopLearn();
     };
   }
 

@@ -2,17 +2,20 @@ IannisMIDIManager {
   var <>map,
   <voicesManager,
   delegate, 
+  parentViewController,
   <selectedDevice,
   <selectedDisconnectedDevice,
   <midiInputEnabled,
-  <channel;
+  <channel,
+  learningFunc;
 
-  *new {arg delegate;
-    ^super.new.init(delegate);
+  *new {arg delegate, parentViewController;
+    ^super.new.init(delegate, parentViewController);
   }
 
-  init {arg aDelegate;
+  init {arg aDelegate, parent;
     delegate = aDelegate;
+    parentViewController = parent;
     midiInputEnabled = false;
     map = ();
     map[\cc] = ();
@@ -20,6 +23,7 @@ IannisMIDIManager {
     voicesManager = IannisVoicesManager();
 
     this.initMIDIClient();
+    this.initLearningFunc();
   }
 
   initMIDIClient {
@@ -31,6 +35,19 @@ IannisMIDIManager {
     } {
       IannisMIDIClient.init();
     };
+  }
+
+  initLearningFunc {
+    learningFunc = MIDIFunc.cc({arg val, num, chan, src;
+      var key = parentViewController.parentController.selectedElementKey;
+      var data = parentViewController.parentController.data;
+
+      key!?{
+        this.addMIDIControllerForParameter(key, src, num, chan+1, data);
+      }
+    });
+
+    learningFunc.disable();
   }
 
   selectedDevice_ {arg device;
@@ -75,9 +92,7 @@ IannisMIDIManager {
   addMIDIControllerForParameter {arg key, sourceUID, ccNum, channel, synthViewData;
     this.map[\cc][key]!?{
       if (this.map[\cc][key][\ccinfo] != [sourceUID, ccNum, channel]) {
-
-        this.map[\cc][key][\func].free();
-        this.map[\cc][key] = nil;
+        this.updateMIDIControllerParameters(key, sourceUID, ccNum, channel);
       };
 
       // return non-nil value
@@ -85,12 +100,19 @@ IannisMIDIManager {
     }??{
       // init new MIDI function for controller
       var newFunc = MIDIFunc.cc({arg val, num, chan, src;
-        if ([src, num, chan] == this.map[\cc][key][\ccinfo]) {
-          var spec = synthViewData[key][\spec];
-          var value = spec.asSpec.map(val/127);
-          AppClock.sched(0, {
-            synthViewData[key][\updater].value(value);
-          });
+        var ccInfo = this.map[\cc][key][\ccinfo];
+        var mapSrc = ccInfo[0];
+        var mapNum = ccInfo[1];
+        var mapChan = ccInfo[2];
+
+        if ([src, num] == [mapSrc, mapNum]) {
+          if ((mapChan == 0) || (mapChan == (chan+1))) {
+            var spec = synthViewData[key][\spec];
+            var value = spec.asSpec.map(val/127);
+            AppClock.sched(0, {
+              synthViewData[key][\updater].value(value);
+            });
+          };
         };
       });
 
@@ -98,12 +120,17 @@ IannisMIDIManager {
       this.map[\cc][key] = ();
       this.map[\cc][key][\func] = newFunc;
       this.map[\cc][key][\ccinfo] = [sourceUID, ccNum, channel];
+
+      // call delegate method
+      delegate.didAddMIDIControllerToMap(key, sourceUID, ccNum, channel);
     }
   }
 
   removeMIDIController {arg key;
     this.map[\cc][key][\func].free();
     this.map[\cc][key] = nil;
+
+    delegate.didRemoveMIDIControllerFromMap(key);
   }
 
   updateMIDIControllerParameters {arg key, sourceUID, ccNum, channel;
@@ -118,7 +145,23 @@ IannisMIDIManager {
 
       channel!?{
         this.map[\cc][key][\ccinfo][2] = channel;
-      }
+      };
+
+      delegate.didUpdateMIDIControllerInMap(
+        key, 
+        this.map[\cc][key][\ccinfo][0],
+        this.map[\cc][key][\ccinfo][1],
+        this.map[\cc][key][\ccinfo][2]
+      );
     };
   }
+
+  startLearn {
+    learningFunc.enable();
+  }
+
+  stopLearn {
+    learningFunc.disable();
+  }
+
 }
