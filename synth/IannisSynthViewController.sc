@@ -36,6 +36,9 @@ IannisSynthViewController : CompositeView {
   }
 
   initToolbar {
+    var learnButton = this.initMIDILearnModeButton();
+    var panicButton = this.initPanicButton();
+
     toolbarView = CompositeView();
     toolbarView.fixedHeight = 90;
 
@@ -45,11 +48,48 @@ IannisSynthViewController : CompositeView {
     presetsManagerController = IannisPresetsManagerController(this);
 
     toolbarView.layout = VLayout(
-      HLayout(synthNameLabel, nil),
-      HLayout(presetsManagerController, nil)
+      HLayout(
+        synthNameLabel, 
+        nil
+      ),
+
+      HLayout(
+        presetsManagerController,
+        nil,
+        learnButton,
+        panicButton
+      )
     );
 
     this.layout.add(toolbarView);
+  }
+
+  initPanicButton {
+    var panicButton = Button();
+    panicButton.fixedWidth = 24;
+    panicButton.fixedHeight = 24;
+    panicButton.states = [["!"]];
+
+    panicButton.action = {arg but;
+      if (but.value == 0) {
+        this.midiView.midiManager.reset();
+      };
+    };
+
+    ^panicButton;
+  }
+
+  initMIDILearnModeButton {
+    var button = Button();
+    button.fixedWidth = 72;
+    button.fixedHeight = 24;
+    button.states = [["Learn"], ["Learning"]];
+
+    button.action = {arg b;
+      this.midiLearnModeEnabled = b.value == 1;
+    };
+
+    ^button;
   }
 
   initPagesView {arg name;

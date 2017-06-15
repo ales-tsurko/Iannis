@@ -1,10 +1,11 @@
 IannisSynthMIDIViewController : CompositeView {
   var <parentController,
+  monophonicModePopup,
+  polyphonyNumberBox,
   <midiSourcesMenu, 
   <channelNumberBox,
   <midiInputEnabled, 
   <midiManager,
-  <panicButton,
   parameters;
 
   *new {arg parentController;
@@ -12,9 +13,13 @@ IannisSynthMIDIViewController : CompositeView {
   }
 
   init {arg viewController;
+    var polyphonyLabel, monophonicModeLabel,
+    midiInLabel, channelNumberLabel;
+
     parentController = viewController;
 
-    this.initPanicButton();
+    this.initPolyphonyNumberBox();
+    this.initMonophonicModePopup();
     this.initMIDISourcesMenu();
     this.initChannelNumberBox();
 
@@ -25,36 +30,61 @@ IannisSynthMIDIViewController : CompositeView {
 
     this.initParameters();
     
-    ~midiInLabel = StaticText();
-    ~midiInLabel.string = "Keyboard Input:";
-    ~channelNumberLabel = StaticText();
-    ~channelNumberLabel.string = "Keyboard Channel:";
+    // labels
+    polyphonyLabel = StaticText();
+    monophonicModeLabel = StaticText();
+    midiInLabel = StaticText();
+    channelNumberLabel = StaticText();
+    polyphonyLabel.string = "Polyphony:";
+    monophonicModeLabel.string = "Monophonic mode:";
+    midiInLabel.string = "Keyboard Input:";
+    channelNumberLabel.string = "Keyboard Channel:";
 
     this.layout = VLayout(
       HLayout(
-        ~midiInLabel,
-        midiSourcesMenu,
-        ~channelNumberLabel,
-        channelNumberBox,
-        nil,
-        panicButton
+        polyphonyLabel,
+        polyphonyNumberBox,
+        monophonicModeLabel,
+        monophonicModePopup,
+        nil
       ),
+
+      HLayout(
+        midiInLabel,
+        midiSourcesMenu,
+        channelNumberLabel,
+        channelNumberBox,
+        nil
+      ),
+
       nil
     );
 
     this.deleteOnClose = false;
   }
 
-  initPanicButton {
-    panicButton = Button();
-    panicButton.fixedWidth = 24;
-    panicButton.fixedHeight = 24;
-    panicButton.states = [["!"]];
+  initPolyphonyNumberBox {
+    polyphonyNumberBox = NumberBox();
+    polyphonyNumberBox.fixedWidth = 48;
+    polyphonyNumberBox.decimals = 0;
+    polyphonyNumberBox.clipLo = 1;
+    polyphonyNumberBox.clipHi = 128;
 
-    panicButton.action = {arg but;
-      if (but.value == 0) {
-        this.midiManager.reset();
-      };
+    polyphonyNumberBox.action = {arg nb;
+      this.midiManager
+      .voicesManager
+      .allowedNumberOfVoices = nb.value;
+    };
+  }
+
+  initMonophonicModePopup {
+    monophonicModePopup = PopUpMenu();
+    monophonicModePopup.items = ["Normal", "Legato"];
+
+    monophonicModePopup.action = {arg pp;
+      this.midiManager
+      .voicesManager
+      .monophonicMode = [\normal, \legato][pp.value];
     };
   }
 
