@@ -1,6 +1,5 @@
-IannisSynthMIDIViewController : CompositeView {
-  var <parentController,
-  monophonicModePopup,
+IannisSynthMIDIViewController : IannisSynthMapPage {
+  var monophonicModePopup,
   polyphonyNumberBox,
   <midiSourcesMenu, 
   <channelNumberBox,
@@ -8,15 +7,11 @@ IannisSynthMIDIViewController : CompositeView {
   <midiManager,
   parameters;
 
-  *new {arg parentController;
-    ^super.new.init(parentController);
-  }
-
   init {arg viewController;
     var polyphonyLabel, monophonicModeLabel,
     midiInLabel, channelNumberLabel;
 
-    parentController = viewController;
+    super.init(viewController);
 
     this.initPolyphonyNumberBox();
     this.initMonophonicModePopup();
@@ -40,27 +35,29 @@ IannisSynthMIDIViewController : CompositeView {
     midiInLabel.string = "Keyboard Input:";
     channelNumberLabel.string = "Keyboard Channel:";
 
-    this.layout = VLayout(
+    this.layout.insert(
       HLayout(
         polyphonyLabel,
         polyphonyNumberBox,
         monophonicModeLabel,
         monophonicModePopup,
         nil
-      ),
+      )
+    );
 
+    this.layout.insert(
       HLayout(
         midiInLabel,
         midiSourcesMenu,
         channelNumberLabel,
         channelNumberBox,
         nil
-      ),
-
-      nil
+      )
     );
 
-    this.deleteOnClose = false;
+    this.layout.add(
+      nil
+    );
   }
 
   initPolyphonyNumberBox {
@@ -137,14 +134,17 @@ IannisSynthMIDIViewController : CompositeView {
     this.midiManager.reset();
   }
 
+  // called by delegate
+  // don't call directly, use midiManager.addMIDIControllerForParameter
+  // instead
   addParameter {arg key, sourceUID, ccNum, channel;
     AppClock.sched(0, {
       var view = IannisMIDIParameterView(
         this,
         key,
-        sourceUID,
-        ccNum,
-        channel
+        sourceUID?0,
+        ccNum?1,
+        channel?0
       );
 
       parameters[key] = view;
@@ -159,6 +159,18 @@ IannisSynthMIDIViewController : CompositeView {
       parameters[key].close();
       parameters[key] = nil;
     });
+  }
+
+  // superclass method
+  addParameterForKey {arg key;
+    var synthData = this.parentSynthController.data;
+    this.midiManager.addMIDIControllerForParameter(
+      key, 
+      0, 
+      1,
+      0, 
+      synthData
+    );
   }
 }
 
@@ -257,7 +269,7 @@ IannisMIDIParameterView : CompositeView {
     // init value
     sourcesPopup.value = IannisMIDIClient.sources.detectIndex({arg d;
       d.uid == this.sourceUID;
-    });
+    })?0;
   }
 
   initCCNumPopup {
