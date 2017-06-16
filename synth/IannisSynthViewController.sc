@@ -662,10 +662,10 @@ IannisSynthViewController : CompositeView {
     view.action = {arg view;
       var presetValue;
 
-      this.mapView.parametersMaps[key]!?{
-        if (this.mapView.parametersMaps[key].isOn) {
+      this.mapView.parameters[key]!?{
+        if (this.mapView.parameters[key].isOn) {
           var aKey = \selfvalue;
-          var aNode = this.mapView.parametersMaps[key].proxiesGroup;
+          var aNode = this.mapView.parameters[key].proxiesGroup;
           presetValue = uiObj[\action].value(view, aKey, aNode, uiObj);
         } {
           presetValue = uiObj[\action].value(view, key, node, uiObj);
@@ -873,9 +873,9 @@ IannisSynthViewController : CompositeView {
       // unfortunatelly, it's impossible to write just
       // if (object.notNil && object.isOn) {  }
       // so:
-      this.mapView.parametersMaps[key]!?{
-        if (this.mapView.parametersMaps[key].isOn) {
-          this.mapView.parametersMaps[key].proxiesGroup.set(\selfvalue, value);
+      this.mapView.parameters[key]!?{
+        if (this.mapView.parameters[key].isOn) {
+          this.mapView.parameters[key].proxiesGroup.set(\selfvalue, value);
         } {
           node.set(key, value);
         }

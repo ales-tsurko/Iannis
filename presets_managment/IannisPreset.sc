@@ -1,5 +1,7 @@
 IannisPreset {
-  var <name, <data, <values, <map, <isFactory;
+  var <name, 
+  <data, 
+  <isFactory;
 
   *new {arg data;
     ^super.new.init(data);
@@ -7,8 +9,6 @@ IannisPreset {
 
   init {arg theData;
     data = theData;
-    values = theData[\values];
-    map = theData[\map]?();
     name = theData[\name];
     isFactory = theData[\isFactory];
   }
@@ -24,15 +24,37 @@ IannisPreset {
   }
 
   values_ {arg newValue;
-    values = newValue;
     data[\values] = newValue;
   }
 
+  values {
+    ^data[\values];
+  }
+
   map_ {arg newValue;
-    map = newValue;
     data[\map] = newValue;
   }
 
+  map {
+    data[\map]??{data[\map] = ()}
+    ^data[\map];
+  }
+
+  midi_ {arg newValue;
+    data[\midi] = newValue;
+  }
+
+  midi {
+    data[\midi]??{data[\midi] = ()};
+    ^data[\midi];
+  }
+
+  midiBindings {
+    this.midi[\cc]??{data[\midi][\cc] = ()};
+    ^data[\midi][\cc];
+  }
+
+  // map related
   initMapForKeyIfNeeded {arg key;
     this.map[key]??{this.map[key] = ()};
   }
@@ -41,8 +63,6 @@ IannisPreset {
     this.initMapForKeyIfNeeded(key);
 
     this.map[key][\code] = code;
-
-    data[\map] = map;
   }
 
   getMapCode {arg key;
@@ -54,8 +74,6 @@ IannisPreset {
     this.initMapForKeyIfNeeded(key);
 
     this.map[key][\xfade] = value;
-
-    data[\map] = map;
   }
 
   getMapXFade {arg key;
@@ -67,8 +85,6 @@ IannisPreset {
     this.initMapForKeyIfNeeded(key);
 
     this.map[key][\state] = value;
-
-    data[\map] = map;
   }
 
   getMapState {arg key;
@@ -80,8 +96,6 @@ IannisPreset {
     this.initMapForKeyIfNeeded(key);
 
     this.map[key][\mode] = value;
-
-    data[\map] = map;
   }
 
   getMapMode {arg key;
@@ -93,12 +107,46 @@ IannisPreset {
     this.initMapForKeyIfNeeded(mapKey);
     this.map[mapKey][\ui]??{this.map[mapKey][\ui] = ()};
     this.map[mapKey][\ui][parameterKey] = value;
-
-    data[\map] = map;
   }
 
   getMapUIValues {arg key;
     var output = this.map[key]!?{this.map[key][\ui]};
     ^output;
+  }
+
+  // MIDI related
+
+  addMIDIBinding {arg key, sourceUID, ccNum, channel;
+    this.midiBindings[key] = [sourceUID, ccNum, channel];
+  }
+
+  removeMIDIBinding {arg key;
+    this.midiBindings[key] = nil;
+  }
+
+  updateMIDIBinding {arg key, sourceUID, ccNum, channel;
+    sourceUID!?{
+      this.midiBindings[key][0] = sourceUID;
+    };
+
+    ccNum!?{
+      this.midiBindings[key][1] = ccNum;
+    };
+
+    channel!?{
+      this.midiBindings[key][2] = channel;
+    };
+  }
+
+  getMIDISourceUIDOfBinding {arg key;
+    ^this.midiBindings[key][0];
+  }
+
+  getMIDICCNumOfBinding {arg key;
+    ^this.midiBindings[key][1];
+  }
+
+  getMIDIChannelOfBinding {arg key;
+    ^this.midiBindings[key][2];
   }
 }

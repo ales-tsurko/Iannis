@@ -26,6 +26,24 @@ IannisMIDIManager {
     this.initLearningFunc();
   }
 
+  loadPreset {arg preset;
+    var synthData = parentViewController
+    .parentSynthController
+    .data;
+
+    preset.midiBindings!?{
+      preset.midiBindings.keysValuesDo({arg key, value;
+        this.addMIDIControllerForParameter(
+          key, 
+          value[0],
+          value[1], 
+          value[2],
+          synthData
+        );
+      });
+    };
+  }
+
   initMIDIClient {
     IannisMIDIClient.addOnUpdateSourcesAction({delegate.didUpdateMIDISources()});
 

@@ -38,11 +38,6 @@ g = IannisNodeGroup();
 v = IannisSynthViewController(g, \granulator).front();
 )
 
-v.midiView.midiManager.voicesManager.allowedNumberOfVoices = 4;
-v.midiView.midiManager.voicesManager.monophonicMode = \normal;
-v.midiLearnModeEnabled = true;
-v.midiLearnModeEnabled = false;
-
 g.do({arg synth;
   synth.release;
 });

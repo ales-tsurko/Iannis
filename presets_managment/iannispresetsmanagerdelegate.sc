@@ -36,6 +36,9 @@
 
     // update map view
     this.parentController.mapView.onLoadPreset(preset);
+
+    // update midi view
+    this.parentController.midiView.onLoadPreset(preset);
   }
 
   didWriteUserPresetsToDisk {

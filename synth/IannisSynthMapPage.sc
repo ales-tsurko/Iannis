@@ -3,7 +3,7 @@ IannisSynthMapPage : CompositeView {
   <>availableParameters,
   parametersMenuButton,
   <parametersListView, 
-  <parametersMaps,
+  <parameters,
   addParameterButton;
 
   *new {arg parentSynthController;
@@ -17,7 +17,7 @@ IannisSynthMapPage : CompositeView {
     .currentPreset;
 
     parentSynthController = parent;
-    parametersMaps = ();
+    parameters = ();
 
     this.initParametersMenuButton();
     this.initParametersListView();
@@ -49,7 +49,7 @@ IannisSynthMapPage : CompositeView {
 
     parametersListView = ListView();
 
-    this.fetchAvailableParametersFromPreset(currentPreset);
+    this.fetchAvailableParameters(currentPreset);
     parametersListView.items = this.availableParameters;
 
     parametersListView.selectionMode = \extended;
@@ -82,7 +82,7 @@ IannisSynthMapPage : CompositeView {
   }
 
   cleanUp {
-    parametersMaps.do({arg param;
+    parameters.do({arg param;
       param.proxiesGroup.free();
       param.proxies.do({arg np; np.free(0.1)});
     });
@@ -127,11 +127,11 @@ IannisSynthMapPage : CompositeView {
 
   addParameterForKey {arg key;
     var view = IannisSynthMapParameter(key, key.asString, this);
-    parametersMaps[key] = view;
+    parameters[key] = view;
     this.layout.insert(view, this.layout.children.size);
   }
 
-  fetchAvailableParametersFromPreset {arg preset;
+  fetchAvailableParameters {arg preset;
     preset!?{
       availableParameters = preset.values.keys.asArray;
       preset.map!?{
@@ -150,8 +150,8 @@ IannisSynthMapPage : CompositeView {
   onLoadPreset {arg preset;
     preset!?{
       // clean up view
-      parametersMaps.valuesDo({arg view; view.remove()});
-      this.fetchAvailableParametersFromPreset(preset);
+      parameters.valuesDo({arg view; view.remove()});
+      this.fetchAvailableParameters(preset);
 
       preset.map!?{
         preset.map.keysDo({arg key;
@@ -163,7 +163,7 @@ IannisSynthMapPage : CompositeView {
           };
         });
 
-        parametersMaps.valuesDo({arg view;
+        parameters.valuesDo({arg view;
           view.onLoadPreset(preset);
         });
       }
@@ -171,6 +171,6 @@ IannisSynthMapPage : CompositeView {
   }
 
   willCloseParameter {arg key;
-    parametersMaps[key] = nil;
+    parameters[key] = nil;
   }
 }

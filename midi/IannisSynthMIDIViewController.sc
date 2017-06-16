@@ -4,8 +4,7 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
   <midiSourcesMenu, 
   <channelNumberBox,
   <midiInputEnabled, 
-  <midiManager,
-  parameters;
+  <midiManager;
 
   init {arg viewController;
     var polyphonyLabel, monophonicModeLabel,
@@ -171,6 +170,38 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       0, 
       synthData
     );
+  }
+
+  fetchAvailableParameters {arg preset;
+    // availableParameters = this.midiManager
+    preset!?{
+      availableParameters = preset.values.keys.asArray;
+      preset.midiBindings!?{
+        preset.midiBindings.keysDo({arg key;
+          // make the parameter unavalaible if it's presented in the map
+          availableParameters.removeAt(
+            availableParameters.indexOf(key)
+          );
+        });
+      };
+    }??{
+      availableParameters = [];
+    };
+  }
+
+  onLoadPreset {arg preset;
+    preset!?{
+      // clean up view
+      parameters.keysDo({arg key;
+        this.removeParameter(key);
+      });
+
+      // load preset data
+      this.midiManager.loadPreset(preset);
+
+      // fetch available parameters
+      this.fetchAvailableParameters(preset);
+    }
   }
 }
 

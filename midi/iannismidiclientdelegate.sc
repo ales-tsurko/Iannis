@@ -58,7 +58,7 @@
           );
 
           // call map parameter bindings
-          this.parentSynthController.mapView.parametersMaps.do({arg map;
+          this.parentSynthController.mapView.parameters.do({arg map;
             map.onNoteOn(num, val);
           });
         }
@@ -75,7 +75,7 @@
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
           this.midiManager.voicesManager.noteOff(num);
           // call map parameter bindings
-          this.parentSynthController.mapView.parametersMaps.do({arg map;
+          this.parentSynthController.mapView.parameters.do({arg map;
             map.onNoteOff(num);
           });
         }
@@ -114,9 +114,22 @@
 
   didAddMIDIControllerToMap {arg key, sourceUID, ccNum, channel;
     this.addParameter(key, sourceUID, ccNum, channel);
+
+    // update preset
+    this.parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset
+    .addMIDIBinding(key, sourceUID, ccNum, channel);
   }
 
   didRemoveMIDIControllerFromMap {arg key;
+    // update preset
+    this.parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset
+    .removeMIDIBinding(key);
   }
 
   didUpdateMIDIControllerInMap {arg key, sourceUID, ccNum, channel;
@@ -131,5 +144,12 @@
     channel!?{
       parameters[key].channel = channel;
     };
+
+    // update preset
+    this.parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset
+    .updateMIDIBinding(key, sourceUID, ccNum, channel);
   }
 }
