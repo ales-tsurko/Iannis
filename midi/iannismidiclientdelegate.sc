@@ -44,7 +44,7 @@
     this.midiManager.map[\noteOn] = MIDIFunc.noteOn({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          var values = this.parentController.node.getState.getPairs;
+          var values = this.parentSynthController.node.getState.getPairs;
           var newVoice;
 
           values = values.addAll([\freq, num.midicps, \velocity, val]);
@@ -52,13 +52,13 @@
           // add it to the voices array
           this.midiManager.voicesManager.noteOn(
             num,
-            this.parentController.synthDefName,
+            this.parentSynthController.synthDefName,
             values,
-            this.parentController.node
+            this.parentSynthController.node
           );
 
           // call map parameter bindings
-          this.parentController.mapView.parametersMaps.do({arg map;
+          this.parentSynthController.mapView.parametersMaps.do({arg map;
             map.onNoteOn(num, val);
           });
         }
@@ -75,7 +75,7 @@
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
           this.midiManager.voicesManager.noteOff(num);
           // call map parameter bindings
-          this.parentController.mapView.parametersMaps.do({arg map;
+          this.parentSynthController.mapView.parametersMaps.do({arg map;
             map.onNoteOff(num);
           });
         }

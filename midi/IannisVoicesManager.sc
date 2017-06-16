@@ -106,7 +106,6 @@ IannisVoicesManager {
   pitchBend {arg value;
     var pbMidiValue = value.linlin(0, 127, pitchBendSemitones.neg, pitchBendSemitones);
     if (value == 64) {pbMidiValue = 0};
-    pbMidiValue.postln;
 
     forBy (0, voices.size, 2) {arg i;
       var keyNum = voices[i];

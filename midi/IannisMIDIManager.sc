@@ -39,8 +39,8 @@ IannisMIDIManager {
 
   initLearningFunc {
     learningFunc = MIDIFunc.cc({arg val, num, chan, src;
-      var key = parentViewController.parentController.selectedElementKey;
-      var data = parentViewController.parentController.data;
+      var key = parentViewController.parentSynthController.selectedElementKey;
+      var data = parentViewController.parentSynthController.data;
 
       key!?{
         this.addMIDIControllerForParameter(key, src, num, chan+1, data);
