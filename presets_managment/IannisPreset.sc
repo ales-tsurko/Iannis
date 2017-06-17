@@ -13,6 +13,10 @@ IannisPreset {
     isFactory = theData[\isFactory];
   }
 
+  loadExternalData {arg newData;
+    data = newData;
+  }
+
   name_ {arg newValue;
     name = newValue;
     data[\name] = newValue;

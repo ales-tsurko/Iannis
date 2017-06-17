@@ -47,8 +47,7 @@ IannisPresetsManager {
 
   updateSelectedPresetWithCurrentData {
     if (this.selectedPreset.isFactory.not) {
-      this.selectedPreset.values = this.currentPreset.values;
-      this.selectedPreset.map = this.currentPreset.map;
+      this.selectedPreset.loadExternalData(this.currentPreset.data);
       this.writeUserPresetsToDisk(this.userPresetsPath);
 
       delegate.didUpdateSelectedPresetWithCurrentData();
