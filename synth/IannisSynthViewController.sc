@@ -54,8 +54,9 @@ IannisSynthViewController : CompositeView {
       ),
 
       HLayout(
-        presetsManagerController,
-        nil,
+        [nil, stretch: 5],
+        [presetsManagerController, align: \center],
+        [nil, stretch: 1],
         learnButton,
         panicButton
       )
