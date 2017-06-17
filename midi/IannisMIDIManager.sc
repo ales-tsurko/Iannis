@@ -42,6 +42,14 @@ IannisMIDIManager {
         );
       });
     };
+
+    preset.getPolyphony()!?{
+      voicesManager.allowedNumberOfVoices = preset.getPolyphony();
+    };
+
+    preset.getMonophonicMode()!?{
+      voicesManager.monophonicMode = preset.getMonophonicMode();
+    };
   }
 
   initMIDIClient {

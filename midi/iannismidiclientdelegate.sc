@@ -133,16 +133,18 @@
   }
 
   didUpdateMIDIControllerInMap {arg key, sourceUID, ccNum, channel;
-    sourceUID!?{
-      parameters[key].sourceUID = sourceUID;
-    };
+    parameters[key]!?{
+      sourceUID!?{
+        parameters[key].sourceUID = sourceUID;
+      };
 
-    ccNum!?{
-      parameters[key].ccNum = ccNum;
-    };
+      ccNum!?{
+        parameters[key].ccNum = ccNum;
+      };
 
-    channel!?{
-      parameters[key].channel = channel;
+      channel!?{
+        parameters[key].channel = channel;
+      };
     };
 
     // update preset

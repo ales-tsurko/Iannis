@@ -70,6 +70,13 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       this.midiManager
       .voicesManager
       .allowedNumberOfVoices = nb.value;
+
+      // update preset
+      this.parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .setPolyphony(nb.value);
     };
   }
 
@@ -78,9 +85,17 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
     monophonicModePopup.items = ["Normal", "Legato"];
 
     monophonicModePopup.action = {arg pp;
+      var value = [\normal, \legato][pp.value];
       this.midiManager
       .voicesManager
-      .monophonicMode = [\normal, \legato][pp.value];
+      .monophonicMode = value;
+
+      // update preset
+      this.parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .setMonophonicMode(value);
     };
   }
 
@@ -199,6 +214,13 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       // load preset data
       this.midiManager.loadPreset(preset);
 
+      // update view for polyphony
+      polyphonyNumberBox
+      .valueAction = preset.getPolyphony()?16;
+
+      monophonicModePopup
+      .valueAction = if (\normal == (preset.getMonophonicMode()?\legato)) {0} {1};
+
       // fetch available parameters
       this.fetchAvailableParameters(preset);
     }
@@ -298,7 +320,7 @@ IannisMIDIParameterView : CompositeView {
     };
 
     // init value
-    sourcesPopup.value = IannisMIDIClient.sources.detectIndex({arg d;
+    sourcesPopup.valueAction = IannisMIDIClient.sources.detectIndex({arg d;
       d.uid == this.sourceUID;
     })?0;
   }

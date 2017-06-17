@@ -153,4 +153,21 @@ IannisPreset {
   getMIDIChannelOfBinding {arg key;
     ^this.midiBindings[key][2];
   }
+
+  // polyphony related
+  setPolyphony {arg numOfVoices;
+    this.midi[\polyphony] = numOfVoices;
+  }
+
+  setMonophonicMode {arg mode;
+    this.midi[\monophonicMode] = mode;
+  }
+
+  getPolyphony {
+    ^this.midi[\polyphony];
+  }
+
+  getMonophonicMode {
+    ^this.midi[\monophonicMode];
+  }
 }
