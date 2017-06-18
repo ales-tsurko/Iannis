@@ -167,12 +167,22 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
     });
   }
 
-  removeParameter {arg key;
-    AppClock.sched(0, {
-      this.midiManager.removeMIDIController(key);
-      parameters[key].close();
-      parameters[key] = nil;
-    });
+  removeParameter {arg key, showAlert = true;
+    parameters[key]!?{
+      var callBack = {
+        AppClock.sched(0, {
+          this.midiManager.removeMIDIController(key);
+          parameters[key].close();
+          parameters[key] = nil;
+        });
+      };
+
+      if (showAlert) {
+        this.showCloseAlert({callBack.value()}, key);
+      } {
+        callBack.value();
+      };
+    }
   }
 
   // superclass method
@@ -204,11 +214,58 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
     };
   }
 
+  showCloseAlert {arg okCallback, key;
+    var screenBounds = Window.screenBounds();
+    var rect = Rect(
+      screenBounds.width/2-125,
+      screenBounds.height/2-50,
+      250,
+      100
+    );
+    var window = Window("Warning", rect, false);
+    var message = StaticText();
+    var okButton = Button();
+    var cancelButton = Button();
+    window.alwaysOnTop = true;
+
+    message.string = "Are you really want to remove MIDI binding for '"++key++"'?";
+    message.align = \center;
+
+    okButton.fixedWidth = 90;
+    okButton.states = [["OK"]];
+    okButton.action = {arg but;
+      if (but.value == 0) {
+        okCallback.value();
+        window.close();
+      };
+    };
+
+    cancelButton.fixedWidth = 90;
+    cancelButton.states = [["Cancel"]];
+    cancelButton.action = {arg but;
+      if (but.value == 0) {
+        window.close();
+      };
+    };
+
+    window.layout = VLayout(
+      message,
+      HLayout(
+        nil,
+        cancelButton,
+        okButton,
+        nil
+      )
+    );
+
+    window.front();
+  }
+
   onLoadPreset {arg preset;
     preset!?{
       // clean up view
       parameters.keysDo({arg key;
-        this.removeParameter(key);
+        this.removeParameter(key, false);
       });
 
       // load preset data
@@ -285,9 +342,7 @@ IannisMIDIParameterView : CompositeView {
 
     closeButton.action = {arg but;
       if (but.value == 0) {
-        this.showCloseAlert({
-          parent.removeParameter(this.parameterKey);
-        });
+        parent.removeParameter(this.parameterKey);
       }
     };
   }
@@ -361,53 +416,6 @@ IannisMIDIParameterView : CompositeView {
     };
 
     channelNumberBox.value = this.channel;
-  }
-
-  showCloseAlert {arg okCallback;
-    var screenBounds = Window.screenBounds();
-    var rect = Rect(
-      screenBounds.width/2-125,
-      screenBounds.height/2-50,
-      250,
-      100
-    );
-    var window = Window("Warning", rect, false);
-    var message = StaticText();
-    var okButton = Button();
-    var cancelButton = Button();
-    window.alwaysOnTop = true;
-
-    message.string = "Are you really want to remove this MIDI binding?";
-    message.align = \center;
-
-    okButton.fixedWidth = 90;
-    okButton.states = [["OK"]];
-    okButton.action = {arg but;
-      if (but.value == 0) {
-        okCallback.value();
-        window.close();
-      };
-    };
-
-    cancelButton.fixedWidth = 90;
-    cancelButton.states = [["Cancel"]];
-    cancelButton.action = {arg but;
-      if (but.value == 0) {
-        window.close();
-      };
-    };
-
-    window.layout = VLayout(
-      message,
-      HLayout(
-        nil,
-        cancelButton,
-        okButton,
-        nil
-      )
-    );
-
-    window.front();
   }
 
   sourceUID_ {arg newValue;

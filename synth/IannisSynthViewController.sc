@@ -55,7 +55,7 @@ IannisSynthViewController : CompositeView {
 
       HLayout(
         [nil, stretch: 5],
-        [presetsManagerController, align: \center],
+        presetsManagerController,
         [nil, stretch: 1],
         learnButton,
         panicButton
@@ -164,9 +164,18 @@ IannisSynthViewController : CompositeView {
       };
 
       view.focusLostAction = {arg v;
-        v.background = previousColor?Color.clear();
-        selectedElementKey = nil;
-        previousColor = nil;
+        if (this.midiLearnModeEnabled) {
+          v.background = previousColor?Color.clear();
+          selectedElementKey = nil;
+          previousColor = nil;
+        };
+      };
+
+      // remove from map with backspace
+      view.keyDownAction = {arg view, char, mod, unicode, keycode, keyNum;
+        if (keyNum == 0x01000003 && this.midiLearnModeEnabled) {
+          this.midiView.removeParameter(key);
+        }
       };
     });
   }
