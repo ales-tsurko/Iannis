@@ -2,7 +2,6 @@ IannisSynthMapParameter : CompositeView {
   var <key,
   <name,
   <parentSynthPage,
-  <parameterBinder,
   <proxies,
   <proxiesGroup,
   nameLabel,
@@ -24,7 +23,6 @@ IannisSynthMapParameter : CompositeView {
     key = aKey;
     name = aName;
     parentSynthPage = aDelegate;
-    parameterBinder = ();
     isOn = false;
 
     proxiesGroup = Group();
@@ -83,8 +81,9 @@ IannisSynthMapParameter : CompositeView {
     closeButton.action = {arg but;
       if (but.value == 0) {
         this.showCloseAlert({
-          var preset = this.parentSynthPage
-          .parentSynthController
+          var parentSynthController = this.parentSynthPage
+          .parentSynthController;
+          var preset = parentSynthController
           .presetsManagerController
           .presetsManager
           .currentPreset;
@@ -92,8 +91,7 @@ IannisSynthMapParameter : CompositeView {
           var val = preset.values[key];
 
           // assign the source value
-          this.parentSynthPage
-          .parentSynthController
+          parentSynthController
           .data[key][\updater]
           .value(val);
 
@@ -373,7 +371,6 @@ IannisSynthMapParameter : CompositeView {
         // loading of the preset values done in
         // the parameter UI creation method (makeParameterView)
         this.loadPresetDataForUserDefinedUI(preset);
-
       };
     };
   }
@@ -383,8 +380,13 @@ IannisSynthMapParameter : CompositeView {
       var obj = preset.getMapUIValues(key);
 
       obj.keysValuesDo({arg key, value;
-        this.parameterBinder[key]!?{
-          this.parameterBinder[key].value(value);
+        var dataKey = (this.key++'.'++key).asSymbol;
+        this.parentSynthPage
+        .parentSynthController
+        .data[dataKey]!?{
+          this.parentSynthPage
+          .parentSynthController
+          .data[dataKey][\updater].value(value);
         };
       });
     };
@@ -419,6 +421,17 @@ IannisSynthMapParameter : CompositeView {
     this.proxies[noteNumber].set(\selfgate, 0);
     this.proxies[noteNumber].set(\selfvelocity, 0);
   }
+
+  didFinishParsing {
+    var parentSynthController = this.parentSynthPage
+    .parentSynthController;
+    var preset = parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+
+    parentSynthController.midiView.midiManager.loadPreset(preset);
+  }
 }
 
 
@@ -441,6 +454,8 @@ IannisSynthMapParameter : CompositeView {
         this.parseComment(comment);
       }
     });
+
+    this.didFinishParsing();
   }
 
   parseComment {arg commentStr;
@@ -479,6 +494,14 @@ IannisSynthMapParameter : CompositeView {
   parseParameter {arg parameterStr;
     var view;
     var nameAndParamSplit = parameterStr.split($:);
+    var fillData = {arg key, view, spec;
+      var dataKey = (this.key++'.'++key).asSymbol;
+      var parentSynthController = this.parentSynthPage
+      .parentSynthController;
+      parentSynthController.data[dataKey]??{parentSynthController.data[dataKey] = ()};
+      parentSynthController.data[dataKey][\view] = view;
+      parentSynthController.data[dataKey][\spec] = spec;
+    };
 
     case
     // the parameter has name
@@ -487,12 +510,14 @@ IannisSynthMapParameter : CompositeView {
       var key = nameAndParamSplit[1].findRegexp("\\w+")[0][1].asSymbol;
       var spec = this.parseSpec(nameAndParamSplit[1]);
       view = this.makeParameterView(name, key, spec);
+      fillData.value(key, view, spec);
     }
     // the parameter has no name
     {nameAndParamSplit.size == 1} {
       var key = nameAndParamSplit[0].findRegexp("\\w+")[0][1].asSymbol;
       var spec = this.parseSpec(nameAndParamSplit[0]);
       view = this.makeParameterView(nil, key, spec);
+      fillData.value(key, view, spec);
     }
     // else
     {true} {
@@ -553,7 +578,6 @@ IannisSynthMapParameter : CompositeView {
     view.fixedHeight = 130;
     content.layout = HLayout(nil);
     content.fixedHeight = 130;
-    // content.background = Color.gray(0.77);
 
     ^view;
   }
@@ -573,6 +597,10 @@ IannisSynthMapParameter : CompositeView {
     .presetsManagerController
     .presetsManager
     .selectedPreset;
+    var previousColor;
+    var dataKey = (this.key++'.'++key).asSymbol;
+    var parentSynthController = this.parentSynthPage
+    .parentSynthController;
 
     label.string = name?"";
     label.align = \center;
@@ -583,15 +611,16 @@ IannisSynthMapParameter : CompositeView {
 
     // apply spec and action to knob
     knob.action = {arg k;
-      var preset;
-      var newValue = spec.map(k.value);
-      proxiesGroup.set(key, newValue);
+      k.value!?{
+        var newValue = spec.map(k.value);
+        proxiesGroup.set(key, newValue);
 
-      valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
+        valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
 
-      // update preset
-      currentPreset!?{
-        currentPreset.setMapUIValueForKey(this.key, key, newValue);
+        // update preset
+        currentPreset!?{
+          currentPreset.setMapUIValueForKey(this.key, key, newValue);
+        };
       };
     };
 
@@ -609,11 +638,22 @@ IannisSynthMapParameter : CompositeView {
     };
 
     // parameter bindings
-    this.parameterBinder[key] = {arg value;
+    parentSynthController
+    .data[dataKey]??{parentSynthController.data[dataKey] = ()};
+
+    parentSynthController
+    .data[dataKey][\updater] = {arg value;
       knob.valueAction = spec.unmap(value.value());
     };
 
     view.layout = VLayout(label, HLayout(knob), valueLabel);
+
+    // midi learn related
+    parentSynthController
+    .prepareViewForMIDILearn(
+      view, 
+      dataKey
+    );
 
     ^view;
   }

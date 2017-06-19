@@ -193,25 +193,38 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       0, 
       1,
       0, 
-      synthData
+      synthData[key][\updater],
+      synthData[key][\spec]
     );
   }
 
   fetchAvailableParameters {arg preset;
-    // availableParameters = this.midiManager
-    preset!?{
-      availableParameters = preset.values.keys.asArray;
-      preset.midiBindings!?{
-        preset.midiBindings.keysDo({arg key;
-          // make the parameter unavalaible if it's presented in the map
-          availableParameters.removeAt(
-            availableParameters.indexOf(key)
-          );
-        });
-      };
+    this.midiManager!?{
+      availableParameters = this.parentSynthController.data.keys.asArray;
+
+      // make the parameter unavalaible if it's presented in the map
+      // TODO: do it more efficiently
+      this.midiManager.map[\cc].keysDo({arg key;
+        availableParameters.removeAt(
+          availableParameters.indexOf(key)
+        );
+      });
     }??{
       availableParameters = [];
-    };
+    }
+    // preset!?{
+      // availableParameters = this.midiManager.map[\cc].keys.asArray;
+      // preset.midiBindings!?{
+        // preset.midiBindings.keysDo({arg key;
+          // // make the parameter unavalaible if it's presented in the map
+          // availableParameters.removeAt(
+            // availableParameters.indexOf(key)
+          // );
+        // });
+      // };
+    // }??{
+      // availableParameters = [];
+    // };
   }
 
   showCloseAlert {arg okCallback, key;

@@ -8,7 +8,7 @@ IannisSynthViewController : CompositeView {
   <synthDefName,
   <mapView,
   <midiView,
-  <selectedElementKey,
+  <>selectedElementKey,
   <midiLearnModeEnabled = false,
   toolbarView, 
   synthNameLabel;
@@ -152,32 +152,36 @@ IannisSynthViewController : CompositeView {
     // midi learn related
     this.data.keysDo({arg key;
       var view = this.data[key][\view];
-      var previousColor;
-      view.canFocus = true;
-      
-      view.focusGainedAction = {arg v;
-        if (this.midiLearnModeEnabled) {
-          previousColor = v.background;
-          v.background = Color.gray(0.9);
-          selectedElementKey = key; 
-        };
-      };
-
-      view.focusLostAction = {arg v;
-        if (this.midiLearnModeEnabled) {
-          v.background = previousColor?Color.clear();
-          selectedElementKey = nil;
-          previousColor = nil;
-        };
-      };
-
-      // remove from map with backspace
-      view.keyDownAction = {arg view, char, mod, unicode, keycode, keyNum;
-        if (keyNum == 0x01000003 && this.midiLearnModeEnabled) {
-          this.midiView.removeParameter(key);
-        }
-      };
+      this.prepareViewForMIDILearn(view, key); 
     });
+  }
+
+  prepareViewForMIDILearn {arg view, key;
+    var previousColor;
+    view.canFocus = true;
+
+    view.focusGainedAction = {arg v;
+      if (this.midiLearnModeEnabled) {
+        previousColor = v.background;
+        v.background = Color.gray(0.9);
+        selectedElementKey = key; 
+      };
+    };
+
+    view.focusLostAction = {arg v;
+      if (this.midiLearnModeEnabled) {
+        v.background = previousColor?Color.clear();
+        selectedElementKey = nil;
+        previousColor = nil;
+      };
+    };
+
+    // remove from map with backspace
+    view.keyDownAction = {arg view, char, mod, unicode, keycode, keyNum;
+      if (keyNum == 0x01000003 && this.midiLearnModeEnabled) {
+        this.midiView.removeParameter(key);
+      }
+    };
   }
 }
 

@@ -33,13 +33,16 @@ IannisMIDIManager {
 
     preset.midiBindings!?{
       preset.midiBindings.keysValuesDo({arg key, value;
-        this.addMIDIControllerForParameter(
-          key, 
-          value[0],
-          value[1], 
-          value[2],
-          synthData
-        );
+        synthData[key]!?{
+          this.addMIDIControllerForParameter(
+            key, 
+            value[0],
+            value[1], 
+            value[2],
+            synthData[key][\updater],
+            synthData[key][\spec]
+          );
+        };
       });
     };
 
@@ -69,7 +72,14 @@ IannisMIDIManager {
       var data = parentViewController.parentSynthController.data;
 
       key!?{
-        this.addMIDIControllerForParameter(key, src, num, chan+1, data);
+        this.addMIDIControllerForParameter(
+          key, 
+          src,
+          num, 
+          chan+1, 
+          data[key][\updater],
+          data[key][\spec]
+        );
       }
     });
 
@@ -115,7 +125,7 @@ IannisMIDIManager {
     this.voicesManager.releaseAll();
   }
 
-  addMIDIControllerForParameter {arg key, sourceUID, ccNum, channel, synthViewData;
+  addMIDIControllerForParameter {arg key, sourceUID, ccNum, channel, updater, spec;
     this.map[\cc][key]!?{
       if (this.map[\cc][key][\ccinfo] != [sourceUID, ccNum, channel]) {
         this.updateMIDIControllerParameters(key, sourceUID, ccNum, channel);
@@ -133,10 +143,9 @@ IannisMIDIManager {
 
         if ([src, num] == [mapSrc, mapNum]) {
           if ((mapChan == 0) || (mapChan == (chan+1))) {
-            var spec = synthViewData[key][\spec];
             var value = spec.asSpec.map(val/127);
             AppClock.sched(0, {
-              synthViewData[key][\updater].value(value);
+              updater.value(value);
             });
           };
         };

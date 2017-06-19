@@ -150,7 +150,10 @@ IannisSynthMapPage : CompositeView {
   onLoadPreset {arg preset;
     preset!?{
       // clean up view
-      parameters.valuesDo({arg view; view.remove()});
+      parameters.do({arg view; 
+        view.remove();
+      });
+
       this.fetchAvailableParameters(preset);
 
       preset.map!?{
@@ -163,7 +166,7 @@ IannisSynthMapPage : CompositeView {
           };
         });
 
-        parameters.valuesDo({arg view;
+        parameters.do({arg view;
           view.onLoadPreset(preset);
         });
       }
