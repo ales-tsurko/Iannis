@@ -169,7 +169,7 @@ IannisSynthMapPage : CompositeView {
         parameters.do({arg view;
           view.onLoadPreset(preset);
         });
-      }
+      };
     }
   }
 

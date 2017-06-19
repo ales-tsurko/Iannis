@@ -187,14 +187,12 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
 
   // superclass method
   addParameterForKey {arg key;
-    var synthData = this.parentSynthController.data;
     this.midiManager.addMIDIControllerForParameter(
       key, 
       0, 
       1,
       0, 
-      synthData[key][\updater],
-      synthData[key][\spec]
+      this.parentSynthController.data
     );
   }
 
@@ -205,9 +203,8 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       // make the parameter unavalaible if it's presented in the map
       // TODO: do it more efficiently
       this.midiManager.map[\cc].keysDo({arg key;
-        availableParameters.removeAt(
-          availableParameters.indexOf(key)
-        );
+        var index = availableParameters.indexOf(key);
+        index!?{availableParameters.removeAt(index)};
       });
     }??{
       availableParameters = [];

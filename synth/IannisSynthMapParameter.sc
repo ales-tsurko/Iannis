@@ -381,8 +381,10 @@ IannisSynthMapParameter : CompositeView {
 
       obj.keysValuesDo({arg key, value;
         var dataKey = (this.key++'.'++key).asSymbol;
-        this.parentSynthPage
-        .parentSynthController
+        var parentSynthController = this.parentSynthPage
+        .parentSynthController;
+
+        parentSynthController
         .data[dataKey]!?{
           this.parentSynthPage
           .parentSynthController
@@ -390,6 +392,17 @@ IannisSynthMapParameter : CompositeView {
         };
       });
     };
+  }
+  
+  didFinishParsing {
+    // var parentSynthController = this.parentSynthPage
+    // .parentSynthController;
+    // var preset = parentSynthController
+    // .presetsManagerController
+    // .presetsManager
+    // .currentPreset;
+    // parentSynthController.midiView.onLoadPreset(preset);
+    // preset.midiBindings().postln;
   }
 
   // MIDI
@@ -420,17 +433,6 @@ IannisSynthMapParameter : CompositeView {
     // send API keys to the proxy
     this.proxies[noteNumber].set(\selfgate, 0);
     this.proxies[noteNumber].set(\selfvelocity, 0);
-  }
-
-  didFinishParsing {
-    var parentSynthController = this.parentSynthPage
-    .parentSynthController;
-    var preset = parentSynthController
-    .presetsManagerController
-    .presetsManager
-    .currentPreset;
-
-    parentSynthController.midiView.midiManager.loadPreset(preset);
   }
 }
 
