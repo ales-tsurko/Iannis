@@ -147,6 +147,17 @@ IannisMIDIManager {
                 synthData[key][\updater].value(value);
               });
             };
+            // display as available
+            parentViewController
+            .parentSynthController
+            .midiView
+            .setAvailable(key, true);
+          }??{
+            // display as unavalaible
+            parentViewController
+            .parentSynthController
+            .midiView
+            .setAvailable(key, false);
           };
         };
       });

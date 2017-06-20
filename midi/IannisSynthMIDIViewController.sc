@@ -104,7 +104,7 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
     midiSourcesMenu.fixedWidth = 100;
 
     midiSourcesMenu.action = {arg popup;
-      if (popup.value.notNil) {
+      popup.value!?{
         this.midiManager.selectedDevice = IannisMIDIClient.sources[popup.value-1];
         this.midiManager.reset();
       }
@@ -182,6 +182,14 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
       } {
         callBack.value();
       };
+    }
+  }
+
+  setAvailable {arg key, value;
+    parameters[key]!?{
+      AppClock.sched(0, {
+        parameters[key].avalaible = value;
+      });
     }
   }
 
@@ -305,12 +313,13 @@ IannisMIDIParameterView : CompositeView {
   <channel,
   closeButton,
   parameterLabel,
-  sourcesPopup, 
+  <sourcesPopup, 
   sourcesLabel,
   ccNumPopup, 
   ccLabel,
   channelNumberBox, 
-  channelLabel;
+  channelLabel,
+  <avalaible = true;
 
   *new {arg parent, parameterKey, sourceUID, ccNum, channel;
     ^super.new.init(parent, parameterKey, sourceUID, ccNum, channel);
@@ -363,31 +372,30 @@ IannisMIDIParameterView : CompositeView {
   }
 
   initSourcesPopup {
-    var sources = IannisMIDIClient.sources;
-    var names = sources.collect(_.name);
+    var names = IannisMIDIClient.sources.collect(_.name);
+    var defaultIndex;
+    names = names.insert(0, "None");
     sourcesLabel = StaticText();
     sourcesLabel.string = "Input:";
     sourcesPopup = PopUpMenu();
     sourcesPopup.items = names;
 
-    // FIXME:
-    // конфигурация подключеных устройств может измениться,
-    // что должно отражаться в меню доступных устройств,
-    // иначе при изменении конфигурации, пользователь
-    // будет работать с некорректными данными (то есть это
-    // потенциальный баг)
-
     sourcesPopup.action = {arg popup;
-      sourceUID = sources[popup.value].uid;
-      // change the source
-      parent.midiManager
-      .updateMIDIControllerParameters(this.parameterKey, sourceUID);
+      popup.value!?{
+        var value = IannisMIDIClient.sources[popup.value-1];
+        sourceUID = value!?{value.uid}??{0};
+
+        // change the source
+        parent.midiManager
+        .updateMIDIControllerParameters(this.parameterKey, sourceUID);
+      };
     };
 
     // init value
-    sourcesPopup.valueAction = IannisMIDIClient.sources.detectIndex({arg d;
+    defaultIndex = IannisMIDIClient.sources.detectIndex({arg d;
       d.uid == this.sourceUID;
-    })?0;
+    });
+    sourcesPopup.valueAction = defaultIndex!?{defaultIndex+1}??{0};
   }
 
   initCCNumPopup {
@@ -431,9 +439,10 @@ IannisMIDIParameterView : CompositeView {
   sourceUID_ {arg newValue;
     sourceUID = newValue;
     AppClock.sched(0, {
-      sourcesPopup.value = IannisMIDIClient.sources.detectIndex({arg d;
+      var index = IannisMIDIClient.sources.detectIndex({arg d;
         d.uid == newValue;
       });
+      sourcesPopup.value = index!?{index+1}??{0};
     });
   }
 
@@ -449,5 +458,15 @@ IannisMIDIParameterView : CompositeView {
     AppClock.sched(0, {
       channelNumberBox.value = newValue;
     });
+  }
+
+  avalaible_ {arg newValue;
+    avalaible = newValue;
+
+    if (avalaible) {
+      parameterLabel.stringColor = Color.black();
+    } {
+      parameterLabel.stringColor = Color.red();
+    };
   }
 }

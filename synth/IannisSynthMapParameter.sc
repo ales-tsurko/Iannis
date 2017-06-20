@@ -26,8 +26,6 @@ IannisSynthMapParameter : CompositeView {
     isOn = false;
 
     proxiesGroup = Group();
-    // ignore CmdPeriod
-    CmdPeriod.remove(proxiesGroup);
 
     // 127.do is faster than Array.fill
     proxies = [];
@@ -35,9 +33,6 @@ IannisSynthMapParameter : CompositeView {
       var proxy = NodeProxy();
       proxies = proxies.add(proxy);
       proxy.group = proxiesGroup;
-
-      // ignore CmdPeriod
-      CmdPeriod.remove(proxy);
     });
 
     this.initNameLabel();

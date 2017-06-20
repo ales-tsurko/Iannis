@@ -1,45 +1,5 @@
 + IannisSynthMIDIViewController {
 
-  didDisableMIDIInput {
-
-  }
-
-  didUpdateMIDIChannel {arg newValue;
-
-  }
-
-  didSelectNewDevice {arg device;
-    this.midiManager.map[\noteOn].free();
-    this.midiManager.map[\noteOff].free();
-    this.midiManager.map[\sustainPedal].free();
-    this.midiManager.map[\bend].free();
-
-    if (this.midiManager.midiInputEnabled) {
-      // NoteON
-      this.initNoteOnMIDIFunc();
-
-      // NoteOFF
-      this.initNoteOffMIDIFunc();
-
-      // Sustain Pedal
-      this.initSustainPedalMIDIFunc();
-
-      // Pitch Bend
-      this.initPitchBendMIDIFunc();
-    }
-  }
-
-  didUpdateMIDISources {
-    var devicesNames = IannisMIDIClient.sources.collect(_.name);
-    midiSourcesMenu.items = devicesNames.insert(0, "None");
-
-    // autoselect previously disconnected device or select None
-    // on diconnection
-    this.midiManager!?{
-      midiSourcesMenu.valueAction = this.midiManager.selectedDeviceIndex;
-    };
-  }
-
   initNoteOnMIDIFunc {
     this.midiManager.map[\noteOn] = MIDIFunc.noteOn({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
@@ -110,6 +70,56 @@
     });
 
     this.midiManager.map[\bend].permanent = true;
+  }
+
+  didDisableMIDIInput {
+
+  }
+
+  didUpdateMIDIChannel {arg newValue;
+
+  }
+
+  didSelectNewDevice {arg device;
+    this.midiManager.map[\noteOn].free();
+    this.midiManager.map[\noteOff].free();
+    this.midiManager.map[\sustainPedal].free();
+    this.midiManager.map[\bend].free();
+
+    if (this.midiManager.midiInputEnabled) {
+      // NoteON
+      this.initNoteOnMIDIFunc();
+
+      // NoteOFF
+      this.initNoteOffMIDIFunc();
+
+      // Sustain Pedal
+      this.initSustainPedalMIDIFunc();
+
+      // Pitch Bend
+      this.initPitchBendMIDIFunc();
+    }
+  }
+
+  didUpdateMIDISources {
+    var devicesNames = IannisMIDIClient.sources.collect(_.name);
+    devicesNames = devicesNames.insert(0, "None");
+
+    // keyboard
+    midiSourcesMenu.items = devicesNames;
+
+    // parameters
+    parameters.do({arg view;
+      view.sourcesPopup.items = devicesNames;
+      // self assign to fire an event
+      view.sourceUID = view.sourceUID; 
+    });
+
+    // autoselect previously disconnected device or select None
+    // on diconnection
+    this.midiManager!?{
+      midiSourcesMenu.valueAction = this.midiManager.selectedDeviceIndex;
+    };
   }
 
   didAddMIDIControllerToMap {arg key, sourceUID, ccNum, channel;
