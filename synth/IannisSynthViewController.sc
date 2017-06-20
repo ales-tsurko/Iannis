@@ -628,6 +628,8 @@ IannisSynthViewController : CompositeView {
       popup.valueAction = value.value();
     };
 
+    this.data[key][\spec] = ControlSpec(0, popup.items.size-1, 0, 1);
+
     view.layout = VLayout(label, popup);
 
     this.data[key][\view] = view;

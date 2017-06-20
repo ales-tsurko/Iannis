@@ -74,8 +74,7 @@ IannisMIDIManager {
           src,
           num, 
           chan+1, 
-          data[key][\updater],
-          data[key][\spec]
+          data
         );
       }
     });
