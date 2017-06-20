@@ -378,13 +378,39 @@ IannisSynthViewController : CompositeView {
       };
     };
 
+    //
     // parameter bindings
+    //
     this.data[key][\updater] = {arg value;
       var newValue = value.value();
       newRecorder.samplePath = newValue;
     };
 
     this.data[key][\view] = newRecorder;
+
+    // record button
+    this.data[(key++'.recorder.record').asSymbol] = ();
+    
+    this.data[(key++'.recorder.record').asSymbol][\view] = newRecorder
+    .recordButton;
+
+    this.data[(key++'.recorder.record').asSymbol][\updater] = {arg value;
+      newRecorder.recordButton.valueAction = value.value();
+    };
+
+    this.data[(key++'.recorder.record').asSymbol][\spec] = ControlSpec(0, 1, 0, 1);
+    
+    // play button
+    this.data[(key++'.recorder.play').asSymbol] = ();
+
+    this.data[(key++'.recorder.play').asSymbol][\view] = newRecorder
+    .playButton;
+
+    this.data[(key++'.recorder.play').asSymbol][\updater] = {arg value;
+      newRecorder.playButton.valueAction = value.value();
+    };
+
+    this.data[(key++'.recorder.play').asSymbol][\spec] = ControlSpec(0, 1, 0, 1);
 
     ^newRecorder;
   }
@@ -415,6 +441,8 @@ IannisSynthViewController : CompositeView {
     this.data[key][\updater] = {arg value;
       button.valueAction = value.value();
     };
+
+    this.data[key][\spec] = ControlSpec(0, 1, 0, 1);
 
     // layout
     view.layout = VLayout(button);
@@ -528,7 +556,7 @@ IannisSynthViewController : CompositeView {
       slider.hi = spec.asSpec.unmap(value.value[1]);
 
       // don't know why, but it's working only when calling twice
-      // in other case the first value that was set, becomes a clipped
+      // in other case the first value, that was set, becomes a clipped
       // version of the same parameter of the previous preset... looks
       // like a bug in the RangeSlider. Also it's maybe a cause of calling
       // tasks synchronously. Anyway, here it's working and it's call 
