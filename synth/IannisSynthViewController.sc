@@ -471,8 +471,12 @@ IannisSynthViewController : CompositeView {
 
     // parameter bindings
     this.data[key][\updater] = {arg value;
-      if (value.isKindOf(Boolean)) {
-        check.valueAction = value.value();
+      case 
+      {value.isKindOf(Boolean)} {
+        check.valueAction = value;
+      }
+      {value.isKindOf(Number)} {
+        check.valueAction = value.asBoolean;
       };
     };
 
@@ -574,6 +578,8 @@ IannisSynthViewController : CompositeView {
         );
       };
     };
+
+    
 
     // layout
     if (orientation == \vertical) {
