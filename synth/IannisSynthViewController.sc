@@ -583,7 +583,7 @@ IannisSynthViewController : CompositeView {
     this.data[(key++'.range.lo').asSymbol] = ();
     
     this.data[(key++'.range.lo').asSymbol][\updater] = {arg value;
-      slider.activeLo = value.value();
+      slider.activeLo = spec.asSpec.unmap(value.value());
     };
 
     this.data[(key++'.range.lo').asSymbol][\spec] = spec;
@@ -592,7 +592,7 @@ IannisSynthViewController : CompositeView {
     this.data[(key++'.range.hi').asSymbol] = ();
     
     this.data[(key++'.range.hi').asSymbol][\updater] = {arg value;
-      slider.activeHi = value.value();
+      slider.activeHi = spec.asSpec.unmap(value.value());
     };
 
     this.data[(key++'.range.hi').asSymbol][\spec] = spec;
@@ -644,11 +644,30 @@ IannisSynthViewController : CompositeView {
       };
     };
 
+    // data bindings
     this.data[key][\updater] = {arg value;
       if (value.isKindOf(Collection)) {
         xy.setXYActive(value.value[0], value.value[1]);
       };
     };
+
+    // X
+    this.data[(key++'.xy.x').asSymbol] = ();
+
+    this.data[(key++'.xy.x').asSymbol][\updater] = {arg value;
+      xy.activex = spec[0].asSpec.unmap(value);
+    };
+
+    this.data[(key++'.xy.x').asSymbol][\spec] = spec[0];
+
+    // Y
+    this.data[(key++'.xy.y').asSymbol] = ();
+
+    this.data[(key++'.xy.y').asSymbol][\updater] = {arg value;
+      xy.activey = spec[1].asSpec.unmap(value);
+    };
+
+    this.data[(key++'.xy.y').asSymbol][\spec] = spec[1];
 
     // layout
     view.layout = VLayout(label, xy, valueLabel);
