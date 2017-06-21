@@ -87,7 +87,7 @@ s.boot;
                       (
                         key: \undefined_3,
                         name: "Parameter 2",
-                        spec: ControlSpec(0, 255, \exp, 1, 4, "n"),
+                        spec: ControlSpec(0, 255, \lin, 1, 4, "n"),
                         ui: (
                           type: \number
                         )

@@ -20,7 +20,7 @@ o = [
 	Array.prNew(12),  "Is true?",  Event.prNew,  Array.prNew(4),  
 	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
 	"s",  Event.prNew,  Array.prNew(4),  "Parameter 1",  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
 	"n",  Event.prNew,  Array.prNew(4),  "Parameter 2",  
 	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
 	"s",  Event.prNew,  Array.prNew(4),  "Parameter 3",  
@@ -348,7 +348,7 @@ p = [
 		default: 4,  units: o[84],  
 		grid: nil,  clipLo: 0,  
 		clipHi: 255 ],  
-	// ExponentialWarp
+	// LinearWarp
 	83, [ spec: o[82] ],  
 	// Event
 	85, [ array: o[86],  size: 1,  

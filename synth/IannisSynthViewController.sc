@@ -579,7 +579,23 @@ IannisSynthViewController : CompositeView {
       };
     };
 
+    // lo
+    this.data[(key++'.range.lo').asSymbol] = ();
     
+    this.data[(key++'.range.lo').asSymbol][\updater] = {arg value;
+      slider.activeLo = value.value();
+    };
+
+    this.data[(key++'.range.lo').asSymbol][\spec] = spec;
+
+    // hi
+    this.data[(key++'.range.hi').asSymbol] = ();
+    
+    this.data[(key++'.range.hi').asSymbol][\updater] = {arg value;
+      slider.activeHi = value.value();
+    };
+
+    this.data[(key++'.range.hi').asSymbol][\spec] = spec;
 
     // layout
     if (orientation == \vertical) {
