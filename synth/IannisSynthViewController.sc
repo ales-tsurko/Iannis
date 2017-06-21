@@ -152,7 +152,7 @@ IannisSynthViewController : CompositeView {
     // midi learn related
     this.data.keysDo({arg key;
       var view = this.data[key][\view];
-      this.prepareViewForMIDILearn(view, key); 
+      view!?{this.prepareViewForMIDILearn(view, key)}; 
     });
   }
 
@@ -383,7 +383,9 @@ IannisSynthViewController : CompositeView {
     //
     this.data[key][\updater] = {arg value;
       var newValue = value.value();
-      newRecorder.samplePath = newValue;
+      if (newValue.isKindOf(String)) {
+        newRecorder.samplePath = newValue;
+      };
     };
 
     this.data[key][\view] = newRecorder;
@@ -469,8 +471,12 @@ IannisSynthViewController : CompositeView {
 
     // parameter bindings
     this.data[key][\updater] = {arg value;
-      check.valueAction = value.value();
+      if (value.isKindOf(Boolean)) {
+        check.valueAction = value.value();
+      };
     };
+
+    this.data[key][\spec] = ControlSpec(0, 1, 0, 1);
 
     // layout
     view.layout = VLayout(check);
@@ -552,19 +558,21 @@ IannisSynthViewController : CompositeView {
 
     // parameter bindings
     this.data[key][\updater] = {arg value;
-      slider.lo = spec.asSpec.unmap(value.value[0]);
-      slider.hi = spec.asSpec.unmap(value.value[1]);
+      if (value.isKindOf(Collection)) {
+        slider.lo = spec.asSpec.unmap(value.value[0]);
+        slider.hi = spec.asSpec.unmap(value.value[1]);
 
-      // don't know why, but it's working only when calling twice
-      // in other case the first value, that was set, becomes a clipped
-      // version of the same parameter of the previous preset... looks
-      // like a bug in the RangeSlider. Also it's maybe a cause of calling
-      // tasks synchronously. Anyway, here it's working and it's call 
-      // action only once, so it's a fine solution.
-      slider.setSpanActive(
-        spec.asSpec.unmap(value.value[0]),
-        spec.asSpec.unmap(value.value[1])
-      );
+        // don't know why, but it's working only when calling twice
+        // in other case the first value, that was set, becomes a clipped
+        // version of the same parameter of the previous preset... looks
+        // like a bug in the RangeSlider. Also it's maybe a cause of calling
+        // tasks synchronously. Anyway, here it's working and it's call 
+        // action only once, so it's a fine solution.
+        slider.setSpanActive(
+          spec.asSpec.unmap(value.value[0]),
+          spec.asSpec.unmap(value.value[1])
+        );
+      };
     };
 
     // layout
@@ -615,7 +623,9 @@ IannisSynthViewController : CompositeView {
     };
 
     this.data[key][\updater] = {arg value;
-      xy.setXYActive(value.value[0], value.value[1]);
+      if (value.isKindOf(Collection)) {
+        xy.setXYActive(value.value[0], value.value[1]);
+      };
     };
 
     // layout
@@ -872,23 +882,89 @@ IannisSynthViewController : CompositeView {
       }
     };
 
+    //
     // parameter bindings
+    //
     this.data[key][\updater] = {arg value;
-      var newValue = value.value();
-      var x = [0];
-      var y = [0,1,newValue[2]/*sustain*/,0];
-      x = x.add(nodeSpec.asSpec.unmap(newValue[0])); // attack
-      x = x.add(nodeSpec.asSpec.unmap(newValue[1])); // decay
-      x = x.add(nodeSpec.asSpec.unmap(newValue[3])); // release
-      x = x.integrate;
+      if (value.isKindOf(Collection)) {
+        var newValue = value.value();
+        var x = [0];
+        var y = [0,1,newValue[2]/*sustain*/,0];
+        x = x.add(nodeSpec.asSpec.unmap(newValue[0])); // attack
+        x = x.add(nodeSpec.asSpec.unmap(newValue[1])); // decay
+        x = x.add(nodeSpec.asSpec.unmap(newValue[3])); // release
+        x = x.integrate;
 
-      curves = newValue[4..6];
-      view.curves = curves;
+        curves = newValue[4..6];
+        view.curves = curves;
 
-      view.valueAction = [x,y];
+        view.valueAction = [x,y];
+      };
     };
 
     this.data[key][\view] = view;
+    
+    // per node data
+    // attack
+    this.data[(key++'.env.attack').asSymbol] = ();
+
+    this.data[(key++'.env.attack').asSymbol][\updater] = {arg value;
+      var newValue = value.value();
+      if (view.index != 1) {
+        view.selectIndex(1);
+      };
+
+      view.x = value;
+      view.doAction();
+    };
+
+    this.data[(key++'.env.attack').asSymbol][\spec] = ControlSpec();
+    
+    // decay
+    this.data[(key++'.env.decay').asSymbol] = ();
+
+    this.data[(key++'.env.decay').asSymbol][\updater] = {arg value;
+      var newValue = value.value();
+      if (view.index != 2) {
+        view.selectIndex(2);
+      };
+
+      view.x = value;
+      view.doAction();
+    };
+
+    this.data[(key++'.env.decay').asSymbol][\spec] = ControlSpec();
+
+    // sustain
+    this.data[(key++'.env.sustain').asSymbol] = ();
+
+    this.data[(key++'.env.sustain').asSymbol][\updater] = {arg value;
+      var newValue = value.value();
+      if (view.index != 2) {
+        view.selectIndex(2);
+      };
+
+      view.y = value;
+      view.doAction();
+    };
+
+    this.data[(key++'.env.sustain').asSymbol][\spec] = ControlSpec();
+
+    // release
+    this.data[(key++'.env.release').asSymbol] = ();
+
+    this.data[(key++'.env.release').asSymbol][\updater] = {arg value;
+      var newValue = value.value();
+      if (view.index != 3) {
+        view.selectIndex(3);
+      };
+
+      view.x = value;
+      view.doAction();
+    };
+
+    this.data[(key++'.env.release').asSymbol][\spec] = ControlSpec();
+
     // return
     ^this.parseAlignment(view, uiObj[\align]);
   }
