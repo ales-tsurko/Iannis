@@ -141,7 +141,7 @@ IannisMIDIManager {
           synthData[key]!?{
             if ((mapChan == 0) || (mapChan == (chan+1))) {
               var spec = synthData[key][\spec];
-              if (spec.isKindOf(ControlSpec)) {
+              if (spec.isKindOf(Collection).not) {
                 var value = spec.asSpec.map(val/127);
                 AppClock.sched(0, {
                   synthData[key][\updater].value(value);

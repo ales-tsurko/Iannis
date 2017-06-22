@@ -586,7 +586,7 @@ IannisSynthViewController : CompositeView {
       slider.activeLo = spec.asSpec.unmap(value.value());
     };
 
-    this.data[(key++'.range.lo').asSymbol][\spec] = spec;
+    this.data[(key++'.range.lo').asSymbol][\spec] = spec.asSpec;
 
     // hi
     this.data[(key++'.range.hi').asSymbol] = ();
@@ -595,7 +595,7 @@ IannisSynthViewController : CompositeView {
       slider.activeHi = spec.asSpec.unmap(value.value());
     };
 
-    this.data[(key++'.range.hi').asSymbol][\spec] = spec;
+    this.data[(key++'.range.hi').asSymbol][\spec] = spec.asSpec;
 
     // layout
     if (orientation == \vertical) {
@@ -658,7 +658,7 @@ IannisSynthViewController : CompositeView {
       xy.activex = spec[0].asSpec.unmap(value);
     };
 
-    this.data[(key++'.xy.x').asSymbol][\spec] = spec[0];
+    this.data[(key++'.xy.x').asSymbol][\spec] = spec[0].asSpec;
 
     // Y
     this.data[(key++'.xy.y').asSymbol] = ();
@@ -667,7 +667,7 @@ IannisSynthViewController : CompositeView {
       xy.activey = spec[1].asSpec.unmap(value);
     };
 
-    this.data[(key++'.xy.y').asSymbol][\spec] = spec[1];
+    this.data[(key++'.xy.y').asSymbol][\spec] = spec[1].asSpec;
 
     // layout
     view.layout = VLayout(label, xy, valueLabel);

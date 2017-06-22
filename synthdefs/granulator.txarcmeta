@@ -7,60 +7,13 @@ o = [
 	Array.prNew(12),  "Preset 3",  Event.prNew,  Array.prNew(32),  
 	Array.prNew(7),  {rrand(-1.0, 1.0)},  "Granulator",  "Granular sampler.",  
 	"http://alestsurko.by",  Event.prNew,  Array.prNew(4),  Array.prNew(1),  
-	Event.prNew,  Array.prNew(8),  "OSC 1",  Array.prNew(5),  
+	Event.prNew,  Array.prNew(8),  "OSC 1",  Array.prNew(4),  
 	Event.prNew,  Array.prNew(4),  Array.prNew(1),  Event.prNew,  
 	Array.prNew(8),  Event.prNew,  Array.prNew(4),  Event.prNew,  
-	Array.prNew(8),  "Elements test",  Array.prNew(1),  Event.prNew,  
-	Array.prNew(4),  Array.prNew(3),  Event.prNew,  Array.prNew(8),  
-	"First",  Array.prNew(7),  Event.prNew,  Array.prNew(8),  
-	Event.prNew,  Array.prNew(12),  Array.prNew(3),  Event.prNew,  
-	Array.prNew(8),  "First",  {"first value generator".postln;1},  Event.prNew,  
-	Array.prNew(8),  "Second",  {"second value generator".postln;2},  Event.prNew,  
-	Array.prNew(8),  "Third",  {"third value generator".postln;3},  Event.prNew,  
-	Array.prNew(12),  "Is true?",  Event.prNew,  Array.prNew(4),  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	"s",  Event.prNew,  Array.prNew(4),  "Parameter 1",  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
-	"n",  Event.prNew,  Array.prNew(4),  "Parameter 2",  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	"s",  Event.prNew,  Array.prNew(4),  "Parameter 3",  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	"ms",  Event.prNew,  Array.prNew(4),  "Parameter 4",  
-	Event.prNew,  Array.prNew(16),  Array.prNew(2),  ControlSpec.prNew,  
-	ExponentialWarp.prNew,  "s",  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	"Hz",  Event.prNew,  Array.prNew(4),  "Parameter 5",  
-	Event.prNew,  Array.prNew(8),  "Second",  Array.prNew(2),  
-	Event.prNew,  Array.prNew(16),  Event.prNew,  Array.prNew(4),  
-	"Parameter",  Event.prNew,  Array.prNew(16),  Event.prNew,  
-	Array.prNew(4),  "Parameter",  Event.prNew,  Array.prNew(8),  
-	"Third",  Array.prNew(2),  Event.prNew,  Array.prNew(12),  
-	Array.prNew(3),  Event.prNew,  Array.prNew(16),  Event.prNew,  
-	Array.prNew(4),  "Parameter 1",  Event.prNew,  Array.prNew(16),  
-	Event.prNew,  Array.prNew(4),  "Parameter 2",  Event.prNew,  
-	Array.prNew(16),  Event.prNew,  Array.prNew(4),  "Parameter 3",  
-	Event.prNew,  Array.prNew(12),  "Parameter 4",  Event.prNew,  
-	Array.prNew(20),  {arg view, value, uiObj;
-                            // this function loading a value, stored in a preset
-                            view.value = value;
-                          },  {arg view, key, node, uiObj;
-                            var value = view.value;
-
-                            node.set(key, value);
-
-                            // should return the value, that you want to
-                            // store in preset
-                            value;
-                          },  {arg key, name, uiObj;
-                            var view = Knob();
-                            view.fixedHeight = 40;
-                            // should return the view, that have to be
-                            // a subclass of View
-                            view;
-                          },  
-	Event.prNew,  Array.prNew(8),  "Grain Parameters",  Array.prNew(2),  
-	Event.prNew,  Array.prNew(12),  "Grain Envelope",  Event.prNew,  
-	Array.prNew(12),  Array.prNew(4),  Event.prNew,  Array.prNew(8),  
-	"Rectangle",  {
+	Array.prNew(8),  "Grain Parameters",  Array.prNew(2),  Event.prNew,  
+	Array.prNew(12),  "Grain Envelope",  Event.prNew,  Array.prNew(12),  
+	Array.prNew(4),  Event.prNew,  Array.prNew(8),  "Rectangle",  
+	{
                       var buffer, signal;
                       var bufSize = 8192;
                       signal = Signal.rectWindow(bufSize);
@@ -68,9 +21,8 @@ o = [
 
                       // return
                       buffer.bufnum;
-                    },  Event.prNew,  Array.prNew(8),  
-	"Hanning",  Event.prNew,  Array.prNew(8),  "Hamming",  
-	{
+                    },  Event.prNew,  Array.prNew(8),  "Hanning",  
+	Event.prNew,  Array.prNew(8),  "Hamming",  {
                       var buffer, signal;
                       var bufSize = 8192;
                       signal = Signal.hammingWindow(bufSize);
@@ -78,8 +30,8 @@ o = [
 
                       // return
                       buffer.bufnum;
-                    },  Event.prNew,  Array.prNew(8),  "Welch",  
-	{
+                    },  
+	Event.prNew,  Array.prNew(8),  "Welch",  {
                       var buffer, signal;
                       var bufSize = 8192;
                       signal = Signal.welchWindow(bufSize);
@@ -87,22 +39,22 @@ o = [
 
                       // return
                       buffer.bufnum;
-                    },  Event.prNew,  Array.prNew(12),  Array.prNew(4),  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	"s",  Event.prNew,  Array.prNew(4),  "Duration",  
+                    },  
+	Event.prNew,  Array.prNew(12),  Array.prNew(4),  Event.prNew,  
+	Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  "s",  
+	Event.prNew,  Array.prNew(4),  "Duration",  Event.prNew,  
+	Array.prNew(16),  Event.prNew,  Array.prNew(4),  "Position",  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
+	"",  Event.prNew,  Array.prNew(4),  "Density",  
 	Event.prNew,  Array.prNew(16),  Event.prNew,  Array.prNew(4),  
-	"Position",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
-	LinearWarp.prNew,  "",  Event.prNew,  Array.prNew(4),  
-	"Density",  Event.prNew,  Array.prNew(16),  Event.prNew,  
-	Array.prNew(4),  "Randomness",  Event.prNew,  Array.prNew(8),  
-	"Envelope",  Array.prNew(1),  Event.prNew,  Array.prNew(12),  
-	"Envelope",  Event.prNew,  Array.prNew(4),  Event.prNew,  
-	Array.prNew(8),  "Output",  Array.prNew(1),  Event.prNew,  
-	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  DbFaderWarp.prNew,  "dB",  Event.prNew,  
-	Array.prNew(4),  "Gain",  Event.prNew,  Array.prNew(16),  
-	Event.prNew,  Array.prNew(4),  "Pan",  "by.alestsurko.granulator",  
-	"Ales Tsurko"
+	"Randomness",  Event.prNew,  Array.prNew(8),  "Envelope",  
+	Array.prNew(1),  Event.prNew,  Array.prNew(12),  "Envelope",  
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(8),  
+	"Output",  Array.prNew(1),  Event.prNew,  Array.prNew(12),  
+	Array.prNew(2),  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
+	DbFaderWarp.prNew,  "dB",  Event.prNew,  Array.prNew(4),  
+	"Gain",  Event.prNew,  Array.prNew(16),  Event.prNew,  
+	Array.prNew(4),  "Pan",  "by.alestsurko.granulator",  "Ales Tsurko"
 ];
 p = [
 	// Event
@@ -117,7 +69,7 @@ p = [
 		nil,  nil,  nil,  nil,  
 		'site',  o[24],  'ui',  o[25],  
 		nil,  nil,  'type',  'synth',  
-		'id',  o[243],  'author',  o[244] ],  
+		'id',  o[122],  'author',  o[123] ],  
 	// Array
 	2, [ o[3],  o[9],  o[15] ],  
 	// Event
@@ -208,8 +160,7 @@ p = [
 	29, [ 'name',  o[30],  nil,  nil,  
 		'groups',  o[31],  nil,  nil ],  
 	// Array
-	31, [ o[32],  o[39],  o[160],  o[214],  
-		o[223] ],  
+	31, [ o[32],  o[39],  o[93],  o[102] ],  
 	// Event
 	32, [ array: o[33],  size: 1,  
 		proto: nil,  parent: nil,  
@@ -239,100 +190,101 @@ p = [
 	40, [ 'name',  o[41],  'parameters',  o[42],  
 		nil,  nil,  nil,  nil ],  
 	// Array
-	42, [ o[43] ],  
+	42, [ o[43],  o[64] ],  
 	// Event
-	43, [ array: o[44],  size: 1,  
+	43, [ array: o[44],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	44, [ 'tabs',  o[45],  nil,  nil ],  
-	// Array
-	45, [ o[46],  o[116],  o[130] ],  
+	44, [ 'name',  o[45],  nil,  nil,  
+		nil,  nil,  'key',  'gran_env_bufnum',  
+		nil,  nil,  'ui',  o[46] ],  
 	// Event
-	46, [ array: o[47],  size: 2,  
+	46, [ array: o[47],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	47, [ 'name',  o[48],  'parameters',  o[49],  
-		nil,  nil,  nil,  nil ],  
-	// Array
-	49, [ o[50],  o[67],  o[72],  o[80],  
-		o[88],  o[96],  o[104] ],  
-	// Event
-	50, [ array: o[51],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	51, [ 'ui',  o[52],  nil,  nil,  
-		nil,  nil,  'key',  'undefined' ],  
-	// Event
-	52, [ array: o[53],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	53, [ 'align',  'right',  'states',  o[54],  
+	47, [ 'align',  'left',  'items',  o[48],  
 		nil,  nil,  nil,  nil,  
-		nil,  nil,  'type',  'button' ],  
+		nil,  nil,  'type',  'popup' ],  
 	// Array
-	54, [ o[55],  o[59],  o[63] ],  
+	48, [ o[49],  o[53],  o[56],  o[60] ],  
 	// Event
-	55, [ array: o[56],  size: 2,  
+	49, [ array: o[50],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	56, [ 'name',  o[57],  nil,  nil,  
-		nil,  nil,  'value',  o[58] ],  
+	50, [ 'name',  o[51],  nil,  nil,  
+		nil,  nil,  'value',  o[52] ],  
 	// Event
-	59, [ array: o[60],  size: 2,  
+	53, [ array: o[54],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	60, [ 'name',  o[61],  nil,  nil,  
-		nil,  nil,  'value',  o[62] ],  
+	54, [ 'name',  o[55],  nil,  nil,  
+		nil,  nil,  'value',  -1 ],  
 	// Event
-	63, [ array: o[64],  size: 2,  
+	56, [ array: o[57],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	64, [ 'name',  o[65],  nil,  nil,  
-		nil,  nil,  'value',  o[66] ],  
+	57, [ 'name',  o[58],  nil,  nil,  
+		nil,  nil,  'value',  o[59] ],  
 	// Event
-	67, [ array: o[68],  size: 3,  
+	60, [ array: o[61],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	68, [ 'name',  o[69],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_1',  
-		nil,  nil,  'ui',  o[70] ],  
+	61, [ 'name',  o[62],  nil,  nil,  
+		nil,  nil,  'value',  o[63] ],  
 	// Event
-	70, [ array: o[71],  size: 1,  
+	64, [ array: o[65],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	71, [ nil,  nil,  'type',  'check' ],  
+	65, [ 'align',  'center',  nil,  nil,  
+		nil,  nil,  'isRow',  0,  
+		'parameters',  o[66],  nil,  nil ],  
+	// Array
+	66, [ o[67],  o[75],  o[80],  o[88] ],  
 	// Event
-	72, [ array: o[73],  size: 4,  
+	67, [ array: o[68],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	73, [ nil,  nil,  'spec',  o[74],  
-		nil,  nil,  'ui',  o[77],  
-		'name',  o[79],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_2' ],  
+	68, [ nil,  nil,  'spec',  o[69],  
+		nil,  nil,  'ui',  o[72],  
+		'name',  o[74],  nil,  nil,  
+		nil,  nil,  'key',  'gran_dur' ],  
 	// ControlSpec
-	74, [ minval: 0.05,  maxval: 3,  
-		warp: o[75],  step: 0,  
-		default: 0.1,  units: o[76],  
+	69, [ minval: 0.05,  maxval: 3,  
+		warp: o[70],  step: 0,  
+		default: 0.1,  units: o[71],  
 		grid: nil,  clipLo: 0.05,  
 		clipHi: 3.0 ],  
 	// ExponentialWarp
-	75, [ spec: o[74] ],  
+	70, [ spec: o[69] ],  
+	// Event
+	72, [ array: o[73],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	73, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	75, [ array: o[76],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	76, [ nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[77],  
+		'name',  o[79],  nil,  nil,  
+		nil,  nil,  'key',  'pos' ],  
 	// Event
 	77, [ array: o[78],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	78, [ nil,  nil,  'type',  'number' ],  
+	78, [ nil,  nil,  'type',  'knob' ],  
 	// Event
 	80, [ array: o[81],  size: 4,  
 		proto: nil,  parent: nil,  
@@ -341,13 +293,13 @@ p = [
 	81, [ nil,  nil,  'spec',  o[82],  
 		nil,  nil,  'ui',  o[85],  
 		'name',  o[87],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_3' ],  
+		nil,  nil,  'key',  'density' ],  
 	// ControlSpec
-	82, [ minval: 0,  maxval: 255,  
+	82, [ minval: 1,  maxval: 16,  
 		warp: o[83],  step: 1,  
-		default: 4,  units: o[84],  
-		grid: nil,  clipLo: 0,  
-		clipHi: 255 ],  
+		default: 1,  units: o[84],  
+		grid: nil,  clipLo: 1,  
+		clipHi: 16 ],  
 	// LinearWarp
 	83, [ spec: o[82] ],  
 	// Event
@@ -355,427 +307,101 @@ p = [
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	86, [ nil,  nil,  'type',  'number' ],  
+	86, [ nil,  nil,  'type',  'knob' ],  
 	// Event
 	88, [ array: o[89],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	89, [ nil,  nil,  'spec',  o[90],  
-		nil,  nil,  'ui',  o[93],  
-		'name',  o[95],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_4' ],  
-	// ControlSpec
-	90, [ minval: 0.05,  maxval: 3,  
-		warp: o[91],  step: 0,  
-		default: 0.1,  units: o[92],  
-		grid: nil,  clipLo: 0.05,  
-		clipHi: 3.0 ],  
-	// ExponentialWarp
-	91, [ spec: o[90] ],  
-	// Event
-	93, [ array: o[94],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	94, [ nil,  nil,  'type',  'vrslider' ],  
-	// Event
-	96, [ array: o[97],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	97, [ nil,  nil,  'spec',  o[98],  
-		nil,  nil,  'ui',  o[101],  
-		'name',  o[103],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_5' ],  
-	// ControlSpec
-	98, [ minval: 1,  maxval: 1000,  
-		warp: o[99],  step: 1,  
-		default: 10,  units: o[100],  
-		grid: nil,  clipLo: 1,  
-		clipHi: 1000 ],  
-	// ExponentialWarp
-	99, [ spec: o[98] ],  
-	// Event
-	101, [ array: o[102],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	102, [ nil,  nil,  'type',  'hrslider' ],  
-	// Event
-	104, [ array: o[105],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	105, [ nil,  nil,  'spec',  o[106],  
-		nil,  nil,  'ui',  o[113],  
-		'name',  o[115],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_6' ],  
-	// Array
-	106, [ o[107],  o[110] ],  
-	// ControlSpec
-	107, [ minval: 0.05,  maxval: 3,  
-		warp: o[108],  step: 0,  
-		default: 0.1,  units: o[109],  
-		grid: nil,  clipLo: 0.05,  
-		clipHi: 3.0 ],  
-	// ExponentialWarp
-	108, [ spec: o[107] ],  
-	// ControlSpec
-	110, [ minval: 100,  maxval: 8000,  
-		warp: o[111],  step: 0.1,  
-		default: 400,  units: o[112],  
-		grid: nil,  clipLo: 100,  
-		clipHi: 8000 ],  
-	// ExponentialWarp
-	111, [ spec: o[110] ],  
-	// Event
-	113, [ array: o[114],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	114, [ nil,  nil,  'type',  'xy' ],  
-	// Event
-	116, [ array: o[117],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	117, [ 'name',  o[118],  'parameters',  o[119],  
-		nil,  nil,  nil,  nil ],  
-	// Array
-	119, [ o[120],  o[125] ],  
-	// Event
-	120, [ array: o[121],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	121, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[122],  
-		'name',  o[124],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_7' ],  
-	// Event
-	122, [ array: o[123],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	123, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	125, [ array: o[126],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	126, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[127],  
-		'name',  o[129],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_8' ],  
-	// Event
-	127, [ array: o[128],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	128, [ nil,  nil,  'type',  'vslider' ],  
-	// Event
-	130, [ array: o[131],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	131, [ 'name',  o[132],  'parameters',  o[133],  
-		nil,  nil,  nil,  nil ],  
-	// Array
-	133, [ o[134],  o[152] ],  
-	// Event
-	134, [ array: o[135],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	135, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  0,  
-		'parameters',  o[136],  nil,  nil ],  
-	// Array
-	136, [ o[137],  o[142],  o[147] ],  
-	// Event
-	137, [ array: o[138],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	138, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[139],  
-		'name',  o[141],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_9' ],  
-	// Event
-	139, [ array: o[140],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	140, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	142, [ array: o[143],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	143, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[144],  
-		'name',  o[146],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_10' ],  
-	// Event
-	144, [ array: o[145],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	145, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	147, [ array: o[148],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	148, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[149],  
-		'name',  o[151],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_11' ],  
-	// Event
-	149, [ array: o[150],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	150, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	152, [ array: o[153],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	153, [ 'name',  o[154],  nil,  nil,  
-		nil,  nil,  'key',  'undefined_12',  
-		nil,  nil,  'ui',  o[155] ],  
-	// Event
-	155, [ array: o[156],  size: 5,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	156, [ 'binder',  o[157],  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		'action',  o[158],  'init',  o[159],  
-		'align',  'center',  'type',  'custom' ],  
-	// Event
-	160, [ array: o[161],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	161, [ 'name',  o[162],  'parameters',  o[163],  
-		nil,  nil,  nil,  nil ],  
-	// Array
-	163, [ o[164],  o[185] ],  
-	// Event
-	164, [ array: o[165],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	165, [ 'name',  o[166],  nil,  nil,  
-		nil,  nil,  'key',  'gran_env_bufnum',  
-		nil,  nil,  'ui',  o[167] ],  
-	// Event
-	167, [ array: o[168],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	168, [ 'align',  'left',  'items',  o[169],  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  'type',  'popup' ],  
-	// Array
-	169, [ o[170],  o[174],  o[177],  o[181] ],  
-	// Event
-	170, [ array: o[171],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	171, [ 'name',  o[172],  nil,  nil,  
-		nil,  nil,  'value',  o[173] ],  
-	// Event
-	174, [ array: o[175],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	175, [ 'name',  o[176],  nil,  nil,  
-		nil,  nil,  'value',  -1 ],  
-	// Event
-	177, [ array: o[178],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	178, [ 'name',  o[179],  nil,  nil,  
-		nil,  nil,  'value',  o[180] ],  
-	// Event
-	181, [ array: o[182],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	182, [ 'name',  o[183],  nil,  nil,  
-		nil,  nil,  'value',  o[184] ],  
-	// Event
-	185, [ array: o[186],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	186, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  0,  
-		'parameters',  o[187],  nil,  nil ],  
-	// Array
-	187, [ o[188],  o[196],  o[201],  o[209] ],  
-	// Event
-	188, [ array: o[189],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	189, [ nil,  nil,  'spec',  o[190],  
-		nil,  nil,  'ui',  o[193],  
-		'name',  o[195],  nil,  nil,  
-		nil,  nil,  'key',  'gran_dur' ],  
-	// ControlSpec
-	190, [ minval: 0.05,  maxval: 3,  
-		warp: o[191],  step: 0,  
-		default: 0.1,  units: o[192],  
-		grid: nil,  clipLo: 0.05,  
-		clipHi: 3.0 ],  
-	// ExponentialWarp
-	191, [ spec: o[190] ],  
-	// Event
-	193, [ array: o[194],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	194, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	196, [ array: o[197],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	197, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[198],  
-		'name',  o[200],  nil,  nil,  
-		nil,  nil,  'key',  'pos' ],  
-	// Event
-	198, [ array: o[199],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	199, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	201, [ array: o[202],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	202, [ nil,  nil,  'spec',  o[203],  
-		nil,  nil,  'ui',  o[206],  
-		'name',  o[208],  nil,  nil,  
-		nil,  nil,  'key',  'density' ],  
-	// ControlSpec
-	203, [ minval: 1,  maxval: 16,  
-		warp: o[204],  step: 1,  
-		default: 1,  units: o[205],  
-		grid: nil,  clipLo: 1,  
-		clipHi: 16 ],  
-	// LinearWarp
-	204, [ spec: o[203] ],  
-	// Event
-	206, [ array: o[207],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	207, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	209, [ array: o[210],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	210, [ nil,  nil,  'spec',  'unipolar',  
-		nil,  nil,  'ui',  o[211],  
-		'name',  o[213],  nil,  nil,  
+	89, [ nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[90],  
+		'name',  o[92],  nil,  nil,  
 		nil,  nil,  'key',  't1rand' ],  
 	// Event
-	211, [ array: o[212],  size: 1,  
+	90, [ array: o[91],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	212, [ nil,  nil,  'type',  'knob' ],  
+	91, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	214, [ array: o[215],  size: 2,  
+	93, [ array: o[94],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	215, [ 'name',  o[216],  'parameters',  o[217],  
+	94, [ 'name',  o[95],  'parameters',  o[96],  
 		nil,  nil,  nil,  nil ],  
 	// Array
-	217, [ o[218] ],  
+	96, [ o[97] ],  
 	// Event
-	218, [ array: o[219],  size: 3,  
+	97, [ array: o[98],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	219, [ 'name',  o[220],  nil,  nil,  
+	98, [ 'name',  o[99],  nil,  nil,  
 		nil,  nil,  'key',  'env',  
-		nil,  nil,  'ui',  o[221] ],  
+		nil,  nil,  'ui',  o[100] ],  
 	// Event
-	221, [ array: o[222],  size: 1,  
+	100, [ array: o[101],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	222, [ nil,  nil,  'type',  'env_adsr' ],  
+	101, [ nil,  nil,  'type',  'env_adsr' ],  
 	// Event
-	223, [ array: o[224],  size: 2,  
+	102, [ array: o[103],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	224, [ 'name',  o[225],  'parameters',  o[226],  
+	103, [ 'name',  o[104],  'parameters',  o[105],  
 		nil,  nil,  nil,  nil ],  
 	// Array
-	226, [ o[227] ],  
+	105, [ o[106] ],  
 	// Event
-	227, [ array: o[228],  size: 3,  
+	106, [ array: o[107],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	228, [ 'align',  'center',  nil,  nil,  
+	107, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  0,  
-		'parameters',  o[229],  nil,  nil ],  
+		'parameters',  o[108],  nil,  nil ],  
 	// Array
-	229, [ o[230],  o[238] ],  
+	108, [ o[109],  o[117] ],  
 	// Event
-	230, [ array: o[231],  size: 4,  
+	109, [ array: o[110],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	231, [ nil,  nil,  'spec',  o[232],  
-		nil,  nil,  'ui',  o[235],  
-		'name',  o[237],  nil,  nil,  
+	110, [ nil,  nil,  'spec',  o[111],  
+		nil,  nil,  'ui',  o[114],  
+		'name',  o[116],  nil,  nil,  
 		nil,  nil,  'key',  'gain' ],  
 	// ControlSpec
-	232, [ minval: -inf,  maxval: 24,  
-		warp: o[233],  step: 0.0,  
-		default: -inf,  units: o[234],  
+	111, [ minval: -inf,  maxval: 24,  
+		warp: o[112],  step: 0.0,  
+		default: -inf,  units: o[113],  
 		grid: nil,  clipLo: -inf,  
 		clipHi: 24.0 ],  
 	// DbFaderWarp
-	233, [ spec: o[232] ],  
+	112, [ spec: o[111] ],  
 	// Event
-	235, [ array: o[236],  size: 1,  
+	114, [ array: o[115],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	236, [ nil,  nil,  'type',  'hslider' ],  
+	115, [ nil,  nil,  'type',  'hslider' ],  
 	// Event
-	238, [ array: o[239],  size: 4,  
+	117, [ array: o[118],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	239, [ nil,  nil,  'spec',  'pan',  
-		nil,  nil,  'ui',  o[240],  
-		'name',  o[242],  nil,  nil,  
+	118, [ nil,  nil,  'spec',  'pan',  
+		nil,  nil,  'ui',  o[119],  
+		'name',  o[121],  nil,  nil,  
 		nil,  nil,  'key',  'pan' ],  
 	// Event
-	240, [ array: o[241],  size: 1,  
+	119, [ array: o[120],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	241, [ nil,  nil,  'type',  'hslider' ]
+	120, [ nil,  nil,  'type',  'hslider' ]
 ];
 prUnarchive(o,p);

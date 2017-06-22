@@ -39,7 +39,7 @@ IannisVoicesManager {
         // remove keynum
         voices.removeAt(0);
         // free the voice and remove it
-        voices[0].free();
+        voices[0].release();
         removingVoice = voices.removeAt(0);
 
         if (sustainPedalIsOn) {
