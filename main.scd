@@ -7,9 +7,13 @@ Quarks.uninstall("Iannis");
 
 (
   s.waitForBoot({
+    var pathToInnerSynthDefs = "~/Desktop/Iannis/inner_synthdefs".standardizePath;
     SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
     s.loadDirectory(SynthDef.synthDefDir);
+
+    // load inner synthdefs
+    s.loadDirectory(pathToInnerSynthDefs);
 
     s.sync;
 
@@ -34,9 +38,14 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 
 // Synth view controller
 (
-g = IannisNodeGroup();
-v = IannisSynthViewController(g, \granulator).front();
+t = IannisMixerTrack();
+t.instrumentsManager.selectInstrument(\granulator);
 )
+t.instrumentsManager.synthViewController.front;
+
+t.pan = 0;
+t.gain = -3;
+t.isMute = false;
 
 g.do({arg synth;
   synth.release;

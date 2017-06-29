@@ -13,12 +13,12 @@ IannisSynthViewController : CompositeView {
   toolbarView, 
   synthNameLabel;
 
-  *new {arg node, synthDefName;
-    ^super.new.init(node, synthDefName);
+  *new {arg synthDefName;
+    ^super.new.init(synthDefName);
   }
 
-  init {arg aNode, aSynthDefName;
-    node = aNode;
+  init {arg aSynthDefName;
+    node = IannisNodeGroup();
     synthDefName = aSynthDefName;
     metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
     data = ();
