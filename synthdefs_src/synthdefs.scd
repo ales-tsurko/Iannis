@@ -423,3 +423,136 @@ SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1,
 	0, 0.01, 0.01, 0, 0, nil, \ir],
 	metadata: ~metadata
 ).writeDefFile(SynthDef.synthDefDir);
+
+
+//
+// FX
+//
+
+(
+//
+// EQ
+//
+var metadata = ();
+
+// main info
+metadata[\type] = \effect;
+metadata[\name] = "Parameq";
+metadata[\id] = "by.alestsurko.iannis.parameq";
+metadata[\author] = "Ales Tsurko";
+metadata[\site] = "http://alestsurko.by";
+metadata[\description] = "5-band parametric EQ";
+
+// presets
+metadata[\presets] = [];
+metadata[\presets] = metadata[\presets].add(
+  (
+    name: "Default",
+    isFactory: true,
+    values: (
+      in: 0,
+      /*LP*/
+      lpFreq: 22000,
+      lpQ: 2,
+      lpBypass: 1,
+      /*HP*/
+      hpFreq: 20,
+      hpQ: 2,
+      hpBypass: 1,
+      /*LoShelf*/
+      loShelfFreq: 120,
+      loShelfQ: 2,
+      loShelfGain: 0,
+      loShelfBypass: 1,
+      /*HiShelf*/
+      hiShelfFreq: 12700,
+      hiShelfQ: 2,
+      hiShelfGain: 0,
+      hiShelfBypass: 1,
+      /*Peak 1*/
+      peak1Freq: 200,
+      peak1Q: 2,
+      peak1Gain: 0,
+      peak1Bypass: 1,
+      /*Peak 2*/
+      peak2Freq: 800,
+      peak2Q: 2,
+      peak2Gain: 0,
+      peak2Bypass: 1,
+      /*Peak 3*/
+      peak3Freq: 3200,
+      peak3Q: 2,
+      peak3Gain: 0,
+      peak3Bypass: 1,
+      /*Peak 4*/
+      peak4Freq: 4500,
+      peak4Q: 2,
+      peak4Gain: 0,
+      peak4Bypass: 1,
+      /*Peak 5*/
+      peak5Freq: 8000,
+      peak5Q: 2,
+      peak5Gain: 0,
+      peak5Bypass: 1,
+    )
+  )
+)
+
+SynthDef("by.alestsurko.iannis.parameq", {arg 
+  in = 0,
+  lpFreq = 20000, lpQ = 2, lpBypass = 1,                                  // LP
+  hpFreq = 20, hpQ = 2, hpBypass = 1,                                     // HP
+  loShelfFreq = 120, loShelfQ = 2, loShelfGain = 0, loShelfBypass = 1,    // LoShelf
+  hiShelfFreq = 12700, hiShelfQ = 2, hiShelfGain = 0, hiShelfBypass = 1,  // HiShelf
+  peak1Freq = 200, peak1Q = 2, peak1Gain = 0, peak1Bypass = 1,            // Peak 1
+  peak2Freq = 800, peak2Q = 2, peak2Gain = 0, peak2Bypass = 1,            // Peak 2
+  peak3Freq = 3200, peak3Q = 2, peak3Gain = 0, peak3Bypass = 1,           // Peak 3
+  peak4Freq = 4500, peak4Q = 2, peak4Gain = 0, peak4Bypass = 1,           // Peak 4
+  peak5Freq = 8000, peak5Q = 2, peak5Gain = 0, peak5Bypass = 1;           // Peak 5
+  
+  var source, 
+  lp,
+  hp,
+  loShelf,
+  hiShelf,
+  peak1,
+  peak2,
+  peak3,
+  peak4,
+  peak5,
+  out;
+
+  source = In.ar(in, 2);
+ 
+  lp = BLowPass4.ar(source, lpFreq, lpQ.reciprocal);
+  lp = (source * lpBypass) + (lp * (lpBypass < 0.5));
+
+  hp = BHiPass4.ar(lp, hpFreq, hpQ.reciprocal);
+  hp = (lp * hpBypass) + (hp * (hpBypass < 0.5));
+  
+  loShelf = BLowShelf.ar(hp, loShelfFreq, loShelfQ.reciprocal, loShelfGain);
+  loShelf = (hp * loShelfBypass) + (loShelf * (loShelfBypass < 0.5));
+
+  hiShelf = BHiShelf.ar(loShelf, hiShelfFreq, hiShelfQ.reciprocal, hiShelfGain);
+  hiShelf = (loShelf * hiShelfBypass) + (hiShelf * (hiShelfBypass < 0.5));
+
+  peak1 = BPeakEQ.ar(hiShelf, peak1Freq, peak1Q.reciprocal, peak1Gain);
+  peak1 = (hiShelf * peak1Bypass) + (peak1 * (peak1Bypass < 0.5));
+
+  peak2 = BPeakEQ.ar(peak1, peak2Freq, peak2Q.reciprocal, peak2Gain);
+  peak2 = (peak1 * peak2Bypass) + (peak2 * (peak2Bypass < 0.5));
+
+  peak3 = BPeakEQ.ar(peak2, peak3Freq, peak3Q.reciprocal, peak3Gain);
+  peak3 = (peak2 * peak3Bypass) + (peak3 * (peak3Bypass < 0.5));
+
+  peak4 = BPeakEQ.ar(peak3, peak4Freq, peak4Q.reciprocal, peak4Gain);
+  peak4 = (peak3 * peak4Bypass) + (peak4 * (peak4Bypass < 0.5));
+
+  peak5 = BPeakEQ.ar(peak4, peak5Freq, peak5Q.reciprocal, peak5Gain);
+  peak5 = (peak4 * peak5Bypass) + (peak5 * (peak5Bypass < 0.5));
+
+  out = peak5;
+
+  ReplaceOut.ar(0, out);
+}, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
+)
