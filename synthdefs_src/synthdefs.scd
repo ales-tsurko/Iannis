@@ -451,27 +451,87 @@ metadata[\ui] = (pages: []);
 // pages
 metadata[\ui][\pages] = [(
   name: "EQ",
-  groups: nil!3
+  groups: nil!2
 )];
 
 // groups
 
 // Peak columns
-~peakColumns = [];
+~columns = [];
 
+// LS
+~columns = ~columns.add(
+  (
+    isColumn: 1,
+    align: \center,
+    parameters: [
+      // bypass
+      (
+        key: \loShelfBypass,
+        ui: (
+          type: \button,
+          width: 60,
+          states: [
+            (
+              name: "LS - On",
+              value: 0
+            ),
+            (
+              name: "LS - Off",
+              value: 1
+            )
+          ]
+        )
+      ),
+
+      // freq
+
+      (
+        key: \loShelfFreq,
+        name: "LS Freq (Hz)",
+        spec: ControlSpec(20, 22000, \exp, 0, 150),
+        ui: (
+          type: \knob
+        )
+      ),
+
+      // Q
+      (
+        key: \loShelfQ,
+        name: "Q",
+        spec: ControlSpec(0.01, 10),
+        ui: (
+          type: \knob
+        )
+      ),
+
+      // gain
+      (
+        key: \loShelfGain,
+        name: "Gain (dB)",
+        spec: ControlSpec(-24, 24),
+        ui: (
+          type: \knob
+        )
+      )
+    ]
+  )
+);
+
+// Peaks
 4.do({arg n;
   var bypassKey = ("peak"++(n+1)++"Bypass").asSymbol;
   var onStateName = (n+1) + "- On";
   var offStateName = (n+1) + "- Off";
   var freqKey = ("peak"++(n+1)++"Freq").asSymbol;
-  var freqName = "Peak"+(n+1);
-  var freqSpec = ControlSpec(20, 22000, \exp, 0, 120*(2**n), "Hz");
+  var freqName = "Peak"+(n+1)+"(Hz)";
+  var freqSpec = ControlSpec(20, 22000, \exp, 0, 120*(2**n));
   var qKey = ("peak"++(n+1)++"Q").asSymbol;
   var qSpec = ControlSpec(0.01, 10);
   var gainKey = ("peak"++(n+1)++"Gain").asSymbol;
-  var gainSpec = ControlSpec(0.ampdb, 24, \db, 0, 0, "dB");
+  var gainSpec = ControlSpec(-24, 24);
 
-  ~peakColumns = ~peakColumns.add(
+  ~columns = ~columns.add(
     (
       isColumn: 1,
       align: \center,
@@ -518,7 +578,7 @@ metadata[\ui][\pages] = [(
         // gain knob
         (
           key: gainKey,
-          name: "Gain",
+          name: "Gain (dB)",
           spec: gainSpec,
           ui: (
             type: \knob
@@ -529,148 +589,84 @@ metadata[\ui][\pages] = [(
   );
 });
 
-// Peaks
+// HS
+~columns = ~columns.add(
+  (
+    isColumn: 1,
+    align: \center,
+    parameters: [
+      // bypass
+      (
+        key: \hiShelfBypass,
+        ui: (
+          type: \button,
+          width: 60,
+          states: [
+            (
+              name: "HS - On",
+              value: 0
+            ),
+            (
+              name: "HS - Off",
+              value: 1
+            )
+          ]
+        )
+      ),
+
+      // freq
+
+      (
+        key: \hiShelfFreq,
+        name: "HS Freq (Hz)",
+        spec: ControlSpec(20, 22000, \exp, 0, 11000),
+        ui: (
+          type: \knob
+        )
+      ),
+
+      // Q
+      (
+        key: \hiShelfQ,
+        name: "Q",
+        spec: ControlSpec(0.01, 10),
+        ui: (
+          type: \knob
+        )
+      ),
+
+      // gain
+      (
+        key: \hiShelfGain,
+        name: "Gain (dB)",
+        spec: ControlSpec(-24, 24),
+        ui: (
+          type: \knob
+        )
+      )
+    ]
+  )
+);
+
+// Row
 metadata[\ui][\pages][0][\groups][0] = (
   parameters: [
     (
       isRow: 1,
       align: \center,
-      parameters: ~peakColumns
-    )
-  ]
-);
-
-// LS, HS group
-metadata[\ui][\pages][0][\groups][1] = (
-  parameters: [
-    // Bypass row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: [
-        
-        (
-          key: \loShelfBypass,
-          ui: (
-            type: \button,
-            width: 60,
-            states: [
-              (
-                name: "LS - On",
-                value: 0
-              ),
-              (
-                name: "LS - Off",
-                value: 1
-              )
-            ]
-          )
-        ),
-
-        (
-          key: \hiShelfBypass,
-          ui: (
-            type: \button,
-            width: 60,
-            states: [
-              (
-                name: "HS - On",
-                value: 0
-              ),
-              (
-                name: "HS - Off",
-                value: 1
-              )
-            ]
-          )
-        )
-      ]
-    ),
-
-    // Freq row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: [
-        (
-          key: \loShelfFreq,
-          name: "LS Freq",
-          spec: ControlSpec(20, 22000, \exp, 0, 150, "Hz"),
-          ui: (
-            type: \knob
-          )
-        ),
-
-        (
-          key: \hiShelfFreq,
-          name: "HS Freq",
-          spec: ControlSpec(20, 22000, \exp, 0, 7900, "Hz"),
-          ui: (
-            type: \knob
-          )
-        )
-      ]
-    ),
-
-    // Q row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: [
-        (
-          key: \loShelfQ,
-          name: "Q",
-          spec: ControlSpec(0.01, 10),
-          ui: (
-            type: \knob
-          )
-        ),
-
-        (
-          key: \hiShelfQ,
-          name: "Q",
-          spec: ControlSpec(0.01, 10),
-          ui: (
-            type: \knob
-          )
-        )
-      ]
-    ),
-
-    // Gain row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: [
-        (
-          key: \loShelfGain,
-          name: "Gain",
-          spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
-          ui: (
-            type: \knob
-          )
-        ),
-
-        (
-          key: \hiShelfGain,
-          name: "Gain",
-          spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
-          ui: (
-            type: \knob
-          )
-        )
-      ]
+      parameters: ~columns
     )
   ]
 );
 
 // LP, HP group
-metadata[\ui][\pages][0][\groups][2] = (
+metadata[\ui][\pages][0][\groups][1] = (
+  name: "HP/LP",
   parameters: [
     // Bypass row
     (
       isRow: 1,
-      align: \center,
+      align: \left,
       parameters: [
         
         (
@@ -714,7 +710,7 @@ metadata[\ui][\pages][0][\groups][2] = (
     // Freq row
     (
       isRow: 1,
-      align: \center,
+      align: \left,
       parameters: [
         (
           key: \hpFreq,
@@ -739,7 +735,7 @@ metadata[\ui][\pages][0][\groups][2] = (
     // Q row
     (
       isRow: 1,
-      align: \center,
+      align: \left,
       parameters: [
         (
           key: \hpQ,

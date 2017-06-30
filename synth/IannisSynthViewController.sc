@@ -506,7 +506,7 @@ IannisSynthViewController : CompositeView {
       button.valueAction = value.value();
     };
 
-    this.data[key][\spec] = ControlSpec(0, 1, 0, 1);
+    this.data[key][\spec] = ControlSpec(0, uiObj[\states].size-1, 1, 0);
 
     // layout
     view.layout = VLayout(button);
