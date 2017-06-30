@@ -435,13 +435,369 @@ SynthDef("granulator", {arg bufnum, gran_env_bufnum = -1,
 //
 var metadata = ();
 
+
 // main info
 metadata[\type] = \effect;
 metadata[\name] = "Parameq";
 metadata[\id] = "by.alestsurko.iannis.parameq";
 metadata[\author] = "Ales Tsurko";
 metadata[\site] = "http://alestsurko.by";
-metadata[\description] = "5-band parametric EQ";
+metadata[\description] = "5-band parametric EQ with LP, HP, Lo-Shelf and Hi-Shelf filters.";
+
+
+// UI
+metadata[\ui] = (pages: []);
+
+// pages
+metadata[\ui][\pages] = [(
+  name: "EQ",
+  groups: nil!3
+)];
+
+// groups
+
+// Peak bypass buttons
+~peakBypassButtons = [];
+
+5.do({arg n;
+  var key = ("peak"++(n+1)++"Bypass").asSymbol;
+  var onStateName = (n+1) + "- On";
+  var offStateName = (n+1) + "- Off";
+
+  ~peakBypassButtons = ~peakBypassButtons.add(
+    (
+      key: key,
+      ui: (
+        type: \button,
+        width: 50,
+        states: [
+          (
+            name: onStateName,
+            value: 0
+          ),
+          (
+            name: offStateName,
+            value: 1
+          )
+        ]
+      )
+    )
+  )
+});
+
+// Peak frequencies
+~peakFrequenciesKnobs = [];
+
+5.do({arg n;
+  var key = ("peak"++(n+1)++"Freq").asSymbol;
+  var name = "Peak" + (n+1);
+  var defaultFreq = 120 * (2**n);
+
+  ~peakFrequenciesKnobs = ~peakFrequenciesKnobs.add(
+    (
+      key: key,
+      name: name,
+      spec: ControlSpec(10, 22000, \exp, 0, defaultFreq, "Hz"),
+      ui: (
+        type: \knob,
+      )
+    )
+  )
+});
+
+// Peak Qs
+~peakQKnobs = [];
+
+5.do({arg n;
+  var key = ("peak"++(n+1)++"Q").asSymbol;
+  var name = "Q";
+
+  ~peakQKnobs = ~peakQKnobs.add(
+    (
+      key: key,
+      name: name,
+      spec: ControlSpec(0.01, 10),
+      ui: (
+        type: \knob,
+      )
+    )
+  )
+});
+
+// Peak gains
+~peakGainKnobs = [];
+
+5.do({arg n;
+  var key = ("peak"++(n+1)++"Gain").asSymbol;
+  var name = "Gain";
+
+  ~peakGainKnobs = ~peakGainKnobs.add(
+    (
+      key: key,
+      name: name,
+      spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
+      ui: (
+        type: \knob,
+      )
+    )
+  )
+});
+
+// Peaks
+metadata[\ui][\pages][0][\groups][0] = (
+  parameters: [
+    // Bypass buttons row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: ~peakBypassButtons
+    ),
+
+    // Frequencies row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: ~peakFrequenciesKnobs
+    ),
+
+    // Qs row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: ~peakQKnobs
+    ),
+    
+    // Gains row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: ~peakGainKnobs
+    )
+  ]
+);
+
+// LS, HS group
+metadata[\ui][\pages][0][\groups][1] = (
+  parameters: [
+    // Bypass row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        
+        (
+          key: \loShelfBypass,
+          ui: (
+            type: \button,
+            width: 60,
+            states: [
+              (
+                name: "LS - On",
+                value: 0
+              ),
+              (
+                name: "LS - Off",
+                value: 1
+              )
+            ]
+          )
+        ),
+
+        (
+          key: \hiShelfBypass,
+          ui: (
+            type: \button,
+            width: 60,
+            states: [
+              (
+                name: "HS - On",
+                value: 0
+              ),
+              (
+                name: "HS - Off",
+                value: 1
+              )
+            ]
+          )
+        )
+      ]
+    ),
+
+    // Freq row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        (
+          key: \loShelfFreq,
+          name: "LS Freq",
+          spec: ControlSpec(20, 22000, \exp, 0, 150, "Hz"),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        (
+          key: \hiShelfFreq,
+          name: "HS Freq",
+          spec: ControlSpec(20, 22000, \exp, 0, 7900, "Hz"),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    ),
+
+    // Q row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        (
+          key: \loShelfQ,
+          name: "Q",
+          spec: ControlSpec(0.01, 10),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        (
+          key: \hiShelfQ,
+          name: "Q",
+          spec: ControlSpec(0.01, 10),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    ),
+
+    // Gain row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        (
+          key: \loShelfGain,
+          name: "Gain",
+          spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        (
+          key: \hiShelfGain,
+          name: "Gain",
+          spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    )
+  ]
+);
+
+// LP, HP group
+metadata[\ui][\pages][0][\groups][2] = (
+  parameters: [
+    // Bypass row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        
+        (
+          key: \hpBypass,
+          ui: (
+            type: \button,
+            width: 60,
+            states: [
+              (
+                name: "HP - On",
+                value: 0
+              ),
+              (
+                name: "HP - Off",
+                value: 1
+              )
+            ]
+          )
+        ),
+
+        (
+          key: \lpBypass,
+          ui: (
+            type: \button,
+            width: 60,
+            states: [
+              (
+                name: "LP - On",
+                value: 0
+              ),
+              (
+                name: "LP - Off",
+                value: 1
+              )
+            ]
+          )
+        )
+      ]
+    ),
+
+    // Freq row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        (
+          key: \hpFreq,
+          name: "HP Freq",
+          spec: ControlSpec(20, 22000, \exp, 0, 20, "Hz"),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        (
+          key: \lpFreq,
+          name: "LP Freq",
+          spec: ControlSpec(20, 22000, \exp, 0, 22000, "Hz"),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    ),
+
+    // Q row
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        (
+          key: \hpQ,
+          name: "Q",
+          spec: ControlSpec(0.01, 10),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        (
+          key: \lpQ,
+          name: "Q",
+          spec: ControlSpec(0.01, 10),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    )
+  ]
+);
 
 // presets
 metadata[\presets] = [];
@@ -450,65 +806,64 @@ metadata[\presets] = metadata[\presets].add(
     name: "Default",
     isFactory: true,
     values: (
-      in: 0,
       /*LP*/
       lpFreq: 22000,
       lpQ: 2,
-      lpBypass: 1,
+      lpBypass: 0,
       /*HP*/
       hpFreq: 20,
       hpQ: 2,
-      hpBypass: 1,
+      hpBypass: 0,
       /*LoShelf*/
       loShelfFreq: 120,
       loShelfQ: 2,
       loShelfGain: 0,
-      loShelfBypass: 1,
+      loShelfBypass: 0,
       /*HiShelf*/
       hiShelfFreq: 12700,
       hiShelfQ: 2,
       hiShelfGain: 0,
-      hiShelfBypass: 1,
+      hiShelfBypass: 0,
       /*Peak 1*/
       peak1Freq: 200,
       peak1Q: 2,
       peak1Gain: 0,
-      peak1Bypass: 1,
+      peak1Bypass: 0,
       /*Peak 2*/
       peak2Freq: 800,
       peak2Q: 2,
       peak2Gain: 0,
-      peak2Bypass: 1,
+      peak2Bypass: 0,
       /*Peak 3*/
       peak3Freq: 3200,
       peak3Q: 2,
       peak3Gain: 0,
-      peak3Bypass: 1,
+      peak3Bypass: 0,
       /*Peak 4*/
       peak4Freq: 4500,
       peak4Q: 2,
       peak4Gain: 0,
-      peak4Bypass: 1,
+      peak4Bypass: 0,
       /*Peak 5*/
       peak5Freq: 8000,
       peak5Q: 2,
       peak5Gain: 0,
-      peak5Bypass: 1,
+      peak5Bypass: 0,
     )
   )
-)
+);
 
-SynthDef("by.alestsurko.iannis.parameq", {arg 
+SynthDef("by-alestsurko-iannis-parameq", {arg 
   in = 0,
   lpFreq = 20000, lpQ = 2, lpBypass = 1,                                  // LP
   hpFreq = 20, hpQ = 2, hpBypass = 1,                                     // HP
-  loShelfFreq = 120, loShelfQ = 2, loShelfGain = 0, loShelfBypass = 1,    // LoShelf
-  hiShelfFreq = 12700, hiShelfQ = 2, hiShelfGain = 0, hiShelfBypass = 1,  // HiShelf
-  peak1Freq = 200, peak1Q = 2, peak1Gain = 0, peak1Bypass = 1,            // Peak 1
-  peak2Freq = 800, peak2Q = 2, peak2Gain = 0, peak2Bypass = 1,            // Peak 2
-  peak3Freq = 3200, peak3Q = 2, peak3Gain = 0, peak3Bypass = 1,           // Peak 3
-  peak4Freq = 4500, peak4Q = 2, peak4Gain = 0, peak4Bypass = 1,           // Peak 4
-  peak5Freq = 8000, peak5Q = 2, peak5Gain = 0, peak5Bypass = 1;           // Peak 5
+  loShelfFreq = 120, loShelfQ = 2, loShelfGain = 0, loShelfBypass = 0,    // LoShelf
+  hiShelfFreq = 12700, hiShelfQ = 2, hiShelfGain = 0, hiShelfBypass = 0,  // HiShelf
+  peak1Freq = 200, peak1Q = 2, peak1Gain = 0, peak1Bypass = 0,            // Peak 1
+  peak2Freq = 800, peak2Q = 2, peak2Gain = 0, peak2Bypass = 0,            // Peak 2
+  peak3Freq = 3200, peak3Q = 2, peak3Gain = 0, peak3Bypass = 0,           // Peak 3
+  peak4Freq = 4500, peak4Q = 2, peak4Gain = 0, peak4Bypass = 0,           // Peak 4
+  peak5Freq = 8000, peak5Q = 2, peak5Gain = 0, peak5Bypass = 0;           // Peak 5
   
   var source, 
   lp,

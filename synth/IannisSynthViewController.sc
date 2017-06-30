@@ -421,12 +421,13 @@ IannisSynthViewController : CompositeView {
     var view = CompositeView();
     var button = Button();
     var states = [];
+    var width = uiObj[\width]?150;
 
     uiObj[\states].do({arg item;
       states = states.add([item[\name]]);
     });
 
-    button.fixedWidth = 150;
+    button.fixedWidth = width;
     button.states = states;
 
     button.action = {arg but;

@@ -19,7 +19,13 @@ Quarks.uninstall("Iannis");
 
     SynthDescLib(\iannis_synth);
     // init synthdescs for iannis' synthdefs
-    SynthDescLib.getLib(\iannis_synth).read(SynthDef.synthDefDir+/+"granulator.scsyndef");
+    PathName(SynthDef.synthDefDir).files.do({arg pathName;
+      if (pathName.extension == "scsyndef") {
+        SynthDescLib
+        .getLib(\iannis_synth)
+        .read(pathName.fullPath);
+      };
+    });
 
     // load iannis synthdesc lib into global lib
     SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
@@ -37,6 +43,9 @@ TempoClock.default.tempo = 107/60;
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
 // Synth view controller
+(
+v = IannisSynthViewController('by-alestsurko-iannis-parameq').front;
+)
 (
 t = IannisMixerTrack();
 t.instrumentsManager.selectInstrument(\granulator);
