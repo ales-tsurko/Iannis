@@ -1,5 +1,10 @@
 IannisSynthViewController : CompositeView {
-  var <synthName, 
+  var <synthName,
+  <description,
+  <author,
+  <type,
+  <id,
+  <site,
   <pagesView, 
   <node, 
   <metadata, 
@@ -195,7 +200,12 @@ IannisSynthViewController : CompositeView {
   parse {
     metadata.keysDo({arg key;
       switch(key,
+        \type, {this.parseType(metadata[\type])},
         \name, {this.parseName(metadata[\name])},
+        \description, {this.parseDescription(metadata[\description])},
+        \author, {this.parseAuthor(metadata[\author])},
+        \site, {this.parseSite(metadata[\site])},
+        \id, {this.parseID(metadata[\id])},
         \ui, {this.parseUI(metadata[\ui])},
         \presets, {this.parseFactoryPresets(metadata[\presets])}
       );
@@ -204,8 +214,29 @@ IannisSynthViewController : CompositeView {
     this.didFinishParsing();
   }
 
-  parseName {arg name;
-    this.synthName = name;
+  parseType {arg sType;
+    type = sType;
+  }
+
+  parseName {arg sName;
+    // this is important here (custom setter)
+    this.synthName = sName;
+  }
+
+  parseDescription {arg desc;
+    description = desc;
+  }
+
+  parseAuthor {arg sAuthor;
+    author = sAuthor;
+  }
+
+  parseID {arg sID;
+    id = sID;
+  }
+
+  parseSite {arg sSite;
+    site = sSite;
   }
 
   parseUI {arg uiObj;
@@ -273,6 +304,13 @@ IannisSynthViewController : CompositeView {
       view = this.parseRow(parameters, align);
     };
 
+    // if is column
+    parameter[\isColumn]!?{
+      var align = parameter[\align];
+      var parameters = parameter[\parameters];
+      view = this.parseRow(parameters, align);
+    };
+
     // if is tabbed element
     parameter[\tabs]!?{
       view = this.parseTabbedElement(parameter[\tabs]);
@@ -286,7 +324,30 @@ IannisSynthViewController : CompositeView {
     view.layout = HLayout();
 
     parametersArr.do({arg obj;
-      var element = this.parseUIElement(obj[\key], obj[\name], obj[\spec],obj[\ui]);
+      var element;
+      obj[\isColumn]!?{
+        element = this.parseColumn(obj[\parameters], obj[\align]);
+      }??{
+        element = this.parseUIElement(obj[\key], obj[\name], obj[\spec],obj[\ui]);
+      };
+
+      view.layout.add(element);
+    });
+
+    ^this.parseAlignment(view, align);
+  }
+
+  parseColumn {arg parametersArr, align;
+    var view = CompositeView();
+    view.layout = VLayout();
+
+    parametersArr.do({arg obj;
+      var element;
+      obj[\isRow]!?{
+        element = this.parseRow(obj[\parameters], obj[\align]);
+      }??{
+        element = this.parseUIElement(obj[\key], obj[\name], obj[\spec],obj[\ui]);
+      };
       view.layout.add(element);
     });
 

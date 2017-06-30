@@ -442,7 +442,7 @@ metadata[\name] = "Parameq";
 metadata[\id] = "by.alestsurko.iannis.parameq";
 metadata[\author] = "Ales Tsurko";
 metadata[\site] = "http://alestsurko.by";
-metadata[\description] = "5-band parametric EQ with LP, HP, Lo-Shelf and Hi-Shelf filters.";
+metadata[\description] = "4-band parametric EQ with LP, HP, Lo-Shelf and Hi-Shelf filters.";
 
 
 // UI
@@ -456,122 +456,86 @@ metadata[\ui][\pages] = [(
 
 // groups
 
-// Peak bypass buttons
-~peakBypassButtons = [];
+// Peak columns
+~peakColumns = [];
 
-5.do({arg n;
-  var key = ("peak"++(n+1)++"Bypass").asSymbol;
+4.do({arg n;
+  var bypassKey = ("peak"++(n+1)++"Bypass").asSymbol;
   var onStateName = (n+1) + "- On";
   var offStateName = (n+1) + "- Off";
+  var freqKey = ("peak"++(n+1)++"Freq").asSymbol;
+  var freqName = "Peak"+(n+1);
+  var freqSpec = ControlSpec(20, 22000, \exp, 0, 120*(2**n), "Hz");
+  var qKey = ("peak"++(n+1)++"Q").asSymbol;
+  var qSpec = ControlSpec(0.01, 10);
+  var gainKey = ("peak"++(n+1)++"Gain").asSymbol;
+  var gainSpec = ControlSpec(0.ampdb, 24, \db, 0, 0, "dB");
 
-  ~peakBypassButtons = ~peakBypassButtons.add(
+  ~peakColumns = ~peakColumns.add(
     (
-      key: key,
-      ui: (
-        type: \button,
-        width: 50,
-        states: [
-          (
-            name: onStateName,
-            value: 0
-          ),
-          (
-            name: offStateName,
-            value: 1
+      isColumn: 1,
+      align: \center,
+      parameters: [
+        // bypass button
+        (
+          key: bypassKey,
+          ui: (
+            type: \button,
+            width: 50,
+            states: [
+              (
+                name: onStateName,
+                value: 0
+              ),
+              (
+                name: offStateName,
+                value: 1
+              )
+            ]
           )
-        ]
-      )
+        ),
+
+        // frequency knob
+        (
+          key: freqKey,
+          name: freqName,
+          spec: freqSpec,
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // Q knob
+        (
+          key: qKey,
+          name: "Q",
+          spec: qSpec,
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // gain knob
+        (
+          key: gainKey,
+          name: "Gain",
+          spec: gainSpec,
+          ui: (
+            type: \knob
+          )
+        )
+      ]
     )
-  )
-});
-
-// Peak frequencies
-~peakFrequenciesKnobs = [];
-
-5.do({arg n;
-  var key = ("peak"++(n+1)++"Freq").asSymbol;
-  var name = "Peak" + (n+1);
-  var defaultFreq = 120 * (2**n);
-
-  ~peakFrequenciesKnobs = ~peakFrequenciesKnobs.add(
-    (
-      key: key,
-      name: name,
-      spec: ControlSpec(10, 22000, \exp, 0, defaultFreq, "Hz"),
-      ui: (
-        type: \knob,
-      )
-    )
-  )
-});
-
-// Peak Qs
-~peakQKnobs = [];
-
-5.do({arg n;
-  var key = ("peak"++(n+1)++"Q").asSymbol;
-  var name = "Q";
-
-  ~peakQKnobs = ~peakQKnobs.add(
-    (
-      key: key,
-      name: name,
-      spec: ControlSpec(0.01, 10),
-      ui: (
-        type: \knob,
-      )
-    )
-  )
-});
-
-// Peak gains
-~peakGainKnobs = [];
-
-5.do({arg n;
-  var key = ("peak"++(n+1)++"Gain").asSymbol;
-  var name = "Gain";
-
-  ~peakGainKnobs = ~peakGainKnobs.add(
-    (
-      key: key,
-      name: name,
-      spec: ControlSpec(0.ampdb, 24, \db, 0, 0, "dB"),
-      ui: (
-        type: \knob,
-      )
-    )
-  )
+  );
 });
 
 // Peaks
 metadata[\ui][\pages][0][\groups][0] = (
   parameters: [
-    // Bypass buttons row
     (
       isRow: 1,
       align: \center,
-      parameters: ~peakBypassButtons
-    ),
-
-    // Frequencies row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: ~peakFrequenciesKnobs
-    ),
-
-    // Qs row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: ~peakQKnobs
-    ),
-    
-    // Gains row
-    (
-      isRow: 1,
-      align: \center,
-      parameters: ~peakGainKnobs
+      parameters: ~peakColumns
     )
   ]
 );
@@ -825,30 +789,25 @@ metadata[\presets] = metadata[\presets].add(
       hiShelfGain: 0,
       hiShelfBypass: 0,
       /*Peak 1*/
-      peak1Freq: 200,
+      peak1Freq: 250,
       peak1Q: 2,
       peak1Gain: 0,
       peak1Bypass: 0,
       /*Peak 2*/
-      peak2Freq: 800,
+      peak2Freq: 1200,
       peak2Q: 2,
       peak2Gain: 0,
       peak2Bypass: 0,
       /*Peak 3*/
-      peak3Freq: 3200,
+      peak3Freq: 3500,
       peak3Q: 2,
       peak3Gain: 0,
       peak3Bypass: 0,
       /*Peak 4*/
-      peak4Freq: 4500,
+      peak4Freq: 8000,
       peak4Q: 2,
       peak4Gain: 0,
       peak4Bypass: 0,
-      /*Peak 5*/
-      peak5Freq: 8000,
-      peak5Q: 2,
-      peak5Gain: 0,
-      peak5Bypass: 0,
     )
   )
 );
@@ -862,8 +821,7 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak1Freq = 200, peak1Q = 2, peak1Gain = 0, peak1Bypass = 0,            // Peak 1
   peak2Freq = 800, peak2Q = 2, peak2Gain = 0, peak2Bypass = 0,            // Peak 2
   peak3Freq = 3200, peak3Q = 2, peak3Gain = 0, peak3Bypass = 0,           // Peak 3
-  peak4Freq = 4500, peak4Q = 2, peak4Gain = 0, peak4Bypass = 0,           // Peak 4
-  peak5Freq = 8000, peak5Q = 2, peak5Gain = 0, peak5Bypass = 0;           // Peak 5
+  peak4Freq = 4500, peak4Q = 2, peak4Gain = 0, peak4Bypass = 0;           // Peak 4
   
   var source, 
   lp,
@@ -874,7 +832,6 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak2,
   peak3,
   peak4,
-  peak5,
   out;
 
   source = In.ar(in, 2);
@@ -903,10 +860,7 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak4 = BPeakEQ.ar(peak3, peak4Freq, peak4Q.reciprocal, peak4Gain);
   peak4 = (peak3 * peak4Bypass) + (peak4 * (peak4Bypass < 0.5));
 
-  peak5 = BPeakEQ.ar(peak4, peak5Freq, peak5Q.reciprocal, peak5Gain);
-  peak5 = (peak4 * peak5Bypass) + (peak5 * (peak5Bypass < 0.5));
-
-  out = peak5;
+  out = peak4;
 
   ReplaceOut.ar(0, out);
 }, metadata: metadata).writeDefFile(SynthDef.synthDefDir);

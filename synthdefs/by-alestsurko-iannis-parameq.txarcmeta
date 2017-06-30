@@ -1,90 +1,83 @@
 var o, p;
 o = [
 	Event.prNew,  Array.prNew(32),  Array.prNew(1),  Event.prNew,  
-	Array.prNew(12),  "Default",  Event.prNew,  Array.prNew(136),  
-	"5-band parametric EQ with LP, HP, Lo-Shelf and Hi-Shelf filters.",  "Parameq",  "http://alestsurko.by",  Event.prNew,  
+	Array.prNew(12),  "Default",  Event.prNew,  Array.prNew(120),  
+	"4-band parametric EQ with LP, HP, Lo-Shelf and Hi-Shelf filters.",  "Parameq",  "http://alestsurko.by",  Event.prNew,  
 	Array.prNew(4),  Array.prNew(1),  Event.prNew,  Array.prNew(8),  
 	"EQ",  Array.prNew(3),  Event.prNew,  Array.prNew(4),  
-	Array.prNew(4),  Event.prNew,  Array.prNew(12),  Array.prNew(5),  
-	Event.prNew,  Array.prNew(8),  Event.prNew,  Array.prNew(12),  
-	Array.prNew(2),  Event.prNew,  Array.prNew(8),  "1 - On",  
-	Event.prNew,  Array.prNew(8),  "1 - Off",  Event.prNew,  
+	Array.prNew(1),  Event.prNew,  Array.prNew(12),  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(4),  Event.prNew,  
 	Array.prNew(8),  Event.prNew,  Array.prNew(12),  Array.prNew(2),  
-	Event.prNew,  Array.prNew(8),  "2 - On",  Event.prNew,  
-	Array.prNew(8),  "2 - Off",  Event.prNew,  Array.prNew(8),  
-	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
-	Array.prNew(8),  "3 - On",  Event.prNew,  Array.prNew(8),  
-	"3 - Off",  Event.prNew,  Array.prNew(8),  Event.prNew,  
-	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(8),  
-	"4 - On",  Event.prNew,  Array.prNew(8),  "4 - Off",  
-	Event.prNew,  Array.prNew(8),  Event.prNew,  Array.prNew(12),  
-	Array.prNew(2),  Event.prNew,  Array.prNew(8),  "5 - On",  
-	Event.prNew,  Array.prNew(8),  "5 - Off",  Event.prNew,  
-	Array.prNew(12),  Array.prNew(5),  Event.prNew,  Array.prNew(16),  
+	Event.prNew,  Array.prNew(8),  "1 - On",  Event.prNew,  
+	Array.prNew(8),  "1 - Off",  Event.prNew,  Array.prNew(16),  
 	ControlSpec.prNew,  ExponentialWarp.prNew,  "Hz",  Event.prNew,  
 	Array.prNew(4),  "Peak 1",  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  ExponentialWarp.prNew,  Event.prNew,  Array.prNew(4),  
-	"Peak 2",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
-	ExponentialWarp.prNew,  Event.prNew,  Array.prNew(4),  "Peak 3",  
+	ControlSpec.prNew,  LinearWarp.prNew,  "",  Event.prNew,  
+	Array.prNew(4),  "Q",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  DbFaderWarp.prNew,  "dB",  Event.prNew,  
+	Array.prNew(4),  "Gain",  Event.prNew,  Array.prNew(12),  
+	Array.prNew(4),  Event.prNew,  Array.prNew(8),  Event.prNew,  
+	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(8),  
+	"2 - On",  Event.prNew,  Array.prNew(8),  "2 - Off",  
 	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
-	Event.prNew,  Array.prNew(4),  "Peak 4",  Event.prNew,  
-	Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  Event.prNew,  
-	Array.prNew(4),  "Peak 5",  Event.prNew,  Array.prNew(12),  
-	Array.prNew(5),  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
-	LinearWarp.prNew,  "",  Event.prNew,  Array.prNew(4),  
-	"Q",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
-	LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  Event.prNew,  
+	Event.prNew,  Array.prNew(4),  "Peak 2",  Event.prNew,  
 	Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  
 	Array.prNew(4),  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
+	DbFaderWarp.prNew,  Event.prNew,  Array.prNew(4),  Event.prNew,  
+	Array.prNew(12),  Array.prNew(4),  Event.prNew,  Array.prNew(8),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
+	Array.prNew(8),  "3 - On",  Event.prNew,  Array.prNew(8),  
+	"3 - Off",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
+	ExponentialWarp.prNew,  Event.prNew,  Array.prNew(4),  "Peak 3",  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
+	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  DbFaderWarp.prNew,  Event.prNew,  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(4),  Event.prNew,  
+	Array.prNew(8),  Event.prNew,  Array.prNew(12),  Array.prNew(2),  
+	Event.prNew,  Array.prNew(8),  "4 - On",  Event.prNew,  
+	Array.prNew(8),  "4 - Off",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  ExponentialWarp.prNew,  Event.prNew,  Array.prNew(4),  
+	"Peak 4",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
 	LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  Event.prNew,  
+	Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  Event.prNew,  
+	Array.prNew(4),  Event.prNew,  Array.prNew(4),  Array.prNew(4),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
+	Array.prNew(8),  Event.prNew,  Array.prNew(12),  Array.prNew(2),  
+	Event.prNew,  Array.prNew(8),  "LS - On",  Event.prNew,  
+	Array.prNew(8),  "LS - Off",  Event.prNew,  Array.prNew(8),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
+	Array.prNew(8),  "HS - On",  Event.prNew,  Array.prNew(8),  
+	"HS - Off",  Event.prNew,  Array.prNew(12),  Array.prNew(2),  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
+	"Hz",  Event.prNew,  Array.prNew(4),  "LS Freq",  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  
+	"Hz",  Event.prNew,  Array.prNew(4),  "HS Freq",  
+	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
 	Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  
-	Array.prNew(4),  Event.prNew,  Array.prNew(12),  Array.prNew(5),  
+	Array.prNew(4),  "Q",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  
+	"Q",  Event.prNew,  Array.prNew(12),  Array.prNew(2),  
 	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  
 	"dB",  Event.prNew,  Array.prNew(4),  "Gain",  
 	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  
-	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  DbFaderWarp.prNew,  Event.prNew,  Array.prNew(4),  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  
-	Event.prNew,  Array.prNew(4),  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  DbFaderWarp.prNew,  Event.prNew,  Array.prNew(4),  
-	Event.prNew,  Array.prNew(4),  Array.prNew(4),  Event.prNew,  
+	"dB",  Event.prNew,  Array.prNew(4),  "Gain",  
+	Event.prNew,  Array.prNew(4),  Array.prNew(3),  Event.prNew,  
 	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(8),  
 	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
-	Array.prNew(8),  "LS - On",  Event.prNew,  Array.prNew(8),  
-	"LS - Off",  Event.prNew,  Array.prNew(8),  Event.prNew,  
+	Array.prNew(8),  "HP - On",  Event.prNew,  Array.prNew(8),  
+	"HP - Off",  Event.prNew,  Array.prNew(8),  Event.prNew,  
 	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(8),  
-	"HS - On",  Event.prNew,  Array.prNew(8),  "HS - Off",  
+	"LP - On",  Event.prNew,  Array.prNew(8),  "LP - Off",  
 	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
 	Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  "Hz",  
-	Event.prNew,  Array.prNew(4),  "LS Freq",  Event.prNew,  
+	Event.prNew,  Array.prNew(4),  "HP Freq",  Event.prNew,  
 	Array.prNew(16),  ControlSpec.prNew,  ExponentialWarp.prNew,  "Hz",  
-	Event.prNew,  Array.prNew(4),  "HS Freq",  Event.prNew,  
+	Event.prNew,  Array.prNew(4),  "LP Freq",  Event.prNew,  
 	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(16),  
 	ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  
 	"Q",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
 	LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  "Q",  
-	Event.prNew,  Array.prNew(12),  Array.prNew(2),  Event.prNew,  
-	Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  "dB",  
-	Event.prNew,  Array.prNew(4),  "Gain",  Event.prNew,  
-	Array.prNew(16),  ControlSpec.prNew,  DbFaderWarp.prNew,  "dB",  
-	Event.prNew,  Array.prNew(4),  "Gain",  Event.prNew,  
-	Array.prNew(4),  Array.prNew(3),  Event.prNew,  Array.prNew(12),  
-	Array.prNew(2),  Event.prNew,  Array.prNew(8),  Event.prNew,  
-	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(8),  
-	"HP - On",  Event.prNew,  Array.prNew(8),  "HP - Off",  
-	Event.prNew,  Array.prNew(8),  Event.prNew,  Array.prNew(12),  
-	Array.prNew(2),  Event.prNew,  Array.prNew(8),  "LP - On",  
-	Event.prNew,  Array.prNew(8),  "LP - Off",  Event.prNew,  
-	Array.prNew(12),  Array.prNew(2),  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  ExponentialWarp.prNew,  "Hz",  Event.prNew,  
-	Array.prNew(4),  "HP Freq",  Event.prNew,  Array.prNew(16),  
-	ControlSpec.prNew,  ExponentialWarp.prNew,  "Hz",  Event.prNew,  
-	Array.prNew(4),  "LP Freq",  Event.prNew,  Array.prNew(12),  
-	Array.prNew(2),  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
-	LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  "Q",  
-	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
-	Event.prNew,  Array.prNew(4),  "Q",  "by.alestsurko.iannis.parameq",  
-	"Ales Tsurko"
+	"by.alestsurko.iannis.parameq",  "Ales Tsurko"
 ];
 p = [
 	// Event
@@ -99,7 +92,7 @@ p = [
 		nil,  nil,  nil,  nil,  
 		'site',  o[10],  'ui',  o[11],  
 		nil,  nil,  'type',  'effect',  
-		'id',  o[335],  'author',  o[336] ],  
+		'id',  o[308],  'author',  o[309] ],  
 	// Array
 	2, [ o[3] ],  
 	// Event
@@ -111,44 +104,40 @@ p = [
 		nil,  nil,  'isFactory',  true,  
 		'values',  o[6],  nil,  nil ],  
 	// Event
-	6, [ array: o[7],  size: 34,  
+	6, [ array: o[7],  size: 30,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	7, [ 'lpQ',  2,  nil,  nil,  
-		'peak3Gain',  0,  'hiShelfFreq',  12700,  
-		'peak5Gain',  0,  'peak5Q',  2,  
-		nil,  nil,  nil,  nil,  
-		'peak1Q',  2,  'lpBypass',  0,  
-		'peak2Q',  2,  'peak4Q',  2,  
-		nil,  nil,  nil,  nil,  
-		'peak2Freq',  800,  'peak4Gain',  0,  
-		'peak4Bypass',  0,  'hpBypass',  0,  
-		'peak5Freq',  8000,  nil,  nil,  
-		'peak3Bypass',  0,  nil,  nil,  
-		'peak3Freq',  3200,  nil,  nil,  
-		nil,  nil,  'hiShelfBypass',  0,  
-		'lpFreq',  22000,  'hpQ',  2,  
-		'loShelfQ',  2,  'peak4Freq',  4500,  
-		nil,  nil,  nil,  nil,  
-		'peak1Gain',  0,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  'hiShelfGain',  0,  
-		'loShelfGain',  0,  'peak2Gain',  0,  
-		'peak5Bypass',  0,  'loShelfBypass',  0,  
-		'peak1Freq',  200,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  'hpFreq',  20,  
-		'peak2Bypass',  0,  nil,  nil,  
-		'loShelfFreq',  120,  'hiShelfQ',  2,  
-		'peak1Bypass',  0,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
+	7, [ nil,  nil,  nil,  nil,  
+		'peak3Gain',  0,  'hpQ',  2,  
+		'loShelfFreq',  120,  'hiShelfBypass',  0,  
+		nil,  nil,  'loShelfBypass',  0,  
 		'peak3Q',  2,  nil,  nil,  
-		nil,  nil,  nil,  nil ],  
+		'peak1Bypass',  0,  nil,  nil,  
+		'lpQ',  2,  'hpFreq',  20,  
+		nil,  nil,  nil,  nil,  
+		'peak1Q',  2,  'peak2Bypass',  0,  
+		'peak3Freq',  3500,  'loShelfQ',  2,  
+		'hiShelfFreq',  12700,  'lpBypass',  0,  
+		'peak3Bypass',  0,  'hiShelfGain',  0,  
+		'peak4Q',  2,  'hpBypass',  0,  
+		'peak4Gain',  0,  'peak4Bypass',  0,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'peak1Freq',  250,  nil,  nil,  
+		'lpFreq',  22000,  'peak2Freq',  1200,  
+		'peak1Gain',  0,  nil,  nil,  
+		nil,  nil,  'peak2Gain',  0,  
+		'loShelfGain',  0,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'hiShelfQ',  2,  
+		nil,  nil,  nil,  nil,  
+		'peak2Q',  2,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'peak4Freq',  8000,  nil,  nil ],  
 	// Event
 	11, [ array: o[12],  size: 1,  
 		proto: nil,  parent: nil,  
@@ -165,7 +154,7 @@ p = [
 	15, [ 'name',  o[16],  nil,  nil,  
 		'groups',  o[17],  nil,  nil ],  
 	// Array
-	17, [ o[18],  o[188],  o[271] ],  
+	17, [ o[18],  o[161],  o[244] ],  
 	// Event
 	18, [ array: o[19],  size: 1,  
 		proto: nil,  parent: nil,  
@@ -173,7 +162,7 @@ p = [
 	// Array
 	19, [ 'parameters',  o[20],  nil,  nil ],  
 	// Array
-	20, [ o[21],  o[79],  o[118],  o[153] ],  
+	20, [ o[21] ],  
 	// Event
 	21, [ array: o[22],  size: 3,  
 		proto: nil,  parent: nil,  
@@ -183,191 +172,198 @@ p = [
 		nil,  nil,  'isRow',  1,  
 		'parameters',  o[23],  nil,  nil ],  
 	// Array
-	23, [ o[24],  o[35],  o[46],  o[57],  
-		o[68] ],  
+	23, [ o[24],  o[62],  o[95],  o[128] ],  
 	// Event
-	24, [ array: o[25],  size: 2,  
+	24, [ array: o[25],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	25, [ 'ui',  o[26],  nil,  nil,  
+	25, [ 'align',  'center',  nil,  nil,  
+		'isColumn',  1,  nil,  nil,  
+		'parameters',  o[26],  nil,  nil ],  
+	// Array
+	26, [ o[27],  o[38],  o[46],  o[54] ],  
+	// Event
+	27, [ array: o[28],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	28, [ 'ui',  o[29],  nil,  nil,  
 		nil,  nil,  'key',  'peak1Bypass' ],  
 	// Event
-	26, [ array: o[27],  size: 3,  
+	29, [ array: o[30],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	27, [ nil,  nil,  'states',  o[28],  
+	30, [ nil,  nil,  'states',  o[31],  
 		'width',  50,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	28, [ o[29],  o[32] ],  
-	// Event
-	29, [ array: o[30],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	30, [ 'name',  o[31],  nil,  nil,  
-		nil,  nil,  'value',  0 ],  
+	31, [ o[32],  o[35] ],  
 	// Event
 	32, [ array: o[33],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
 	33, [ 'name',  o[34],  nil,  nil,  
-		nil,  nil,  'value',  1 ],  
+		nil,  nil,  'value',  0 ],  
 	// Event
 	35, [ array: o[36],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	36, [ 'ui',  o[37],  nil,  nil,  
-		nil,  nil,  'key',  'peak2Bypass' ],  
-	// Event
-	37, [ array: o[38],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	38, [ nil,  nil,  'states',  o[39],  
-		'width',  50,  nil,  nil,  
-		nil,  nil,  'type',  'button' ],  
-	// Array
-	39, [ o[40],  o[43] ],  
-	// Event
-	40, [ array: o[41],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	41, [ 'name',  o[42],  nil,  nil,  
-		nil,  nil,  'value',  0 ],  
-	// Event
-	43, [ array: o[44],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	44, [ 'name',  o[45],  nil,  nil,  
+	36, [ 'name',  o[37],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	46, [ array: o[47],  size: 2,  
+	38, [ array: o[39],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	47, [ 'ui',  o[48],  nil,  nil,  
-		nil,  nil,  'key',  'peak3Bypass' ],  
+	39, [ nil,  nil,  'spec',  o[40],  
+		nil,  nil,  'ui',  o[43],  
+		'name',  o[45],  nil,  nil,  
+		nil,  nil,  'key',  'peak1Freq' ],  
+	// ControlSpec
+	40, [ minval: 20,  maxval: 22000,  
+		warp: o[41],  step: 0,  
+		default: 120.0,  units: o[42],  
+		grid: nil,  clipLo: 20,  
+		clipHi: 22000 ],  
+	// ExponentialWarp
+	41, [ spec: o[40] ],  
 	// Event
-	48, [ array: o[49],  size: 3,  
+	43, [ array: o[44],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	49, [ nil,  nil,  'states',  o[50],  
-		'width',  50,  nil,  nil,  
-		nil,  nil,  'type',  'button' ],  
-	// Array
-	50, [ o[51],  o[54] ],  
+	44, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	51, [ array: o[52],  size: 2,  
+	46, [ array: o[47],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	52, [ 'name',  o[53],  nil,  nil,  
-		nil,  nil,  'value',  0 ],  
+	47, [ nil,  nil,  'spec',  o[48],  
+		nil,  nil,  'ui',  o[51],  
+		'name',  o[53],  nil,  nil,  
+		nil,  nil,  'key',  'peak1Q' ],  
+	// ControlSpec
+	48, [ minval: 0.01,  maxval: 10,  
+		warp: o[49],  step: 0.0,  
+		default: 0.01,  units: o[50],  
+		grid: nil,  clipLo: 0.01,  
+		clipHi: 10.0 ],  
+	// LinearWarp
+	49, [ spec: o[48] ],  
 	// Event
-	54, [ array: o[55],  size: 2,  
+	51, [ array: o[52],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	55, [ 'name',  o[56],  nil,  nil,  
-		nil,  nil,  'value',  1 ],  
+	52, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	57, [ array: o[58],  size: 2,  
+	54, [ array: o[55],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	58, [ 'ui',  o[59],  nil,  nil,  
-		nil,  nil,  'key',  'peak4Bypass' ],  
+	55, [ nil,  nil,  'spec',  o[56],  
+		nil,  nil,  'ui',  o[59],  
+		'name',  o[61],  nil,  nil,  
+		nil,  nil,  'key',  'peak1Gain' ],  
+	// ControlSpec
+	56, [ minval: -inf,  maxval: 24,  
+		warp: o[57],  step: 0,  
+		default: 0,  units: o[58],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	57, [ spec: o[56] ],  
 	// Event
-	59, [ array: o[60],  size: 3,  
+	59, [ array: o[60],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	60, [ nil,  nil,  'states',  o[61],  
-		'width',  50,  nil,  nil,  
-		nil,  nil,  'type',  'button' ],  
-	// Array
-	61, [ o[62],  o[65] ],  
+	60, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	62, [ array: o[63],  size: 2,  
+	62, [ array: o[63],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	63, [ 'name',  o[64],  nil,  nil,  
-		nil,  nil,  'value',  0 ],  
+	63, [ 'align',  'center',  nil,  nil,  
+		'isColumn',  1,  nil,  nil,  
+		'parameters',  o[64],  nil,  nil ],  
+	// Array
+	64, [ o[65],  o[76],  o[83],  o[89] ],  
 	// Event
 	65, [ array: o[66],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	66, [ 'name',  o[67],  nil,  nil,  
-		nil,  nil,  'value',  1 ],  
+	66, [ 'ui',  o[67],  nil,  nil,  
+		nil,  nil,  'key',  'peak2Bypass' ],  
 	// Event
-	68, [ array: o[69],  size: 2,  
+	67, [ array: o[68],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	69, [ 'ui',  o[70],  nil,  nil,  
-		nil,  nil,  'key',  'peak5Bypass' ],  
-	// Event
-	70, [ array: o[71],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	71, [ nil,  nil,  'states',  o[72],  
+	68, [ nil,  nil,  'states',  o[69],  
 		'width',  50,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	72, [ o[73],  o[76] ],  
+	69, [ o[70],  o[73] ],  
+	// Event
+	70, [ array: o[71],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	71, [ 'name',  o[72],  nil,  nil,  
+		nil,  nil,  'value',  0 ],  
 	// Event
 	73, [ array: o[74],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
 	74, [ 'name',  o[75],  nil,  nil,  
-		nil,  nil,  'value',  0 ],  
-	// Event
-	76, [ array: o[77],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	77, [ 'name',  o[78],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	79, [ array: o[80],  size: 3,  
+	76, [ array: o[77],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	80, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  1,  
-		'parameters',  o[81],  nil,  nil ],  
-	// Array
-	81, [ o[82],  o[90],  o[97],  o[104],  
-		o[111] ],  
-	// Event
-	82, [ array: o[83],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	83, [ nil,  nil,  'spec',  o[84],  
-		nil,  nil,  'ui',  o[87],  
-		'name',  o[89],  nil,  nil,  
-		nil,  nil,  'key',  'peak1Freq' ],  
+	77, [ nil,  nil,  'spec',  o[78],  
+		nil,  nil,  'ui',  o[80],  
+		'name',  o[82],  nil,  nil,  
+		nil,  nil,  'key',  'peak2Freq' ],  
 	// ControlSpec
-	84, [ minval: 10,  maxval: 22000,  
-		warp: o[85],  step: 0,  
-		default: 120.0,  units: o[86],  
-		grid: nil,  clipLo: 10,  
+	78, [ minval: 20,  maxval: 22000,  
+		warp: o[79],  step: 0,  
+		default: 240.0,  units: o[42],  
+		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	85, [ spec: o[84] ],  
+	79, [ spec: o[78] ],  
+	// Event
+	80, [ array: o[81],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	81, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	83, [ array: o[84],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	84, [ nil,  nil,  'spec',  o[85],  
+		nil,  nil,  'ui',  o[87],  
+		'name',  o[53],  nil,  nil,  
+		nil,  nil,  'key',  'peak2Q' ],  
+	// ControlSpec
+	85, [ minval: 0.01,  maxval: 10,  
+		warp: o[86],  step: 0.0,  
+		default: 0.01,  units: o[50],  
+		grid: nil,  clipLo: 0.01,  
+		clipHi: 10.0 ],  
+	// LinearWarp
+	86, [ spec: o[85] ],  
 	// Event
 	87, [ array: o[88],  size: 1,  
 		proto: nil,  parent: nil,  
@@ -375,125 +371,132 @@ p = [
 	// Array
 	88, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	90, [ array: o[91],  size: 4,  
+	89, [ array: o[90],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	91, [ nil,  nil,  'spec',  o[92],  
-		nil,  nil,  'ui',  o[94],  
-		'name',  o[96],  nil,  nil,  
-		nil,  nil,  'key',  'peak2Freq' ],  
+	90, [ nil,  nil,  'spec',  o[91],  
+		nil,  nil,  'ui',  o[93],  
+		'name',  o[61],  nil,  nil,  
+		nil,  nil,  'key',  'peak2Gain' ],  
 	// ControlSpec
-	92, [ minval: 10,  maxval: 22000,  
-		warp: o[93],  step: 0,  
-		default: 240.0,  units: o[86],  
-		grid: nil,  clipLo: 10,  
-		clipHi: 22000 ],  
-	// ExponentialWarp
-	93, [ spec: o[92] ],  
+	91, [ minval: -inf,  maxval: 24,  
+		warp: o[92],  step: 0,  
+		default: 0,  units: o[58],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	92, [ spec: o[91] ],  
 	// Event
-	94, [ array: o[95],  size: 1,  
+	93, [ array: o[94],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	95, [ nil,  nil,  'type',  'knob' ],  
+	94, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	97, [ array: o[98],  size: 4,  
+	95, [ array: o[96],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	98, [ nil,  nil,  'spec',  o[99],  
-		nil,  nil,  'ui',  o[101],  
-		'name',  o[103],  nil,  nil,  
+	96, [ 'align',  'center',  nil,  nil,  
+		'isColumn',  1,  nil,  nil,  
+		'parameters',  o[97],  nil,  nil ],  
+	// Array
+	97, [ o[98],  o[109],  o[116],  o[122] ],  
+	// Event
+	98, [ array: o[99],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	99, [ 'ui',  o[100],  nil,  nil,  
+		nil,  nil,  'key',  'peak3Bypass' ],  
+	// Event
+	100, [ array: o[101],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	101, [ nil,  nil,  'states',  o[102],  
+		'width',  50,  nil,  nil,  
+		nil,  nil,  'type',  'button' ],  
+	// Array
+	102, [ o[103],  o[106] ],  
+	// Event
+	103, [ array: o[104],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	104, [ 'name',  o[105],  nil,  nil,  
+		nil,  nil,  'value',  0 ],  
+	// Event
+	106, [ array: o[107],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	107, [ 'name',  o[108],  nil,  nil,  
+		nil,  nil,  'value',  1 ],  
+	// Event
+	109, [ array: o[110],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	110, [ nil,  nil,  'spec',  o[111],  
+		nil,  nil,  'ui',  o[113],  
+		'name',  o[115],  nil,  nil,  
 		nil,  nil,  'key',  'peak3Freq' ],  
 	// ControlSpec
-	99, [ minval: 10,  maxval: 22000,  
-		warp: o[100],  step: 0,  
-		default: 480.0,  units: o[86],  
-		grid: nil,  clipLo: 10,  
+	111, [ minval: 20,  maxval: 22000,  
+		warp: o[112],  step: 0,  
+		default: 480.0,  units: o[42],  
+		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	100, [ spec: o[99] ],  
+	112, [ spec: o[111] ],  
 	// Event
-	101, [ array: o[102],  size: 1,  
+	113, [ array: o[114],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	102, [ nil,  nil,  'type',  'knob' ],  
+	114, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	104, [ array: o[105],  size: 4,  
+	116, [ array: o[117],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	105, [ nil,  nil,  'spec',  o[106],  
-		nil,  nil,  'ui',  o[108],  
-		'name',  o[110],  nil,  nil,  
-		nil,  nil,  'key',  'peak4Freq' ],  
+	117, [ nil,  nil,  'spec',  o[118],  
+		nil,  nil,  'ui',  o[120],  
+		'name',  o[53],  nil,  nil,  
+		nil,  nil,  'key',  'peak3Q' ],  
 	// ControlSpec
-	106, [ minval: 10,  maxval: 22000,  
-		warp: o[107],  step: 0,  
-		default: 960.0,  units: o[86],  
-		grid: nil,  clipLo: 10,  
-		clipHi: 22000 ],  
-	// ExponentialWarp
-	107, [ spec: o[106] ],  
-	// Event
-	108, [ array: o[109],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	109, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	111, [ array: o[112],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	112, [ nil,  nil,  'spec',  o[113],  
-		nil,  nil,  'ui',  o[115],  
-		'name',  o[117],  nil,  nil,  
-		nil,  nil,  'key',  'peak5Freq' ],  
-	// ControlSpec
-	113, [ minval: 10,  maxval: 22000,  
-		warp: o[114],  step: 0,  
-		default: 1920.0,  units: o[86],  
-		grid: nil,  clipLo: 10,  
-		clipHi: 22000 ],  
-	// ExponentialWarp
-	114, [ spec: o[113] ],  
-	// Event
-	115, [ array: o[116],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	116, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	118, [ array: o[119],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	119, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  1,  
-		'parameters',  o[120],  nil,  nil ],  
-	// Array
-	120, [ o[121],  o[129],  o[135],  o[141],  
-		o[147] ],  
-	// Event
-	121, [ array: o[122],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	122, [ nil,  nil,  'spec',  o[123],  
-		nil,  nil,  'ui',  o[126],  
-		'name',  o[128],  nil,  nil,  
-		nil,  nil,  'key',  'peak1Q' ],  
-	// ControlSpec
-	123, [ minval: 0.01,  maxval: 10,  
-		warp: o[124],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	118, [ minval: 0.01,  maxval: 10,  
+		warp: o[119],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	124, [ spec: o[123] ],  
+	119, [ spec: o[118] ],  
+	// Event
+	120, [ array: o[121],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	121, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	122, [ array: o[123],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	123, [ nil,  nil,  'spec',  o[124],  
+		nil,  nil,  'ui',  o[126],  
+		'name',  o[61],  nil,  nil,  
+		nil,  nil,  'key',  'peak3Gain' ],  
+	// ControlSpec
+	124, [ minval: -inf,  maxval: 24,  
+		warp: o[125],  step: 0,  
+		default: 0,  units: o[58],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	125, [ spec: o[124] ],  
 	// Event
 	126, [ array: o[127],  size: 1,  
 		proto: nil,  parent: nil,  
@@ -501,662 +504,554 @@ p = [
 	// Array
 	127, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	129, [ array: o[130],  size: 4,  
+	128, [ array: o[129],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	130, [ nil,  nil,  'spec',  o[131],  
-		nil,  nil,  'ui',  o[133],  
-		'name',  o[128],  nil,  nil,  
-		nil,  nil,  'key',  'peak2Q' ],  
+	129, [ 'align',  'center',  nil,  nil,  
+		'isColumn',  1,  nil,  nil,  
+		'parameters',  o[130],  nil,  nil ],  
+	// Array
+	130, [ o[131],  o[142],  o[149],  o[155] ],  
+	// Event
+	131, [ array: o[132],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	132, [ 'ui',  o[133],  nil,  nil,  
+		nil,  nil,  'key',  'peak4Bypass' ],  
+	// Event
+	133, [ array: o[134],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	134, [ nil,  nil,  'states',  o[135],  
+		'width',  50,  nil,  nil,  
+		nil,  nil,  'type',  'button' ],  
+	// Array
+	135, [ o[136],  o[139] ],  
+	// Event
+	136, [ array: o[137],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	137, [ 'name',  o[138],  nil,  nil,  
+		nil,  nil,  'value',  0 ],  
+	// Event
+	139, [ array: o[140],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	140, [ 'name',  o[141],  nil,  nil,  
+		nil,  nil,  'value',  1 ],  
+	// Event
+	142, [ array: o[143],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	143, [ nil,  nil,  'spec',  o[144],  
+		nil,  nil,  'ui',  o[146],  
+		'name',  o[148],  nil,  nil,  
+		nil,  nil,  'key',  'peak4Freq' ],  
 	// ControlSpec
-	131, [ minval: 0.01,  maxval: 10,  
-		warp: o[132],  step: 0.0,  
-		default: 0.01,  units: o[125],  
-		grid: nil,  clipLo: 0.01,  
-		clipHi: 10.0 ],  
-	// LinearWarp
-	132, [ spec: o[131] ],  
+	144, [ minval: 20,  maxval: 22000,  
+		warp: o[145],  step: 0,  
+		default: 960.0,  units: o[42],  
+		grid: nil,  clipLo: 20,  
+		clipHi: 22000 ],  
+	// ExponentialWarp
+	145, [ spec: o[144] ],  
 	// Event
-	133, [ array: o[134],  size: 1,  
+	146, [ array: o[147],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	134, [ nil,  nil,  'type',  'knob' ],  
+	147, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	135, [ array: o[136],  size: 4,  
+	149, [ array: o[150],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	136, [ nil,  nil,  'spec',  o[137],  
-		nil,  nil,  'ui',  o[139],  
-		'name',  o[128],  nil,  nil,  
-		nil,  nil,  'key',  'peak3Q' ],  
-	// ControlSpec
-	137, [ minval: 0.01,  maxval: 10,  
-		warp: o[138],  step: 0.0,  
-		default: 0.01,  units: o[125],  
-		grid: nil,  clipLo: 0.01,  
-		clipHi: 10.0 ],  
-	// LinearWarp
-	138, [ spec: o[137] ],  
-	// Event
-	139, [ array: o[140],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	140, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	141, [ array: o[142],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	142, [ nil,  nil,  'spec',  o[143],  
-		nil,  nil,  'ui',  o[145],  
-		'name',  o[128],  nil,  nil,  
+	150, [ nil,  nil,  'spec',  o[151],  
+		nil,  nil,  'ui',  o[153],  
+		'name',  o[53],  nil,  nil,  
 		nil,  nil,  'key',  'peak4Q' ],  
 	// ControlSpec
-	143, [ minval: 0.01,  maxval: 10,  
-		warp: o[144],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	151, [ minval: 0.01,  maxval: 10,  
+		warp: o[152],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	144, [ spec: o[143] ],  
+	152, [ spec: o[151] ],  
 	// Event
-	145, [ array: o[146],  size: 1,  
+	153, [ array: o[154],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	146, [ nil,  nil,  'type',  'knob' ],  
+	154, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	147, [ array: o[148],  size: 4,  
+	155, [ array: o[156],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	148, [ nil,  nil,  'spec',  o[149],  
-		nil,  nil,  'ui',  o[151],  
-		'name',  o[128],  nil,  nil,  
-		nil,  nil,  'key',  'peak5Q' ],  
+	156, [ nil,  nil,  'spec',  o[157],  
+		nil,  nil,  'ui',  o[159],  
+		'name',  o[61],  nil,  nil,  
+		nil,  nil,  'key',  'peak4Gain' ],  
 	// ControlSpec
-	149, [ minval: 0.01,  maxval: 10,  
-		warp: o[150],  step: 0.0,  
-		default: 0.01,  units: o[125],  
-		grid: nil,  clipLo: 0.01,  
-		clipHi: 10.0 ],  
-	// LinearWarp
-	150, [ spec: o[149] ],  
-	// Event
-	151, [ array: o[152],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	152, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	153, [ array: o[154],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	154, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  1,  
-		'parameters',  o[155],  nil,  nil ],  
-	// Array
-	155, [ o[156],  o[164],  o[170],  o[176],  
-		o[182] ],  
-	// Event
-	156, [ array: o[157],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	157, [ nil,  nil,  'spec',  o[158],  
-		nil,  nil,  'ui',  o[161],  
-		'name',  o[163],  nil,  nil,  
-		nil,  nil,  'key',  'peak1Gain' ],  
-	// ControlSpec
-	158, [ minval: -inf,  maxval: 24,  
-		warp: o[159],  step: 0,  
-		default: 0,  units: o[160],  
+	157, [ minval: -inf,  maxval: 24,  
+		warp: o[158],  step: 0,  
+		default: 0,  units: o[58],  
 		grid: nil,  clipLo: -inf,  
 		clipHi: 24.0 ],  
 	// DbFaderWarp
-	159, [ spec: o[158] ],  
+	158, [ spec: o[157] ],  
+	// Event
+	159, [ array: o[160],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	160, [ nil,  nil,  'type',  'knob' ],  
 	// Event
 	161, [ array: o[162],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	162, [ nil,  nil,  'type',  'knob' ],  
+	162, [ 'parameters',  o[163],  nil,  nil ],  
+	// Array
+	163, [ o[164],  o[189],  o[208],  o[225] ],  
 	// Event
-	164, [ array: o[165],  size: 4,  
+	164, [ array: o[165],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	165, [ nil,  nil,  'spec',  o[166],  
-		nil,  nil,  'ui',  o[168],  
-		'name',  o[163],  nil,  nil,  
-		nil,  nil,  'key',  'peak2Gain' ],  
-	// ControlSpec
-	166, [ minval: -inf,  maxval: 24,  
-		warp: o[167],  step: 0,  
-		default: 0,  units: o[160],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	167, [ spec: o[166] ],  
-	// Event
-	168, [ array: o[169],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	169, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	170, [ array: o[171],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	171, [ nil,  nil,  'spec',  o[172],  
-		nil,  nil,  'ui',  o[174],  
-		'name',  o[163],  nil,  nil,  
-		nil,  nil,  'key',  'peak3Gain' ],  
-	// ControlSpec
-	172, [ minval: -inf,  maxval: 24,  
-		warp: o[173],  step: 0,  
-		default: 0,  units: o[160],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	173, [ spec: o[172] ],  
-	// Event
-	174, [ array: o[175],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	175, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	176, [ array: o[177],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	177, [ nil,  nil,  'spec',  o[178],  
-		nil,  nil,  'ui',  o[180],  
-		'name',  o[163],  nil,  nil,  
-		nil,  nil,  'key',  'peak4Gain' ],  
-	// ControlSpec
-	178, [ minval: -inf,  maxval: 24,  
-		warp: o[179],  step: 0,  
-		default: 0,  units: o[160],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	179, [ spec: o[178] ],  
-	// Event
-	180, [ array: o[181],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	181, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	182, [ array: o[183],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	183, [ nil,  nil,  'spec',  o[184],  
-		nil,  nil,  'ui',  o[186],  
-		'name',  o[163],  nil,  nil,  
-		nil,  nil,  'key',  'peak5Gain' ],  
-	// ControlSpec
-	184, [ minval: -inf,  maxval: 24,  
-		warp: o[185],  step: 0,  
-		default: 0,  units: o[160],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	185, [ spec: o[184] ],  
-	// Event
-	186, [ array: o[187],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	187, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	188, [ array: o[189],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	189, [ 'parameters',  o[190],  nil,  nil ],  
-	// Array
-	190, [ o[191],  o[216],  o[235],  o[252] ],  
-	// Event
-	191, [ array: o[192],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	192, [ 'align',  'center',  nil,  nil,  
+	165, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  1,  
-		'parameters',  o[193],  nil,  nil ],  
+		'parameters',  o[166],  nil,  nil ],  
 	// Array
-	193, [ o[194],  o[205] ],  
+	166, [ o[167],  o[178] ],  
 	// Event
-	194, [ array: o[195],  size: 2,  
+	167, [ array: o[168],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	195, [ 'ui',  o[196],  nil,  nil,  
+	168, [ 'ui',  o[169],  nil,  nil,  
 		nil,  nil,  'key',  'loShelfBypass' ],  
 	// Event
-	196, [ array: o[197],  size: 3,  
+	169, [ array: o[170],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	197, [ nil,  nil,  'states',  o[198],  
+	170, [ nil,  nil,  'states',  o[171],  
 		'width',  60,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	198, [ o[199],  o[202] ],  
+	171, [ o[172],  o[175] ],  
 	// Event
-	199, [ array: o[200],  size: 2,  
+	172, [ array: o[173],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	200, [ 'name',  o[201],  nil,  nil,  
+	173, [ 'name',  o[174],  nil,  nil,  
 		nil,  nil,  'value',  0 ],  
 	// Event
-	202, [ array: o[203],  size: 2,  
+	175, [ array: o[176],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	203, [ 'name',  o[204],  nil,  nil,  
+	176, [ 'name',  o[177],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	205, [ array: o[206],  size: 2,  
+	178, [ array: o[179],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	206, [ 'ui',  o[207],  nil,  nil,  
+	179, [ 'ui',  o[180],  nil,  nil,  
 		nil,  nil,  'key',  'hiShelfBypass' ],  
 	// Event
-	207, [ array: o[208],  size: 3,  
+	180, [ array: o[181],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	208, [ nil,  nil,  'states',  o[209],  
+	181, [ nil,  nil,  'states',  o[182],  
 		'width',  60,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	209, [ o[210],  o[213] ],  
+	182, [ o[183],  o[186] ],  
 	// Event
-	210, [ array: o[211],  size: 2,  
+	183, [ array: o[184],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	211, [ 'name',  o[212],  nil,  nil,  
+	184, [ 'name',  o[185],  nil,  nil,  
 		nil,  nil,  'value',  0 ],  
 	// Event
-	213, [ array: o[214],  size: 2,  
+	186, [ array: o[187],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	214, [ 'name',  o[215],  nil,  nil,  
+	187, [ 'name',  o[188],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	216, [ array: o[217],  size: 3,  
+	189, [ array: o[190],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	217, [ 'align',  'center',  nil,  nil,  
+	190, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  1,  
-		'parameters',  o[218],  nil,  nil ],  
+		'parameters',  o[191],  nil,  nil ],  
 	// Array
-	218, [ o[219],  o[227] ],  
+	191, [ o[192],  o[200] ],  
 	// Event
-	219, [ array: o[220],  size: 4,  
+	192, [ array: o[193],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	220, [ nil,  nil,  'spec',  o[221],  
-		nil,  nil,  'ui',  o[224],  
-		'name',  o[226],  nil,  nil,  
+	193, [ nil,  nil,  'spec',  o[194],  
+		nil,  nil,  'ui',  o[197],  
+		'name',  o[199],  nil,  nil,  
 		nil,  nil,  'key',  'loShelfFreq' ],  
 	// ControlSpec
-	221, [ minval: 20,  maxval: 22000,  
-		warp: o[222],  step: 0,  
-		default: 150,  units: o[223],  
+	194, [ minval: 20,  maxval: 22000,  
+		warp: o[195],  step: 0,  
+		default: 150,  units: o[196],  
 		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	222, [ spec: o[221] ],  
+	195, [ spec: o[194] ],  
 	// Event
-	224, [ array: o[225],  size: 1,  
+	197, [ array: o[198],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	225, [ nil,  nil,  'type',  'knob' ],  
+	198, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	227, [ array: o[228],  size: 4,  
+	200, [ array: o[201],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	228, [ nil,  nil,  'spec',  o[229],  
-		nil,  nil,  'ui',  o[232],  
-		'name',  o[234],  nil,  nil,  
+	201, [ nil,  nil,  'spec',  o[202],  
+		nil,  nil,  'ui',  o[205],  
+		'name',  o[207],  nil,  nil,  
 		nil,  nil,  'key',  'hiShelfFreq' ],  
 	// ControlSpec
-	229, [ minval: 20,  maxval: 22000,  
-		warp: o[230],  step: 0,  
-		default: 7900,  units: o[231],  
+	202, [ minval: 20,  maxval: 22000,  
+		warp: o[203],  step: 0,  
+		default: 7900,  units: o[204],  
 		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	230, [ spec: o[229] ],  
+	203, [ spec: o[202] ],  
 	// Event
-	232, [ array: o[233],  size: 1,  
+	205, [ array: o[206],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	233, [ nil,  nil,  'type',  'knob' ],  
+	206, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	235, [ array: o[236],  size: 3,  
+	208, [ array: o[209],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	236, [ 'align',  'center',  nil,  nil,  
+	209, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  1,  
-		'parameters',  o[237],  nil,  nil ],  
+		'parameters',  o[210],  nil,  nil ],  
 	// Array
-	237, [ o[238],  o[245] ],  
+	210, [ o[211],  o[218] ],  
 	// Event
-	238, [ array: o[239],  size: 4,  
+	211, [ array: o[212],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	239, [ nil,  nil,  'spec',  o[240],  
-		nil,  nil,  'ui',  o[242],  
-		'name',  o[244],  nil,  nil,  
+	212, [ nil,  nil,  'spec',  o[213],  
+		nil,  nil,  'ui',  o[215],  
+		'name',  o[217],  nil,  nil,  
 		nil,  nil,  'key',  'loShelfQ' ],  
 	// ControlSpec
-	240, [ minval: 0.01,  maxval: 10,  
-		warp: o[241],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	213, [ minval: 0.01,  maxval: 10,  
+		warp: o[214],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	241, [ spec: o[240] ],  
+	214, [ spec: o[213] ],  
 	// Event
-	242, [ array: o[243],  size: 1,  
+	215, [ array: o[216],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	243, [ nil,  nil,  'type',  'knob' ],  
+	216, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	245, [ array: o[246],  size: 4,  
+	218, [ array: o[219],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	246, [ nil,  nil,  'spec',  o[247],  
-		nil,  nil,  'ui',  o[249],  
-		'name',  o[251],  nil,  nil,  
+	219, [ nil,  nil,  'spec',  o[220],  
+		nil,  nil,  'ui',  o[222],  
+		'name',  o[224],  nil,  nil,  
 		nil,  nil,  'key',  'hiShelfQ' ],  
 	// ControlSpec
-	247, [ minval: 0.01,  maxval: 10,  
-		warp: o[248],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	220, [ minval: 0.01,  maxval: 10,  
+		warp: o[221],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	248, [ spec: o[247] ],  
+	221, [ spec: o[220] ],  
 	// Event
-	249, [ array: o[250],  size: 1,  
+	222, [ array: o[223],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	250, [ nil,  nil,  'type',  'knob' ],  
+	223, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	225, [ array: o[226],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	226, [ 'align',  'center',  nil,  nil,  
+		nil,  nil,  'isRow',  1,  
+		'parameters',  o[227],  nil,  nil ],  
+	// Array
+	227, [ o[228],  o[236] ],  
+	// Event
+	228, [ array: o[229],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	229, [ nil,  nil,  'spec',  o[230],  
+		nil,  nil,  'ui',  o[233],  
+		'name',  o[235],  nil,  nil,  
+		nil,  nil,  'key',  'loShelfGain' ],  
+	// ControlSpec
+	230, [ minval: -inf,  maxval: 24,  
+		warp: o[231],  step: 0,  
+		default: 0,  units: o[232],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	231, [ spec: o[230] ],  
+	// Event
+	233, [ array: o[234],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	234, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	236, [ array: o[237],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	237, [ nil,  nil,  'spec',  o[238],  
+		nil,  nil,  'ui',  o[241],  
+		'name',  o[243],  nil,  nil,  
+		nil,  nil,  'key',  'hiShelfGain' ],  
+	// ControlSpec
+	238, [ minval: -inf,  maxval: 24,  
+		warp: o[239],  step: 0,  
+		default: 0,  units: o[240],  
+		grid: nil,  clipLo: -inf,  
+		clipHi: 24.0 ],  
+	// DbFaderWarp
+	239, [ spec: o[238] ],  
+	// Event
+	241, [ array: o[242],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	242, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	244, [ array: o[245],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	245, [ 'parameters',  o[246],  nil,  nil ],  
+	// Array
+	246, [ o[247],  o[272],  o[291] ],  
+	// Event
+	247, [ array: o[248],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	248, [ 'align',  'center',  nil,  nil,  
+		nil,  nil,  'isRow',  1,  
+		'parameters',  o[249],  nil,  nil ],  
+	// Array
+	249, [ o[250],  o[261] ],  
+	// Event
+	250, [ array: o[251],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	251, [ 'ui',  o[252],  nil,  nil,  
+		nil,  nil,  'key',  'hpBypass' ],  
 	// Event
 	252, [ array: o[253],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	253, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  1,  
-		'parameters',  o[254],  nil,  nil ],  
-	// Array
-	254, [ o[255],  o[263] ],  
-	// Event
-	255, [ array: o[256],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	256, [ nil,  nil,  'spec',  o[257],  
-		nil,  nil,  'ui',  o[260],  
-		'name',  o[262],  nil,  nil,  
-		nil,  nil,  'key',  'loShelfGain' ],  
-	// ControlSpec
-	257, [ minval: -inf,  maxval: 24,  
-		warp: o[258],  step: 0,  
-		default: 0,  units: o[259],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	258, [ spec: o[257] ],  
-	// Event
-	260, [ array: o[261],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	261, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	263, [ array: o[264],  size: 4,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	264, [ nil,  nil,  'spec',  o[265],  
-		nil,  nil,  'ui',  o[268],  
-		'name',  o[270],  nil,  nil,  
-		nil,  nil,  'key',  'hiShelfGain' ],  
-	// ControlSpec
-	265, [ minval: -inf,  maxval: 24,  
-		warp: o[266],  step: 0,  
-		default: 0,  units: o[267],  
-		grid: nil,  clipLo: -inf,  
-		clipHi: 24.0 ],  
-	// DbFaderWarp
-	266, [ spec: o[265] ],  
-	// Event
-	268, [ array: o[269],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	269, [ nil,  nil,  'type',  'knob' ],  
-	// Event
-	271, [ array: o[272],  size: 1,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	272, [ 'parameters',  o[273],  nil,  nil ],  
-	// Array
-	273, [ o[274],  o[299],  o[318] ],  
-	// Event
-	274, [ array: o[275],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	275, [ 'align',  'center',  nil,  nil,  
-		nil,  nil,  'isRow',  1,  
-		'parameters',  o[276],  nil,  nil ],  
-	// Array
-	276, [ o[277],  o[288] ],  
-	// Event
-	277, [ array: o[278],  size: 2,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	278, [ 'ui',  o[279],  nil,  nil,  
-		nil,  nil,  'key',  'hpBypass' ],  
-	// Event
-	279, [ array: o[280],  size: 3,  
-		proto: nil,  parent: nil,  
-		know: true ],  
-	// Array
-	280, [ nil,  nil,  'states',  o[281],  
+	253, [ nil,  nil,  'states',  o[254],  
 		'width',  60,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	281, [ o[282],  o[285] ],  
+	254, [ o[255],  o[258] ],  
 	// Event
-	282, [ array: o[283],  size: 2,  
+	255, [ array: o[256],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	283, [ 'name',  o[284],  nil,  nil,  
+	256, [ 'name',  o[257],  nil,  nil,  
 		nil,  nil,  'value',  0 ],  
 	// Event
-	285, [ array: o[286],  size: 2,  
+	258, [ array: o[259],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	286, [ 'name',  o[287],  nil,  nil,  
+	259, [ 'name',  o[260],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	288, [ array: o[289],  size: 2,  
+	261, [ array: o[262],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	289, [ 'ui',  o[290],  nil,  nil,  
+	262, [ 'ui',  o[263],  nil,  nil,  
 		nil,  nil,  'key',  'lpBypass' ],  
 	// Event
-	290, [ array: o[291],  size: 3,  
+	263, [ array: o[264],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	291, [ nil,  nil,  'states',  o[292],  
+	264, [ nil,  nil,  'states',  o[265],  
 		'width',  60,  nil,  nil,  
 		nil,  nil,  'type',  'button' ],  
 	// Array
-	292, [ o[293],  o[296] ],  
+	265, [ o[266],  o[269] ],  
 	// Event
-	293, [ array: o[294],  size: 2,  
+	266, [ array: o[267],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	294, [ 'name',  o[295],  nil,  nil,  
+	267, [ 'name',  o[268],  nil,  nil,  
 		nil,  nil,  'value',  0 ],  
 	// Event
-	296, [ array: o[297],  size: 2,  
+	269, [ array: o[270],  size: 2,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	297, [ 'name',  o[298],  nil,  nil,  
+	270, [ 'name',  o[271],  nil,  nil,  
 		nil,  nil,  'value',  1 ],  
 	// Event
-	299, [ array: o[300],  size: 3,  
+	272, [ array: o[273],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	300, [ 'align',  'center',  nil,  nil,  
+	273, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  1,  
-		'parameters',  o[301],  nil,  nil ],  
+		'parameters',  o[274],  nil,  nil ],  
 	// Array
-	301, [ o[302],  o[310] ],  
+	274, [ o[275],  o[283] ],  
 	// Event
-	302, [ array: o[303],  size: 4,  
+	275, [ array: o[276],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	303, [ nil,  nil,  'spec',  o[304],  
-		nil,  nil,  'ui',  o[307],  
-		'name',  o[309],  nil,  nil,  
+	276, [ nil,  nil,  'spec',  o[277],  
+		nil,  nil,  'ui',  o[280],  
+		'name',  o[282],  nil,  nil,  
 		nil,  nil,  'key',  'hpFreq' ],  
 	// ControlSpec
-	304, [ minval: 20,  maxval: 22000,  
-		warp: o[305],  step: 0,  
-		default: 20,  units: o[306],  
+	277, [ minval: 20,  maxval: 22000,  
+		warp: o[278],  step: 0,  
+		default: 20,  units: o[279],  
 		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	305, [ spec: o[304] ],  
+	278, [ spec: o[277] ],  
 	// Event
-	307, [ array: o[308],  size: 1,  
+	280, [ array: o[281],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	308, [ nil,  nil,  'type',  'knob' ],  
+	281, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	310, [ array: o[311],  size: 4,  
+	283, [ array: o[284],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	311, [ nil,  nil,  'spec',  o[312],  
-		nil,  nil,  'ui',  o[315],  
-		'name',  o[317],  nil,  nil,  
+	284, [ nil,  nil,  'spec',  o[285],  
+		nil,  nil,  'ui',  o[288],  
+		'name',  o[290],  nil,  nil,  
 		nil,  nil,  'key',  'lpFreq' ],  
 	// ControlSpec
-	312, [ minval: 20,  maxval: 22000,  
-		warp: o[313],  step: 0,  
-		default: 22000,  units: o[314],  
+	285, [ minval: 20,  maxval: 22000,  
+		warp: o[286],  step: 0,  
+		default: 22000,  units: o[287],  
 		grid: nil,  clipLo: 20,  
 		clipHi: 22000 ],  
 	// ExponentialWarp
-	313, [ spec: o[312] ],  
+	286, [ spec: o[285] ],  
 	// Event
-	315, [ array: o[316],  size: 1,  
+	288, [ array: o[289],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	316, [ nil,  nil,  'type',  'knob' ],  
+	289, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	318, [ array: o[319],  size: 3,  
+	291, [ array: o[292],  size: 3,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	319, [ 'align',  'center',  nil,  nil,  
+	292, [ 'align',  'center',  nil,  nil,  
 		nil,  nil,  'isRow',  1,  
-		'parameters',  o[320],  nil,  nil ],  
+		'parameters',  o[293],  nil,  nil ],  
 	// Array
-	320, [ o[321],  o[328] ],  
+	293, [ o[294],  o[301] ],  
 	// Event
-	321, [ array: o[322],  size: 4,  
+	294, [ array: o[295],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	322, [ nil,  nil,  'spec',  o[323],  
-		nil,  nil,  'ui',  o[325],  
-		'name',  o[327],  nil,  nil,  
+	295, [ nil,  nil,  'spec',  o[296],  
+		nil,  nil,  'ui',  o[298],  
+		'name',  o[300],  nil,  nil,  
 		nil,  nil,  'key',  'hpQ' ],  
 	// ControlSpec
-	323, [ minval: 0.01,  maxval: 10,  
-		warp: o[324],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	296, [ minval: 0.01,  maxval: 10,  
+		warp: o[297],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	324, [ spec: o[323] ],  
+	297, [ spec: o[296] ],  
 	// Event
-	325, [ array: o[326],  size: 1,  
+	298, [ array: o[299],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	326, [ nil,  nil,  'type',  'knob' ],  
+	299, [ nil,  nil,  'type',  'knob' ],  
 	// Event
-	328, [ array: o[329],  size: 4,  
+	301, [ array: o[302],  size: 4,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	329, [ nil,  nil,  'spec',  o[330],  
-		nil,  nil,  'ui',  o[332],  
-		'name',  o[334],  nil,  nil,  
+	302, [ nil,  nil,  'spec',  o[303],  
+		nil,  nil,  'ui',  o[305],  
+		'name',  o[307],  nil,  nil,  
 		nil,  nil,  'key',  'lpQ' ],  
 	// ControlSpec
-	330, [ minval: 0.01,  maxval: 10,  
-		warp: o[331],  step: 0.0,  
-		default: 0.01,  units: o[125],  
+	303, [ minval: 0.01,  maxval: 10,  
+		warp: o[304],  step: 0.0,  
+		default: 0.01,  units: o[50],  
 		grid: nil,  clipLo: 0.01,  
 		clipHi: 10.0 ],  
 	// LinearWarp
-	331, [ spec: o[330] ],  
+	304, [ spec: o[303] ],  
 	// Event
-	332, [ array: o[333],  size: 1,  
+	305, [ array: o[306],  size: 1,  
 		proto: nil,  parent: nil,  
 		know: true ],  
 	// Array
-	333, [ nil,  nil,  'type',  'knob' ]
+	306, [ nil,  nil,  'type',  'knob' ]
 ];
 prUnarchive(o,p);

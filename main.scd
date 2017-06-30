@@ -46,6 +46,7 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 (
 v = IannisSynthViewController('by-alestsurko-iannis-parameq').front;
 )
+
 (
 t = IannisMixerTrack();
 t.instrumentsManager.selectInstrument(\granulator);
