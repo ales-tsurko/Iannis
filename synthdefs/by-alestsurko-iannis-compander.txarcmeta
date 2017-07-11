@@ -1,0 +1,258 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(32),  Array.prNew(1),  Event.prNew,  
+	Array.prNew(12),  "Default",  Event.prNew,  Array.prNew(28),  
+	"Compander",  "General purpose (hard-knee) dynamics processor.",  "http://alestsurko.by",  Event.prNew,  
+	Array.prNew(4),  Array.prNew(1),  Event.prNew,  Array.prNew(8),  
+	Array.prNew(1),  Event.prNew,  Array.prNew(4),  Array.prNew(1),  
+	Event.prNew,  Array.prNew(12),  Array.prNew(7),  Event.prNew,  
+	Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  "",  
+	Event.prNew,  Array.prNew(4),  "Input Gain (dB)",  Event.prNew,  
+	Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  
+	Array.prNew(4),  "Threshold (dB)",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  ExponentialWarp.prNew,  ": 1",  Event.prNew,  
+	Array.prNew(4),  "Gate Ratio",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  ExponentialWarp.prNew,  ": 1",  Event.prNew,  
+	Array.prNew(4),  "Comp. Ratio",  Event.prNew,  Array.prNew(16),  
+	ControlSpec.prNew,  LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  
+	"Attack (ms)",  Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  
+	LinearWarp.prNew,  Event.prNew,  Array.prNew(4),  "Release (ms)",  
+	Event.prNew,  Array.prNew(16),  ControlSpec.prNew,  LinearWarp.prNew,  
+	Event.prNew,  Array.prNew(4),  "Output Gain (dB)",  "by.alestsurko.iannis.compander",  
+	"Ales Tsurko"
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 8,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'presets',  o[2],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'name',  o[8],  'description',  o[9],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'site',  o[10],  'ui',  o[11],  
+		nil,  nil,  'id',  o[75],  
+		'type',  'effect',  'author',  o[76] ],  
+	// Array
+	2, [ o[3] ],  
+	// Event
+	3, [ array: o[4],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	4, [ 'name',  o[5],  nil,  nil,  
+		nil,  nil,  'isFactory',  true,  
+		'values',  o[6],  nil,  nil ],  
+	// Event
+	6, [ array: o[7],  size: 7,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	7, [ 'threshold',  0,  'aboveRatio',  1,  
+		'release',  100,  'belowRatio',  1,  
+		'inputGain',  0,  nil,  nil,  
+		'outputGain',  0,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  'attack',  5 ],  
+	// Event
+	11, [ array: o[12],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	12, [ nil,  nil,  'pages',  o[13] ],  
+	// Array
+	13, [ o[14] ],  
+	// Event
+	14, [ array: o[15],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	15, [ 'name',  Compander,  nil,  nil,  
+		'groups',  o[16],  nil,  nil ],  
+	// Array
+	16, [ o[17] ],  
+	// Event
+	17, [ array: o[18],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	18, [ 'parameters',  o[19],  nil,  nil ],  
+	// Array
+	19, [ o[20] ],  
+	// Event
+	20, [ array: o[21],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	21, [ 'align',  'center',  nil,  nil,  
+		nil,  nil,  'isRow',  1,  
+		'parameters',  o[22],  nil,  nil ],  
+	// Array
+	22, [ o[23],  o[31],  o[38],  o[46],  
+		o[54],  o[61],  o[68] ],  
+	// Event
+	23, [ array: o[24],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	24, [ nil,  nil,  'spec',  o[25],  
+		nil,  nil,  'ui',  o[28],  
+		'name',  o[30],  nil,  nil,  
+		nil,  nil,  'key',  'inputGain' ],  
+	// ControlSpec
+	25, [ minval: -32,  maxval: 32,  
+		warp: o[26],  step: 0.0,  
+		default: -32,  units: o[27],  
+		grid: nil,  clipLo: -32,  
+		clipHi: 32 ],  
+	// LinearWarp
+	26, [ spec: o[25] ],  
+	// Event
+	28, [ array: o[29],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	29, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	31, [ array: o[32],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	32, [ nil,  nil,  'spec',  o[33],  
+		nil,  nil,  'ui',  o[35],  
+		'name',  o[37],  nil,  nil,  
+		nil,  nil,  'key',  'threshold' ],  
+	// ControlSpec
+	33, [ minval: -60,  maxval: 0,  
+		warp: o[34],  step: 0.0,  
+		default: -60,  units: o[27],  
+		grid: nil,  clipLo: -60,  
+		clipHi: 0 ],  
+	// LinearWarp
+	34, [ spec: o[33] ],  
+	// Event
+	35, [ array: o[36],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	36, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	38, [ array: o[39],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	39, [ nil,  nil,  'spec',  o[40],  
+		nil,  nil,  'ui',  o[43],  
+		'name',  o[45],  nil,  nil,  
+		nil,  nil,  'key',  'belowRatio' ],  
+	// ControlSpec
+	40, [ minval: 1,  maxval: 50,  
+		warp: o[41],  step: 0.0,  
+		default: 1,  units: o[42],  
+		grid: nil,  clipLo: 1,  
+		clipHi: 50 ],  
+	// ExponentialWarp
+	41, [ spec: o[40] ],  
+	// Event
+	43, [ array: o[44],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	44, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	46, [ array: o[47],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	47, [ nil,  nil,  'spec',  o[48],  
+		nil,  nil,  'ui',  o[51],  
+		'name',  o[53],  nil,  nil,  
+		nil,  nil,  'key',  'aboveRatio' ],  
+	// ControlSpec
+	48, [ minval: 1,  maxval: 50,  
+		warp: o[49],  step: 0.0,  
+		default: 1,  units: o[50],  
+		grid: nil,  clipLo: 1,  
+		clipHi: 50 ],  
+	// ExponentialWarp
+	49, [ spec: o[48] ],  
+	// Event
+	51, [ array: o[52],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	52, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	54, [ array: o[55],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	55, [ nil,  nil,  'spec',  o[56],  
+		nil,  nil,  'ui',  o[58],  
+		'name',  o[60],  nil,  nil,  
+		nil,  nil,  'key',  'attack' ],  
+	// ControlSpec
+	56, [ minval: 1,  maxval: 300,  
+		warp: o[57],  step: 0.0,  
+		default: 1,  units: o[27],  
+		grid: nil,  clipLo: 1,  
+		clipHi: 300 ],  
+	// LinearWarp
+	57, [ spec: o[56] ],  
+	// Event
+	58, [ array: o[59],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	59, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	61, [ array: o[62],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	62, [ nil,  nil,  'spec',  o[63],  
+		nil,  nil,  'ui',  o[65],  
+		'name',  o[67],  nil,  nil,  
+		nil,  nil,  'key',  'release' ],  
+	// ControlSpec
+	63, [ minval: 1,  maxval: 300,  
+		warp: o[64],  step: 0.0,  
+		default: 1,  units: o[27],  
+		grid: nil,  clipLo: 1,  
+		clipHi: 300 ],  
+	// LinearWarp
+	64, [ spec: o[63] ],  
+	// Event
+	65, [ array: o[66],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	66, [ nil,  nil,  'type',  'vslider' ],  
+	// Event
+	68, [ array: o[69],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	69, [ nil,  nil,  'spec',  o[70],  
+		nil,  nil,  'ui',  o[72],  
+		'name',  o[74],  nil,  nil,  
+		nil,  nil,  'key',  'outputGain' ],  
+	// ControlSpec
+	70, [ minval: -70,  maxval: 24,  
+		warp: o[71],  step: 0.0,  
+		default: -70,  units: o[27],  
+		grid: nil,  clipLo: -70,  
+		clipHi: 24 ],  
+	// LinearWarp
+	71, [ spec: o[70] ],  
+	// Event
+	72, [ array: o[73],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	73, [ nil,  nil,  'type',  'vslider' ]
+];
+prUnarchive(o,p);

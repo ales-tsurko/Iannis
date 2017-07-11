@@ -45,6 +45,8 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 // Synth view controller
 (
 v = IannisSynthViewController('by-alestsurko-iannis-parameq').front;
+c = IannisSynthViewController('by-alestsurko-iannis-compander').front;
+r = IannisSynthViewController('by-alestsurko-iannis-gverb').front;
 )
 
 (

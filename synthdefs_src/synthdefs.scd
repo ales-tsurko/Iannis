@@ -769,11 +769,11 @@ metadata[\presets] = metadata[\presets].add(
       /*LP*/
       lpFreq: 22000,
       lpQ: 2,
-      lpBypass: 0,
+      lpBypass: 1,
       /*HP*/
       hpFreq: 20,
       hpQ: 2,
-      hpBypass: 0,
+      hpBypass: 1,
       /*LoShelf*/
       loShelfFreq: 120,
       loShelfQ: 2,
@@ -857,6 +857,324 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak4 = (peak3 * peak4Bypass) + (peak4 * (peak4Bypass < 0.5));
 
   out = peak4;
+
+  ReplaceOut.ar(0, out);
+}, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
+)
+
+(
+//
+// Compander
+//
+
+var metadata = ();
+
+// Info
+metadata[\type] = \effect;
+metadata[\name] = "Compander";
+metadata[\author] = "Ales Tsurko";
+metadata[\description] = "General purpose (hard-knee) dynamics processor.\nA wrapper of the Compander ugen.";
+metadata[\id] = "by.alestsurko.iannis.compander";
+metadata[\site] = "http://alestsurko.by";
+
+
+// UI
+metadata[\ui] = (
+  pages: [(
+    name: "Compander",
+    groups: nil!1
+  )]
+);
+
+metadata[\ui][\pages][0][\groups][0] = (
+  parameters: [
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        // Input gain
+        (
+          key: \inputGain,
+          name: "Input Gain (dB)",
+          spec: ControlSpec(-32, 32),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Threshold
+        (
+          key: \threshold,
+          name: "Threshold (dB)",
+          spec: ControlSpec(-60, 0),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Gate Ratio
+        (
+          key: \belowRatio,
+          name: "Gate Ratio",
+          spec: ControlSpec(1, 50, \exp, units: ": 1"),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Compression Ratio
+        (
+          key: \aboveRatio,
+          name: "Comp. Ratio",
+          spec: ControlSpec(1, 50, \exp, units: ": 1"),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Attack
+        (
+          key: \attack,
+          name: "Attack (ms)",
+          spec: ControlSpec(1, 300),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Release
+        (
+          key: \release,
+          name: "Release (ms)",
+          spec: ControlSpec(1, 300),
+          ui: (
+            type: \vslider
+          )
+        ),
+
+        // Output gain
+        (
+          key: \outputGain,
+          name: "Output Gain (dB)",
+          spec: ControlSpec(-70, 24),
+          ui: (
+            type: \vslider
+          )
+        )
+      ]
+    )
+  ]
+);
+
+
+// Presets
+metadata[\presets] = [
+  (
+    name: "Default",
+    isFactory: true,
+    values: (
+      threshold: 0,
+      belowRatio: 1,
+      aboveRatio: 1,
+      attack: 5,
+      release: 100,
+      inputGain: 0,
+      outputGain: 0
+    )
+  )
+];
+
+SynthDef("by-alestsurko-iannis-compander", {arg 
+  in = 0,
+
+  threshold = 0,
+  belowRatio = 1, // below ratio
+  aboveRatio = 1, // above ratio
+  attack = 5, // in ms
+  release = 100,
+  inputGain = 0,
+  outputGain = 0; // in ms
+
+  var source, out;
+  source = In.ar(in, 2) * inputGain.dbamp;
+  out = Compander.ar(source, source, 
+    threshold, 
+    belowRatio,
+    aboveRatio,
+    attack*0.001,
+    release*0.001,
+    outputGain.dbamp
+  );
+  ReplaceOut.ar(0, out);
+}, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
+)
+
+(
+var metadata = ();
+
+
+// Info
+
+metadata[\type] = \effect;
+metadata[\name] = "GVerb";
+metadata[\author] = "Ales Tsurko";
+metadata[\description] = "A two-channel reverb.\nA wrapper of the GVerb ugen.";
+metadata[\id] = "by.alestsurko.iannis.gverb";
+metadata[\site] = "http://alestsurko.by";
+
+
+// UI
+
+metadata[\ui] = (
+  pages: [(
+    name: "Main",
+    groups: nil!1
+  )]
+);
+
+metadata[\ui][\pages][0][\groups][0] = (
+  parameters: [
+    (
+      isRow: 1,
+      align: \center,
+      parameters: [
+        // Size
+        (
+          key: \size,
+          name: "Size (m2)",
+          spec: ControlSpec(5, 300),
+          ui: (
+            type: \knob
+          )
+        ),
+
+
+        // Time
+        (
+          key: \time,
+          name: "Time (s)",
+          spec: ControlSpec(0.1, 30),
+          ui: (
+            type: \knob
+          )
+        ),
+
+
+        // Damping
+        (
+          key: \damping,
+          name: "Damping",
+          spec: \unipolar,
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // InputBW
+        (
+          key: \inputbw,
+          name: "InputBW",
+          spec: \unipolar,
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // Spread
+        (
+          key: \spread,
+          name: "Spread",
+          spec: ControlSpec(0, 100),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    ),
+
+    // Levels
+    (
+      isRow: 1, 
+      align: \center,
+      parameters: [
+        // Dry level
+        (
+          key: \dryLevel,
+          name: "Dry Level (dB)",
+          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // Early reflections level
+        (
+          key: \earlyLevel,
+          name: "Early Reflections (dB)",
+          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
+          ui: (
+            type: \knob
+          )
+        ),
+
+        // Reverb level
+        (
+          key: \reverbLevel,
+          name: "Reverb (dB)",
+          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
+          ui: (
+            type: \knob
+          )
+        )
+      ]
+    )
+  ]
+);
+
+
+// Presets
+
+metadata[\presets] = [
+  (
+    name: "Default",
+    isFactory: true,
+    values: (
+      size: 20,
+      time: 1.5,
+      damping: 0.5,
+      inputbw: 1,
+      spread: 15,
+      dryLevel: 0,
+      earlyLevel: 0,
+      reverbLevel: 0
+    )
+  )
+];
+
+SynthDef("by-alestsurko-iannis-gverb", {arg 
+  in = 0,
+  size = 20,
+  time = 1.5, 
+  damping = 0.5,
+  inputbw = 1,
+  spread = 15,
+  dryLevel = 0,
+  earlyLevel = 0,
+  reverbLevel = 0;
+
+  var source, out;
+  source = In.ar(in, 2);
+  out = GVerb.ar(
+    source, 
+    size, 
+    time, 
+    damping,
+    inputbw,
+    spread,
+    dryLevel,
+    earlyLevel,
+    reverbLevel
+  );
 
   ReplaceOut.ar(0, out);
 }, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
