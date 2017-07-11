@@ -1,0 +1,129 @@
+var o, p;
+o = [
+	Event.prNew,  Array.prNew(32),  Array.prNew(1),  Event.prNew,  
+	Array.prNew(12),  "Default",  Event.prNew,  Array.prNew(12),  
+	"FreeVerb",  "A two-channel reverb.
+A wrapper of the FreeVerb2 ugen.",  "http://alestsurko.by",  Event.prNew,  
+	Array.prNew(4),  Array.prNew(1),  Event.prNew,  Array.prNew(8),  
+	"Main",  Array.prNew(1),  Event.prNew,  Array.prNew(4),  
+	Array.prNew(1),  Event.prNew,  Array.prNew(12),  Array.prNew(3),  
+	Event.prNew,  Array.prNew(16),  Event.prNew,  Array.prNew(4),  
+	"Size",  Event.prNew,  Array.prNew(16),  Event.prNew,  
+	Array.prNew(4),  "Damping",  Event.prNew,  Array.prNew(16),  
+	Event.prNew,  Array.prNew(4),  "Dry/Wet",  "by.alestsurko.iannis.freeverb",  
+	"Ales Tsurko"
+];
+p = [
+	// Event
+	0, [ array: o[1],  size: 8,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	1, [ 'presets',  o[2],  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'name',  o[8],  'description',  o[9],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		'site',  o[10],  'ui',  o[11],  
+		nil,  nil,  'id',  o[39],  
+		'type',  'effect',  'author',  o[40] ],  
+	// Array
+	2, [ o[3] ],  
+	// Event
+	3, [ array: o[4],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	4, [ 'name',  o[5],  nil,  nil,  
+		nil,  nil,  'isFactory',  true,  
+		'values',  o[6],  nil,  nil ],  
+	// Event
+	6, [ array: o[7],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	7, [ nil,  nil,  'size',  0.3,  
+		'damping',  0.5,  'mix',  0.5,  
+		nil,  nil,  nil,  nil ],  
+	// Event
+	11, [ array: o[12],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	12, [ nil,  nil,  'pages',  o[13] ],  
+	// Array
+	13, [ o[14] ],  
+	// Event
+	14, [ array: o[15],  size: 2,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	15, [ 'name',  o[16],  nil,  nil,  
+		'groups',  o[17],  nil,  nil ],  
+	// Array
+	17, [ o[18] ],  
+	// Event
+	18, [ array: o[19],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	19, [ 'parameters',  o[20],  nil,  nil ],  
+	// Array
+	20, [ o[21] ],  
+	// Event
+	21, [ array: o[22],  size: 3,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	22, [ 'align',  'center',  nil,  nil,  
+		nil,  nil,  'isRow',  1,  
+		'parameters',  o[23],  nil,  nil ],  
+	// Array
+	23, [ o[24],  o[29],  o[34] ],  
+	// Event
+	24, [ array: o[25],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	25, [ nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[26],  
+		'name',  o[28],  nil,  nil,  
+		nil,  nil,  'key',  'size' ],  
+	// Event
+	26, [ array: o[27],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	27, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	29, [ array: o[30],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	30, [ nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[31],  
+		'name',  o[33],  nil,  nil,  
+		nil,  nil,  'key',  'damping' ],  
+	// Event
+	31, [ array: o[32],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	32, [ nil,  nil,  'type',  'knob' ],  
+	// Event
+	34, [ array: o[35],  size: 4,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	35, [ nil,  nil,  'spec',  'unipolar',  
+		nil,  nil,  'ui',  o[36],  
+		'name',  o[38],  nil,  nil,  
+		nil,  nil,  'key',  'mix' ],  
+	// Event
+	36, [ array: o[37],  size: 1,  
+		proto: nil,  parent: nil,  
+		know: true ],  
+	// Array
+	37, [ nil,  nil,  'type',  'knob' ]
+];
+prUnarchive(o,p);

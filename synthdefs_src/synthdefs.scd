@@ -1016,10 +1016,10 @@ var metadata = ();
 // Info
 
 metadata[\type] = \effect;
-metadata[\name] = "GVerb";
+metadata[\name] = "FreeVerb";
 metadata[\author] = "Ales Tsurko";
-metadata[\description] = "A two-channel reverb.\nA wrapper of the GVerb ugen.";
-metadata[\id] = "by.alestsurko.iannis.gverb";
+metadata[\description] = "A two-channel reverb.\nA wrapper of the FreeVerb2 ugen.";
+metadata[\id] = "by.alestsurko.iannis.freeverb";
 metadata[\site] = "http://alestsurko.by";
 
 
@@ -1041,24 +1041,12 @@ metadata[\ui][\pages][0][\groups][0] = (
         // Size
         (
           key: \size,
-          name: "Size (m2)",
-          spec: ControlSpec(5, 300),
+          name: "Size",
+          spec: \unipolar,
           ui: (
             type: \knob
           )
         ),
-
-
-        // Time
-        (
-          key: \time,
-          name: "Time (s)",
-          spec: ControlSpec(0.1, 30),
-          ui: (
-            type: \knob
-          )
-        ),
-
 
         // Damping
         (
@@ -1070,58 +1058,11 @@ metadata[\ui][\pages][0][\groups][0] = (
           )
         ),
 
-        // InputBW
+        // Mix
         (
-          key: \inputbw,
-          name: "InputBW",
+          key: \mix,
+          name: "Dry/Wet",
           spec: \unipolar,
-          ui: (
-            type: \knob
-          )
-        ),
-
-        // Spread
-        (
-          key: \spread,
-          name: "Spread",
-          spec: ControlSpec(0, 100),
-          ui: (
-            type: \knob
-          )
-        )
-      ]
-    ),
-
-    // Levels
-    (
-      isRow: 1, 
-      align: \center,
-      parameters: [
-        // Dry level
-        (
-          key: \dryLevel,
-          name: "Dry Level (dB)",
-          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
-          ui: (
-            type: \knob
-          )
-        ),
-
-        // Early reflections level
-        (
-          key: \earlyLevel,
-          name: "Early Reflections (dB)",
-          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
-          ui: (
-            type: \knob
-          )
-        ),
-
-        // Reverb level
-        (
-          key: \reverbLevel,
-          name: "Reverb (dB)",
-          spec: ControlSpec(0.ampdb, 1.ampdb, \db),
           ui: (
             type: \knob
           )
@@ -1139,41 +1080,28 @@ metadata[\presets] = [
     name: "Default",
     isFactory: true,
     values: (
-      size: 20,
-      time: 1.5,
+      size: 0.3,
       damping: 0.5,
-      inputbw: 1,
-      spread: 15,
-      dryLevel: 0,
-      earlyLevel: 0,
-      reverbLevel: 0
+      mix: 0.5
     )
   )
 ];
 
-SynthDef("by-alestsurko-iannis-gverb", {arg 
+SynthDef("by-alestsurko-iannis-freeverb", {arg 
   in = 0,
-  size = 20,
-  time = 1.5, 
+
+  size = 0.1,
   damping = 0.5,
-  inputbw = 1,
-  spread = 15,
-  dryLevel = 0,
-  earlyLevel = 0,
-  reverbLevel = 0;
+  mix = 0.5;
 
   var source, out;
   source = In.ar(in, 2);
-  out = GVerb.ar(
-    source, 
-    size, 
-    time, 
-    damping,
-    inputbw,
-    spread,
-    dryLevel,
-    earlyLevel,
-    reverbLevel
+  out = FreeVerb2.ar(
+    source[0],
+    source[1],
+    mix,
+    size,
+    damping
   );
 
   ReplaceOut.ar(0, out);
