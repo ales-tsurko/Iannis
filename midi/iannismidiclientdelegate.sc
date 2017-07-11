@@ -4,18 +4,21 @@
     this.midiManager.map[\noteOn] = MIDIFunc.noteOn({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          var values = this.parentSynthController.node.getState.getPairs;
-          var newVoice;
+          if (this.parentSynthController.type == \synth) {
+            var values = this.parentSynthController.node.getState.getPairs;
+            var newVoice;
 
-          values = values.addAll([\freq, num.midicps, \velocity, val]);
+            values = values.addAll([\freq, num.midicps, \velocity, val]);
 
-          // add it to the voices array
-          this.midiManager.voicesManager.noteOn(
-            num,
-            this.parentSynthController.synthDefName,
-            values,
-            this.parentSynthController.node
-          );
+            // add it to the voices array
+            this.midiManager.voicesManager.noteOn(
+              num,
+              this.parentSynthController.synthDefName,
+              values,
+              this.parentSynthController.node
+            );
+
+          };
 
           // call map parameter bindings
           this.parentSynthController.mapView.parameters.do({arg map;
@@ -33,7 +36,9 @@
     this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          this.midiManager.voicesManager.noteOff(num);
+          if (this.parentSynthController.type == \synth) {
+            this.midiManager.voicesManager.noteOff(num);
+          };
           // call map parameter bindings
           this.parentSynthController.mapView.parameters.do({arg map;
             map.onNoteOff(num);
@@ -51,7 +56,9 @@
 
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          this.midiManager.voicesManager.sustainPedalIsOn = (val == 127);
+          if (this.parentSynthController.type == \synth) {
+            this.midiManager.voicesManager.sustainPedalIsOn = (val == 127);
+          };
         }
       };
     }, 64);
@@ -63,8 +70,10 @@
     this.midiManager.map[\bend] = MIDIFunc.bend({arg val, chan, src;
       if (this.midiManager.selectedDevice.uid == src) {
         if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          var value = (val>>7)&0xFF;
-          this.midiManager.voicesManager.pitchBend(value);
+          if (this.parentSynthController.type == \synth) {
+            var value = (val>>7)&0xFF;
+            this.midiManager.voicesManager.pitchBend(value);
+          };
         }
       };
     });

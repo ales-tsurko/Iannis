@@ -23,16 +23,21 @@ IannisSynthViewController : CompositeView {
   }
 
   init {arg aSynthDefName;
-    node = IannisNodeGroup();
     synthDefName = aSynthDefName;
     metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
     data = ();
+    node = IannisNodeGroup();
     this.fixedWidth = 680;
     this.minHeight = 550;
     this.layout = VLayout();
     this.initToolbar();
     mapView = IannisSynthMapPage(this);
     midiView = IannisSynthMIDIViewController(this);
+
+    if (metadata[\type] == \effect) {
+      Synth(synthDefName, target: node);
+    };
+
     this.parse();
 
     this.pagesView.addPage("Map", mapView);
@@ -1093,17 +1098,17 @@ IannisSynthViewController : CompositeView {
   }
 
   updateNodeValue {arg key, value;
-      // unfortunatelly, it's impossible to write just
-      // if (object.notNil && object.isOn) {  }
-      // so:
-      this.mapView.parameters[key]!?{
-        if (this.mapView.parameters[key].isOn) {
-          this.mapView.parameters[key].proxiesGroup.set(\selfvalue, value);
-        } {
-          node.set(key, value);
-        }
-      }??{
+    // unfortunatelly, it's impossible to write just
+    // if (object.notNil && object.isOn) {  }
+    // so:
+    this.mapView.parameters[key]!?{
+      if (this.mapView.parameters[key].isOn) {
+        this.mapView.parameters[key].proxiesGroup.set(\selfvalue, value);
+      } {
         node.set(key, value);
       }
+    }??{
+      node.set(key, value);
     }
+  }
 }

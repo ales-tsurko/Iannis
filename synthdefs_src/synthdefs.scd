@@ -509,7 +509,7 @@ metadata[\ui][\pages] = [(
       (
         key: \loShelfGain,
         name: "Gain (dB)",
-        spec: ControlSpec(-24, 24),
+        spec: ControlSpec(-20, 20),
         ui: (
           type: \knob
         )
@@ -639,7 +639,7 @@ metadata[\ui][\pages] = [(
       (
         key: \hiShelfGain,
         name: "Gain (dB)",
-        spec: ControlSpec(-24, 24),
+        spec: ControlSpec(-20, 20),
         ui: (
           type: \knob
         )
@@ -998,9 +998,9 @@ SynthDef("by-alestsurko-iannis-compander", {arg
   var source, out;
   source = In.ar(in, 2) * inputGain.dbamp;
   out = Compander.ar(source, source, 
-    threshold, 
+    threshold.dbamp, 
     belowRatio,
-    aboveRatio,
+    1/aboveRatio,
     attack*0.001,
     release*0.001,
     outputGain.dbamp

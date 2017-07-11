@@ -406,12 +406,19 @@ IannisSynthMapParameter : CompositeView {
 
     proxy.bus!?{
       if (isOn) {
-        var voice = this.parentSynthPage
-        .parentSynthController
-        .midiView
-        .midiManager
-        .voicesManager
-        .getVoice(noteNumber);
+        var voice;
+        case
+        {this.parentSynthPage.type == \synth} {
+          voice = this.parentSynthPage
+          .parentSynthController
+          .midiView
+          .midiManager
+          .voicesManager
+          .getVoice(noteNumber);
+        }
+        {this.parentSynthPage.type == \effect} {
+          voice = this.parentSynthPage.node;
+        };
 
         // set map to the voice
         voice.set(key, proxy.bus.asMap);

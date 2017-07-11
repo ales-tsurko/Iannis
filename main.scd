@@ -44,10 +44,12 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 
 // Synth view controller
 (
+t = IannisSynthViewController('granulator').front;
 v = IannisSynthViewController('by-alestsurko-iannis-parameq').front;
 c = IannisSynthViewController('by-alestsurko-iannis-compander').front;
 r = IannisSynthViewController('by-alestsurko-iannis-gverb').front;
 )
+c.node.moveAfter(t.node);
 
 (
 t = IannisMixerTrack();

@@ -34,15 +34,17 @@ IannisSynthMIDIViewController : IannisSynthMapPage {
     midiInLabel.string = "Keyboard Input:";
     channelNumberLabel.string = "Keyboard Channel:";
 
-    this.layout.insert(
-      HLayout(
-        polyphonyLabel,
-        polyphonyNumberBox,
-        monophonicModeLabel,
-        monophonicModePopup,
-        nil
-      )
-    );
+    if (this.parentSynthController.metadata[\type] == \synth) {
+      this.layout.insert(
+        HLayout(
+          polyphonyLabel,
+          polyphonyNumberBox,
+          monophonicModeLabel,
+          monophonicModePopup,
+          nil
+        )
+      );
+    };
 
     this.layout.insert(
       HLayout(
