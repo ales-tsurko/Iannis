@@ -15,6 +15,8 @@ IannisSynthViewController : CompositeView {
   <midiView,
   <>selectedElementKey,
   <midiLearnModeEnabled = false,
+  <isBypassed = false,
+  bypassButton,
   toolbarView, 
   synthNameLabel;
 
@@ -36,18 +38,23 @@ IannisSynthViewController : CompositeView {
 
     if (metadata[\type] == \effect) {
       Synth(synthDefName, target: node);
+      this.userCanClose = false;
     };
 
     this.parse();
 
     this.pagesView.addPage("Map", mapView);
     this.pagesView.addPage("MIDI", midiView);
+
     this.onClose = {this.cleanUp()};
   }
 
   initToolbar {
     var learnButton = this.initMIDILearnModeButton();
     var panicButton = this.initPanicButton();
+    var closeButton = this.initCloseButton();
+    var headerRow, toolbarRow;
+    this.initBypassButton();
 
     toolbarView = CompositeView();
     toolbarView.fixedHeight = 90;
@@ -57,22 +64,68 @@ IannisSynthViewController : CompositeView {
 
     presetsManagerController = IannisPresetsManagerController(this);
 
-    toolbarView.layout = VLayout(
-      HLayout(
+    if (this.metadata[\type] == \synth) {
+      headerRow = HLayout(
+        bypassButton,
         synthNameLabel, 
         nil
-      ),
+      );
 
-      HLayout(
+      toolbarRow = HLayout(
         [nil, stretch: 5],
         presetsManagerController,
         [nil, stretch: 1],
         learnButton,
         panicButton
-      )
+      );
+    } {
+      headerRow = HLayout(
+        closeButton,
+        bypassButton,
+        synthNameLabel, 
+        nil
+      );
+
+      toolbarRow = HLayout(
+        [nil, stretch: 5],
+        presetsManagerController,
+        [nil, stretch: 1],
+        learnButton
+      );
+    };
+
+    toolbarView.layout = VLayout(
+      headerRow,
+      toolbarRow
     );
 
     this.layout.add(toolbarView);
+  }
+
+  initCloseButton {
+    var closeButton = Button();
+    closeButton.fixedWidth = 18;
+    closeButton.fixedHeight = 18;
+    closeButton.states = [["✖"]];
+
+    closeButton.action = {arg but;
+      if (but.value == 0) {
+        this.visible = false;
+      }
+    };
+
+    ^closeButton;
+  }
+
+  initBypassButton {
+    bypassButton = Button();
+    bypassButton.fixedWidth = 18;
+    bypassButton.fixedHeight = 18;
+    bypassButton.states = [["B", Color.grey(0.65)], ["B", Color.red]];
+
+    bypassButton.action = {arg button;
+      this.isBypassed = button.value == 1;
+    };
   }
 
   initPanicButton {
@@ -109,6 +162,16 @@ IannisSynthViewController : CompositeView {
     pagesView = IannisTabbedView(name, view);
 
     this.layout.add(pagesView);
+  }
+
+  isBypassed_ {arg newValue;
+    isBypassed = newValue;
+
+    node.run(isBypassed.not);
+
+    bypassButton!?{
+      bypassButton.value = isBypassed.asInt;
+    }
   }
 
   cleanUp {

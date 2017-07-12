@@ -4,7 +4,7 @@ IannisMixerTrack {
   isSolo = false,
   <isMute = false,
   <instrumentsManager,
-  effectsManager,
+  <effectsManager,
   <gain = 0,
   <pan = 0;
 
@@ -20,6 +20,9 @@ IannisMixerTrack {
     );
 
     instrumentsManager = IannisInstrumentsManager(this);
+    effectsManager = IannisEffectsManager(this);
+
+    effectsManager.group.moveBefore(this.node);
   }
 
   cleanUp {
@@ -57,12 +60,22 @@ IannisMixerTrack {
 // Instruments manager delegate
 + IannisMixerTrack {
   didSelectInstrument {arg instrumentDesc, synthViewController;
-    node.moveAfter(synthViewController.node);
+    this.effectsManager.group.moveAfter(synthViewController.node);
+    node.moveAfter(this.effectsManager.group);
   }
 }
 
 // Effects manager delegate
 + IannisMixerTrack {
   didAddEffect {arg effect;
+  }
+
+  willRemoveEffectAtIndex {arg index, effectViewController;
+  }
+
+  didChangeEffectAtIndex {arg index, effectViewController;
+  }
+
+  didMoveEffectToIndex {arg fromIndex, toIndex;
   }
 }

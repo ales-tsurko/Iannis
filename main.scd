@@ -51,6 +51,7 @@ r = IannisSynthViewController('by-alestsurko-iannis-freeverb').front;
 )
 r.node.moveAfter(t.node);
 
+// Track
 (
 t = IannisMixerTrack();
 t.instrumentsManager.selectInstrument(\granulator);
@@ -58,8 +59,19 @@ t.instrumentsManager.selectInstrument(\granulator);
 t.instrumentsManager.synthViewController.front;
 
 t.pan = 0;
-t.gain = -3;
+t.gain = 0;
 t.isMute = false;
+
+t.effectsManager.addEffect('by-alestsurko-iannis-freeverb');
+t.effectsManager.effectsViewControllers[0].isBypassed = true;
+t.effectsManager.effectsViewControllers[0].visible = true;
+t.effectsManager.removeEffectAtIndex(0);
+
+t.effectsManager.addEffect('by-alestsurko-iannis-parameq');
+
+t.effectsManager.moveEffectToIndex(1,0);
+t.effectsManager.changeEffectAtIndex(1, 'by-alestsurko-iannis-freeverb');
+t.effectsManager.changeEffectAtIndex(0, 'by-alestsurko-iannis-parameq');
 
 g.do({arg synth;
   synth.release;
