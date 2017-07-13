@@ -5,6 +5,7 @@ IannisMixerTrackView : CompositeView {
   gainFader,
   levelMeters,
   levelMeterUpdater,
+  peaksReseter,
   panLabel,
   panKnob,
   muteButton,
@@ -106,22 +107,45 @@ IannisMixerTrackView : CompositeView {
   }
 
   runLevelMeterUpdater {
+    var peaks = 0!2;
     levelMeterUpdater??{
       levelMeterUpdater = Routine({
         loop {
           var values = mixerTrack.bus.getnSynchronous(2);
+          values[0] = values[0].abs;
+          values[1] = values[1].abs;
 
           levelMeters.do({arg meter, n;
-            meter.value = values[n].abs;
+            meter.value = values[n];
+
+            if (values[n] > peaks[n]) {
+              peaks[n] = values[n];
+            };
+
+            meter.peakLevel = peaks[n];
           });
 
-          0.07.wait;
+          0.1.wait;
+        }
+      });
+    };
+
+    peaksReseter??{
+      peaksReseter = Routine({
+        loop {
+          levelMeters.do({arg meter, n;
+            peaks = 0!2;
+            meter.peakLevel = 0;
+          });
+
+          5.wait;
         }
       });
     };
 
     if (levelMeterUpdater.isPlaying.not) {
       AppClock.play(levelMeterUpdater);
+      AppClock.play(peaksReseter);
     }
   }
 
@@ -129,6 +153,10 @@ IannisMixerTrackView : CompositeView {
     levelMeterUpdater.stop();
     levelMeterUpdater.free();
     levelMeterUpdater = nil;
+
+    peaksReseter.stop();
+    peaksReseter.free();
+    peaksReseter = nil;
   }
 
   initPanLabel {
@@ -197,6 +225,7 @@ IannisMixerTrackView : CompositeView {
   }
 
   cleanUp {
+    this.stopLevelMeterUpdater();
     mixerTrack.cleanUp();
   }
 }
