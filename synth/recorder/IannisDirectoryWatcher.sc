@@ -37,7 +37,7 @@ IannisDirectoryWatcher {
     // watcher.stop();
   // }
   startWatch {
-    if (watcher.isPlaying.not) {
+    watcher??{  
       watcher = Routine({
         loop {
           if (directorySnapshot != path.files.collect(_.fileName)) {
@@ -48,6 +48,9 @@ IannisDirectoryWatcher {
           3.wait;
         };
       });
+    };
+
+    if (watcher.isPlaying.not) {
       AppClock.play(watcher);
     } {
       ("Already watching"+this.path).inform;
@@ -56,5 +59,7 @@ IannisDirectoryWatcher {
 
   stopWatch {
     watcher.stop();
+    watcher.free();
+    watcher = nil;
   }
 }

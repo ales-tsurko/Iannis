@@ -53,10 +53,9 @@ r.node.moveAfter(t.node);
 
 // Track
 (
-t = IannisMixerTrack();
-t.instrumentsManager.selectInstrument(\granulator);
+t = IannisMixerTrackView().front();
+t.mixerTrack.instrumentsManager.synthViewController.front;
 )
-t.instrumentsManager.synthViewController.front;
 
 t.pan = 0;
 t.gain = 0;

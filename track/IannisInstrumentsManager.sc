@@ -31,6 +31,19 @@ IannisInstrumentsManager {
     availableInstrumentsDescs = synthDescs;
   }
 
+  availableInstrumentsNames {
+    var names = [];
+    IannisInstrumentsManager.availableInstrumentsDescs??{
+      IannisInstrumentsManager.fetchAvailableInstruments();
+    };
+
+    IannisInstrumentsManager.availableInstrumentsDescs.do({arg desc;
+      names = names.add(desc.metadata[\name]);
+    });
+
+    ^names;
+  }
+
   selectInstrument {arg instrumentName;
     currentInstrumentDesc!?{
       synthViewController.close();

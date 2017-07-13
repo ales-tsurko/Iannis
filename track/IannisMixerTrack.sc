@@ -1,7 +1,8 @@
 IannisMixerTrack {
   var <node,
   <>name,
-  isSolo = false,
+  <bus,
+  <isSolo = false,
   <isMute = false,
   <instrumentsManager,
   <effectsManager,
@@ -14,9 +15,10 @@ IannisMixerTrack {
 
   init {arg aName;
     name = aName?"New Track";
+    bus = Bus.control(Server.default, 2);
     node = Synth(
       "by.alestsurko.iannis.track.controller",
-      [\gain, 0, \pan, 0]
+      [\gain, 0, \pan, 0, \levelbus, bus.index]
     );
 
     instrumentsManager = IannisInstrumentsManager(this);
