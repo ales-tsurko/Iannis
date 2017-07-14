@@ -3,9 +3,9 @@ IannisMixerTrackView : CompositeView {
   nameLabel,
   gainLabel,
   gainFader,
+  peaksLabels,
   levelMeters,
   levelMeterUpdater,
-  peaksReseter,
   panLabel,
   panKnob,
   muteButton,
@@ -22,6 +22,7 @@ IannisMixerTrackView : CompositeView {
     this.initInstrumentPopup();
     this.initGainLabel();
     this.initGainFader();
+    this.initPeaksLabels();
     this.initLevelMeters();
     this.initPanLabel();
     this.initPanKnob();
@@ -29,24 +30,51 @@ IannisMixerTrackView : CompositeView {
     this.initSoloButton();
     this.initNameLabel();
 
+    ~levelMeterLayout = HLayout(
+      levelMeters[0],
+      levelMeters[1]
+    );
+    ~levelMeterLayout.spacing = 1;
+
+    ~peaksLabelsLayout = HLayout(
+        peaksLabels[0],
+        peaksLabels[1],
+    );
+    ~peaksLabelsLayout.spacing = 1;
+
     this.layout = VLayout(
+      // Instruments Menu
       [instrumentPopup, align: \center],
-      [gainLabel, align: \center],
+      HLayout(
+        [nil, stretch: 5],
+        [~peaksLabelsLayout, stretch: 4],
+        [nil, stretch: 2]
+      ),
       HLayout(
         nil,
+        [gainLabel, align: \topRight, stretch: 1],
         gainFader,
-        levelMeters[0],
-        levelMeters[1],
-        nil
+        ~levelMeterLayout,
+        [nil, stretch: 1]
       ),
+      nil,
+      // Pan Knob
       [panLabel, align: \center],
       [panKnob, align: \center],
+      nil,
+      // Mute and Solo buttons
       HLayout(
+        nil,
         muteButton,
-        soloButton
+        soloButton,
+        nil
       ),
+      // Track Name
       [nameLabel, align: \center]
     );
+
+    this.fixedWidth = 155;
+    this.fixedHeight = 385;
 
     this.onClose = {
       this.cleanUp();
@@ -55,7 +83,7 @@ IannisMixerTrackView : CompositeView {
 
   initInstrumentPopup {
     instrumentPopup = PopUpMenu();
-    instrumentPopup.fixedWidth = 100;
+    instrumentPopup.fixedWidth = 130;
     instrumentPopup.allowsReselection = true;
 
     instrumentPopup.items = mixerTrack.instrumentsManager.availableInstrumentsNames;
@@ -69,8 +97,11 @@ IannisMixerTrackView : CompositeView {
   }
 
   initGainLabel {
+    var font = Font.default;
+    font.size = 10;
     gainLabel = StaticText();
     gainLabel.string = mixerTrack.gain.round(0.01);
+    gainLabel.font = font;
   }
 
   initGainFader {
@@ -88,12 +119,24 @@ IannisMixerTrackView : CompositeView {
     gainFader.value = gainSpec.unmap(mixerTrack.gain);
   }
 
+  initPeaksLabels {
+    peaksLabels = nil!2;
+
+    peaksLabels.do({arg item, n;
+      var font = Font.default;
+      font.size = 10;
+      peaksLabels[n] = StaticText();
+      peaksLabels[n].string = "-inf";
+      peaksLabels[n].font = font;
+    });
+  }
+
   initLevelMeters {
     levelMeters = nil!2;
 
     levelMeters.do({arg item, n;
       var meter = LevelIndicator();
-      meter.fixedWidth = 13;
+      meter.fixedWidth = 12;
       meter.fixedHeight = 200;
       meter.warning = -3.dbamp;
       meter.critical = -0.03.dbamp;
@@ -107,22 +150,20 @@ IannisMixerTrackView : CompositeView {
   }
 
   runLevelMeterUpdater {
-    var peaks = 0!2;
     levelMeterUpdater??{
       levelMeterUpdater = Routine({
         loop {
-          var values = mixerTrack.bus.getnSynchronous(2);
-          values[0] = values[0].abs;
-          values[1] = values[1].abs;
+          var values = mixerTrack.bus.getnSynchronous(4);
+          values = values.abs;
 
           levelMeters.do({arg meter, n;
-            meter.value = values[n];
+              // assign values
+              meter.value = values[n];
 
-            if (values[n] > peaks[n]) {
-              peaks[n] = values[n];
-            };
-
-            meter.peakLevel = peaks[n];
+              // asign peaks
+              meter.peakLevel = values[n+2];
+              // update peaks labels
+              peaksLabels[n].string = values[n+2].ampdb.round(0.1);
           });
 
           0.1.wait;
@@ -130,22 +171,8 @@ IannisMixerTrackView : CompositeView {
       });
     };
 
-    peaksReseter??{
-      peaksReseter = Routine({
-        loop {
-          levelMeters.do({arg meter, n;
-            peaks = 0!2;
-            meter.peakLevel = 0;
-          });
-
-          5.wait;
-        }
-      });
-    };
-
     if (levelMeterUpdater.isPlaying.not) {
       AppClock.play(levelMeterUpdater);
-      AppClock.play(peaksReseter);
     }
   }
 
@@ -153,15 +180,14 @@ IannisMixerTrackView : CompositeView {
     levelMeterUpdater.stop();
     levelMeterUpdater.free();
     levelMeterUpdater = nil;
-
-    peaksReseter.stop();
-    peaksReseter.free();
-    peaksReseter = nil;
   }
 
   initPanLabel {
+    var font = Font.default;
+    font.size = 10;
     panLabel = StaticText();
     panLabel.string = mixerTrack.pan.round(0.01);
+    panLabel.font = font;
   }
 
   initPanKnob {
@@ -214,7 +240,7 @@ IannisMixerTrackView : CompositeView {
 
   initNameLabel {
     nameLabel = TextField();
-    nameLabel.fixedWidth = 100;
+    nameLabel.fixedWidth = 130;
     nameLabel.align = \center;
 
     nameLabel.action = {arg tf;

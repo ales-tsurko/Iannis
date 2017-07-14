@@ -12,7 +12,12 @@ SynthDef("by.alestsurko.iannis.track.controller", {arg
   out = Balance2.ar(in[0], in[1], pan, gain.dbamp);
 
   // level output
-  Out.kr(levelbus, out);
+  Out.kr(levelbus, [
+    out[0],
+    out[1],
+    RunningMax.kr(out[0], Impulse.kr(0.1)), // left peak
+    RunningMax.kr(out[1], Impulse.kr(0.1))  // right peak
+  ]);
 
   // main output
   ReplaceOut.ar(outbus, out);

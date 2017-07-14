@@ -15,7 +15,7 @@ IannisMixerTrack {
 
   init {arg aName;
     name = aName?"New Track";
-    bus = Bus.control(Server.default, 2);
+    bus = Bus.control(Server.default, 4);
     node = Synth(
       "by.alestsurko.iannis.track.controller",
       [\gain, 0, \pan, 0, \levelbus, bus.index]
