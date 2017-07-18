@@ -31,7 +31,7 @@ IannisInstrumentsManager {
     availableInstrumentsDescs = synthDescs;
   }
 
-  availableInstrumentsNames {
+  *availableInstrumentsNames {
     var names = [];
     IannisInstrumentsManager.availableInstrumentsDescs??{
       IannisInstrumentsManager.fetchAvailableInstruments();

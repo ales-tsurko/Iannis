@@ -52,9 +52,14 @@ r = IannisSynthViewController('by-alestsurko-iannis-freeverb').front;
 r.node.moveAfter(t.node);
 
 // Track
+
+// rack
+r = IannisEffectsRackView().front();
+
+// track
 (
-t = IannisMixerTrackView().front();
-t.mixerTrack.instrumentsManager.synthViewController.front;
+t = IannisMixerTrackViewController().front();
+t.trackView.mixerTrack.instrumentsManager.synthViewController.front;
 )
 
 t.pan = 0;
@@ -119,4 +124,7 @@ z.fixedWidth = 200;
 z.layout = HLayout(m);
 
 t.addPage("tab 2", z);
+
+
+
 

@@ -39,6 +39,19 @@ IannisEffectsManager {
     availableEffects = synthDescs;
   }
 
+  *availableEffectsNames {
+    var names = [];
+    IannisEffectsManager.availableEffects??{
+      IannisEffectsManager.fetchAvailableEffects();
+    };
+
+    IannisEffectsManager.availableEffects.do({arg desc;
+      names = names.add(desc.metadata[\name]);
+    });
+
+    ^names;
+  }
+
   addEffect {arg effectName;
     var newEffectView = IannisSynthViewController(effectName);
 

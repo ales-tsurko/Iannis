@@ -1,3 +1,22 @@
+IannisMixerTrackViewController : CompositeView {
+  var <trackView,
+  <effectsRackView;
+  
+  *new {arg name;
+    ^super.new.init(name);
+  }
+
+  init {arg aName;
+    trackView = IannisMixerTrackView(aName);
+
+    this.layout = HLayout(
+      trackView,
+      effectsRackView,
+      nil
+    );
+  }
+}
+
 IannisMixerTrackView : CompositeView {
   var instrumentPopup,
   nameLabel,
@@ -73,7 +92,7 @@ IannisMixerTrackView : CompositeView {
       [nameLabel, align: \center]
     );
 
-    this.fixedWidth = 155;
+    this.fixedWidth = 160;
     this.fixedHeight = 385;
 
     this.onClose = {
@@ -86,7 +105,7 @@ IannisMixerTrackView : CompositeView {
     instrumentPopup.fixedWidth = 130;
     instrumentPopup.allowsReselection = true;
 
-    instrumentPopup.items = mixerTrack.instrumentsManager.availableInstrumentsNames;
+    instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
 
     instrumentPopup.action = {arg popup;
       var keys = IannisInstrumentsManager.availableInstrumentsDescs.keys;
@@ -253,5 +272,237 @@ IannisMixerTrackView : CompositeView {
   cleanUp {
     this.stopLevelMeterUpdater();
     mixerTrack.cleanUp();
+  }
+}
+
+//
+// Effects Rack
+//
+
+IannisEffectsRackView : CompositeView {
+  var mixerTrack,
+  label,
+  addSlotButton,
+  removeSlotButton,
+  rackView,
+  <slots;
+
+  *new {arg mixerTrack;
+    ^super.new.init(mixerTrack);
+  }
+
+  init {arg aMixerTrack;
+    mixerTrack = aMixerTrack;
+    slots = [];
+    label = StaticText();
+    label.string = "Effects";
+
+    this.initRackView();
+    this.initAddSlotButton();
+    this.initRemoveSlotButton();
+
+    this.layout = VLayout(
+      [label, align: \center],
+      rackView,
+      HLayout(
+        nil,
+        addSlotButton,
+        removeSlotButton,
+        nil
+      ),
+    );
+
+    // Appearance
+    this.fixedWidth = 160;
+    this.layout.margins = 0!4;
+  }
+
+  initRackView {
+    rackView = ScrollView();
+    rackView.hasHorizontalScroller = false;
+    rackView.hasBorder = false;
+    rackView.fixedWidth = 160;
+    rackView.canvas = CompositeView();
+
+    rackView.canvas.layout = VLayout(
+      nil,
+    );
+
+    rackView.canvas.layout.spacing = 1;
+    rackView.canvas.layout.margins = 0!4;
+  }
+
+  initAddSlotButton {
+    addSlotButton = Button();
+    addSlotButton.fixedWidth = 18;
+    addSlotButton.fixedHeight = 18;
+    addSlotButton.states = [["+"]];
+
+    addSlotButton.action = {arg button;
+      var newSlot = IannisEffectSlotView(this);
+      slots = slots.add(newSlot);
+      rackView.canvas.layout.insert(
+        newSlot,
+        slots.size-1,
+        align: \center
+      );
+    };
+  }
+
+  initRemoveSlotButton {
+    removeSlotButton = Button();
+    removeSlotButton.fixedWidth = 18;
+    removeSlotButton.fixedHeight = 18;
+    removeSlotButton.states = [["-"]];
+    removeSlotButton.action = {arg button;
+      var last = slots.last;
+      last!?{
+        last.close();
+      };
+
+      if (slots.size > 0) {
+        slots.removeAt(slots.size-1);
+      }
+    };
+  }
+
+  moveSlotToIndex {arg index, newIndex;
+    rackView.canvas.layout.insert(slots[index], newIndex, align: \center);
+    slots.move(index, newIndex);
+  }
+}
+
+
+
+IannisEffectSlotView : UserView {
+  var bypassButton,
+  editButton,
+  effectsPopUp,
+  dragHandler,
+  rackView;
+
+  *new {arg rackView;
+    ^super.new.init(rackView);
+  }
+
+  init {arg aRackView;
+    rackView = aRackView;
+
+    this.initBypassButton();
+    this.initEditButton();
+    this.initEffectsPopUp();
+    this.initDragHandler();
+
+    this.layout = HLayout(
+      bypassButton,
+      editButton,
+      effectsPopUp,
+      nil,
+      dragHandler
+    );
+
+    // Appearance
+    this.layout.spacing = 3;
+    this.layout.margins = 2!4;
+    this.background = Color.gray(0.7);
+    this.fixedWidth = 130;
+    this.fixedHeight = 23;
+
+    // Drag and drop
+    this.initDragAndDrop();
+  }
+
+  initBypassButton {
+    bypassButton = Button();
+    bypassButton.fixedWidth = 18;
+    bypassButton.fixedHeight = 18;
+    bypassButton.states = [["B"], ["B", Color.white(), Color.red()]];
+
+    bypassButton.action = {arg button;
+
+      // change handler color
+      dragHandler!?{
+        dragHandler.stringColor = [
+          Color.green(), 
+          Color.blue()
+        ][button.value];
+      }
+    };
+  }
+
+  initEditButton {
+    editButton = Button();
+    editButton.fixedWidth = 18;
+    editButton.fixedHeight = 18;
+    editButton.states = [["E"]];
+  }
+
+  initEffectsPopUp {
+    effectsPopUp = PopUpMenu();
+    effectsPopUp.items = ["None"].addAll(
+      IannisEffectsManager.availableEffectsNames
+    );
+
+    effectsPopUp.action = {arg popup;
+    };
+  }
+
+  initDragHandler {
+    dragHandler = StaticText();
+    dragHandler.string = "≡";
+    dragHandler.stringColor = Color.green();
+    dragHandler.acceptsMouse = false;
+  }
+
+  initDragAndDrop {
+    this.acceptsMouse = true;
+    this.initFocusIndicator();
+    this.setDragEventsEnabled(true);
+
+    this.mouseDownAction = {arg ciew, x, y;
+      this.beginDrag(x, y);
+    };
+
+    this.beginDragAction = {arg view, x, y;
+      view.drawingEnabled = false;
+      view.refresh();
+      this.dragLabel = effectsPopUp.item?"Effect Slot";
+      this;
+    };
+
+    this.canReceiveDragHandler = {arg view, x, y;
+      var canReceive = view != View.currentDrag;
+      view.drawingEnabled = canReceive;
+      view.refresh();
+
+      rackView.slots.do({arg slot;
+        if (slot != view) {
+          slot.drawingEnabled = false;
+          slot.refresh();
+        }
+      });
+
+      canReceive;
+    };
+
+    this.receiveDragHandler = {arg view, x, y;
+      var currentIndex = rackView.slots.indexOf(View.currentDrag);
+      var newIndex = rackView.slots.indexOf(view);
+      rackView.moveSlotToIndex(currentIndex, newIndex);
+
+      view.drawingEnabled = false;
+      view.refresh();
+    };
+  }
+
+  initFocusIndicator {
+    this.drawFunc = {arg view;
+      Pen.strokeColor = dragHandler.stringColor?Color.green();
+      Pen.width = 2;
+      Pen.moveTo(0@0);
+      Pen.lineTo(this.bounds.width@0);
+      Pen.stroke; 
+    };
+    this.drawingEnabled = false;
   }
 }

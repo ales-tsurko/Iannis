@@ -15,8 +15,8 @@ SynthDef("by.alestsurko.iannis.track.controller", {arg
   Out.kr(levelbus, [
     out[0],
     out[1],
-    RunningMax.kr(out[0], Impulse.kr(0.1)), // left peak
-    RunningMax.kr(out[1], Impulse.kr(0.1))  // right peak
+    Peak.ar(out[0], Impulse.kr(1/7)), // left peak
+    Peak.ar(out[1], Impulse.kr(1/7))  // right peak
   ]);
 
   // main output
