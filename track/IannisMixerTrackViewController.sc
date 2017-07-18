@@ -455,9 +455,9 @@ IannisEffectSlotView : UserView {
   }
 
   initDragAndDrop {
+    var isCleaned = true;
     this.acceptsMouse = true;
     this.initFocusIndicator();
-    this.setDragEventsEnabled(true);
 
     this.mouseDownAction = {arg ciew, x, y;
       this.beginDrag(x, y);
@@ -468,6 +468,17 @@ IannisEffectSlotView : UserView {
       view.refresh();
       this.dragLabel = effectsPopUp.item?"Effect Slot";
       this;
+    };
+
+    this.mouseLeaveAction = {
+      if (isCleaned.not) {
+        rackView.slots.do({arg slot;
+          slot.drawingEnabled = false;
+          slot.refresh();
+        });
+
+        isCleaned = true;
+      }
     };
 
     this.canReceiveDragHandler = {arg view, x, y;
@@ -481,6 +492,8 @@ IannisEffectSlotView : UserView {
           slot.refresh();
         }
       });
+
+      isCleaned = false;
 
       canReceive;
     };
