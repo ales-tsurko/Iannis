@@ -1,4 +1,5 @@
 IannisTabbedView : CompositeView {
+  classvar <>isScrollable = true;
   var currentIndex, currentButton, previousButton, <tabsContainer, tabs, <views, stackLayout;
 
   *new {arg initialName, initialView;
@@ -9,12 +10,7 @@ IannisTabbedView : CompositeView {
     tabs = [];
     currentIndex = 0;
 
-    tabsContainer = ScrollView();
-    tabsContainer.fixedHeight = 60;
-    tabsContainer.hasBorder = false;
-    tabsContainer.hasVerticalScroller = false;
-    tabsContainer.canvas = CompositeView();
-    tabsContainer.canvas.layout = HLayout(nil);
+    this.initTabsContainer();
 
     stackLayout = StackLayout();
 
@@ -26,11 +22,18 @@ IannisTabbedView : CompositeView {
     this.addPage(initName, initView);
   }
 
+  initTabsContainer {
+    tabsContainer = ScrollView();
+    tabsContainer.fixedHeight = 60;
+    tabsContainer.hasBorder = false;
+    tabsContainer.hasVerticalScroller = false;
+    tabsContainer.canvas = CompositeView();
+    tabsContainer.canvas.layout = HLayout(nil);
+  }
 
   addPage {arg name, view;
     var button = CompositeView();
     var buttonLabel = StaticText();
-    var content = ScrollView();
 
     button.fixedHeight = 40;
     button.fixedWidth = 110;
@@ -48,12 +51,19 @@ IannisTabbedView : CompositeView {
       previousButton = but;
     };
 
-    content.canvas = view;
-    content.hasBorder = false;
-    views = views.add(content);
+    // add content view
+    if (IannisTabbedView.isScrollable) {
+      var content = ScrollView();
+      content.canvas = view;
+      content.hasBorder = false;
+      views = views.add(content);
+      stackLayout.add(content);
+    } {
+      views = views.add(view);
+      stackLayout.add(view);
+    };
 
     tabsContainer.canvas.layout.insert(button, tabs.size-1);
-    stackLayout.add(content);
 
     this.switchPage(currentIndex);
   }

@@ -1,5 +1,8 @@
+// View controller
 IannisMixerTrackViewController : CompositeView {
-  var instrumentPopup,
+  var toggleRackButton,
+  instrumentPopup,
+  editInstrumentButton,
   effectsRackView,
   nameLabel,
   gainLabel,
@@ -11,6 +14,7 @@ IannisMixerTrackViewController : CompositeView {
   panKnob,
   muteButton,
   soloButton,
+  <viewControllersRack,
   <mixerTrack;
   
   *new {arg name;
@@ -18,9 +22,13 @@ IannisMixerTrackViewController : CompositeView {
   }
 
   init {arg aName;
+    IannisTabbedView.isScrollable = false;
     mixerTrack = IannisMixerTrack(aName);
+    viewControllersRack = IannisViewControllersRack();
 
+    this.initToggleRackButton();
     this.initInstrumentPopup();
+    this.initEditInstrumentButton();
     this.initEffectsRackView();
     this.initGainLabel();
     this.initGainFader();
@@ -44,10 +52,16 @@ IannisMixerTrackViewController : CompositeView {
     );
     ~peaksLabelsLayout.spacing = 1;
 
-    this.layout = VLayout(
+    ~trackLayout = VLayout(
+      [toggleRackButton, align: \center],
       // Instruments Menu
-      [instrumentPopup, align: \center],
-      [effectsRackView, align: \center],
+      // HLayout(
+        // nil,
+        // editInstrumentButton,
+        [instrumentPopup, align: \center],
+        // nil
+      // ),
+      [effectsRackView, align: \top],
       HLayout(
         [nil, stretch: 5],
         [~peaksLabelsLayout, stretch: 4],
@@ -60,11 +74,9 @@ IannisMixerTrackViewController : CompositeView {
         ~levelMeterLayout,
         [nil, stretch: 1]
       ),
-      nil,
       // Pan Knob
-      [panLabel, align: \center],
-      [panKnob, align: \center],
-      nil,
+      [panLabel, align: \bottom],
+      [panKnob, align: \bottom],
       // Mute and Solo buttons
       HLayout(
         nil,
@@ -76,29 +88,61 @@ IannisMixerTrackViewController : CompositeView {
       [nameLabel, align: \center]
     );
 
-    this.fixedWidth = 180;
-    this.fixedHeight = 535;
+    this.layout = HLayout(
+      ~trackLayout,
+      viewControllersRack
+    );
+
+    // this.fixedWidth = 180;
+    this.minHeight = 600;
 
     this.onClose = {
       this.cleanUp();
     };
   }
 
+  initToggleRackButton {
+    toggleRackButton = Button();
+    toggleRackButton.fixedWidth = 130;
+    toggleRackButton.states = [["Edit"], ["Compact"]];
+
+    toggleRackButton.action = {arg button;
+      viewControllersRack.visible = button.value.asBoolean;
+    };
+  }
+
   initInstrumentPopup {
     instrumentPopup = PopUpMenu();
     instrumentPopup.fixedWidth = 130;
-    instrumentPopup.allowsReselection = true;
 
     instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
 
     instrumentPopup.action = {arg popup;
       mixerTrack.instrumentsManager.selectInstrument(popup.value);
+
+      // update view in rack
+      viewControllersRack.instrumentViewController = mixerTrack
+      .instrumentsManager
+      .synthViewController;
+    };
+
+    instrumentPopup.valueAction = 0;
+  }
+
+  initEditInstrumentButton {
+    editInstrumentButton = Button();
+    editInstrumentButton.fixedWidth = 18;
+    editInstrumentButton.fixedHeight = 18;
+    editInstrumentButton.states = [["E"]];
+
+    editInstrumentButton.action = {
+      mixerTrack.instrumentsManager.synthViewController.front();
     };
   }
 
   initEffectsRackView {
-    effectsRackView = IannisEffectsRackView(mixerTrack);
-    effectsRackView.fixedHeight = 142;
+    effectsRackView = IannisEffectsRackView(this);
+    effectsRackView.minHeight = 120;
   }
 
   initGainLabel {
@@ -113,7 +157,7 @@ IannisMixerTrackViewController : CompositeView {
     var gainSpec = ControlSpec(0.ampdb, 6, \db);
     gainFader = Slider();
     gainFader.fixedWidth = 25;
-    gainFader.fixedHeight = 200;
+    gainFader.minHeight = 200;
 
     gainFader.action = {arg slider;
       mixerTrack.gain = gainSpec.map(slider.value);
@@ -142,7 +186,7 @@ IannisMixerTrackViewController : CompositeView {
     levelMeters.do({arg item, n;
       var meter = LevelIndicator();
       meter.fixedWidth = 12;
-      meter.fixedHeight = 200;
+      meter.minHeight = 200;
       meter.warning = -3.dbamp;
       meter.critical = -0.03.dbamp;
       meter.drawsPeak = true;
@@ -261,24 +305,26 @@ IannisMixerTrackViewController : CompositeView {
   }
 }
 
+
+
 //
 // Effects Rack
 //
 
 IannisEffectsRackView : CompositeView {
-  var <mixerTrack,
+  var <parent,
   label,
   addSlotButton,
   removeSlotButton,
   rackView,
   <slots;
 
-  *new {arg mixerTrack;
-    ^super.new.init(mixerTrack);
+  *new {arg parent;
+    ^super.new.init(parent);
   }
 
-  init {arg aMixerTrack;
-    mixerTrack = aMixerTrack;
+  init {arg aParent;
+    parent = aParent;
     slots = [];
     label = StaticText();
     label.string = "Effects";
@@ -288,7 +334,7 @@ IannisEffectsRackView : CompositeView {
     this.initRemoveSlotButton();
 
     this.layout = VLayout(
-      [label, align: \center],
+      [label, align: \top],
       rackView,
       HLayout(
         nil,
@@ -311,11 +357,12 @@ IannisEffectsRackView : CompositeView {
     rackView.canvas = CompositeView();
 
     rackView.canvas.layout = VLayout(
-      nil,
+      nil
     );
 
     rackView.canvas.layout.spacing = 1;
     rackView.canvas.layout.margins = 0!4;
+
   }
 
   initAddSlotButton {
@@ -337,7 +384,13 @@ IannisEffectsRackView : CompositeView {
       );
 
       // model
-      mixerTrack.effectsManager.addEffect();
+      parent
+      .mixerTrack
+      .effectsManager
+      .addEffect();
+
+      // update view controllers rack
+      this.updateViewControllersRackEffects();
     };
   }
 
@@ -351,9 +404,15 @@ IannisEffectsRackView : CompositeView {
       last!?{
         last.close();
 
-        mixerTrack.effectsManager.removeEffectAtIndex(slots.size-1);
+        parent
+        .mixerTrack
+        .effectsManager
+        .removeEffectAtIndex(slots.size-1);
 
         slots.removeAt(slots.size-1);
+
+        // update view controllers rack
+        this.updateViewControllersRackEffects();
       };
     };
   }
@@ -361,7 +420,8 @@ IannisEffectsRackView : CompositeView {
   moveSlotToIndex {arg index, newIndex;
     rackView.canvas.layout.insert(slots[index], newIndex, align: \center);
     
-    mixerTrack
+    parent
+    .mixerTrack
     .effectsManager
     .moveEffectToIndex(index, newIndex);
 
@@ -371,9 +431,18 @@ IannisEffectsRackView : CompositeView {
     slots.do({arg view, n;
       view.index = n;
     });
+
+    // update view controllers rack
+    this.updateViewControllersRackEffects();
+  }
+
+  updateViewControllersRackEffects {
+    parent.viewControllersRack.effectsViewControllers = parent
+    .mixerTrack
+    .effectsManager
+    .effectsViewControllers;
   }
 }
-
 
 
 IannisEffectSlotView : UserView {
@@ -399,7 +468,7 @@ IannisEffectSlotView : UserView {
 
     this.layout = HLayout(
       bypassButton,
-      editButton,
+      // editButton,
       effectsPopUp,
       nil,
       dragHandler
@@ -426,6 +495,7 @@ IannisEffectSlotView : UserView {
 
     bypassButton.action = {arg button;
       var effectViewController = rackView
+      .parent
       .mixerTrack
       .effectsManager
       .effectsViewControllers[this.index];
@@ -452,6 +522,7 @@ IannisEffectSlotView : UserView {
 
     editButton.action = {
       var effectViewController = rackView
+      .parent
       .mixerTrack
       .effectsManager
       .effectsViewControllers[this.index];
@@ -476,13 +547,18 @@ IannisEffectSlotView : UserView {
         .availableEffectsDescs[popup.value-1].name
       };
 
+      // update effect
       rackView
+      .parent
       .mixerTrack
       .effectsManager
       .changeEffectAtIndex(
         this.index,
         effectName
       );
+
+      // update view controllers rack
+      rackView.updateViewControllersRackEffects();
     };
   }
 
@@ -555,5 +631,49 @@ IannisEffectSlotView : UserView {
     };
 
     this.drawingEnabled = false;
+  }
+}
+
+//
+// View controllers rack
+//
+IannisViewControllersRack : ScrollView {
+  var <instrumentViewController,
+  <effectsViewControllers;
+
+  *new {
+    ^super.new.init()
+  }
+
+  init {
+    effectsViewControllers = [];
+
+    this.canvas = CompositeView();
+    this.initLayout();
+
+    this.fixedWidth = 685;
+  }
+
+  initLayout {
+    this.canvas.layout = VLayout(
+      instrumentViewController,
+      *effectsViewControllers
+    );
+    this.canvas.layout.add(nil);
+
+    this.canvas.layout.spacing = 0;
+    this.canvas.layout.margins = 0!4;
+  }
+
+  effectsViewControllers_ {arg newValue;
+    effectsViewControllers = newValue;
+
+    this.initLayout();
+  }
+
+  instrumentViewController_ {arg newValue;
+    instrumentViewController = newValue;
+
+    this.initLayout();
   }
 }

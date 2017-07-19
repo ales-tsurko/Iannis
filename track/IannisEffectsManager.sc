@@ -57,8 +57,6 @@ IannisEffectsManager {
 
     newEffectView.node.moveToTail(this.group);
 
-    newEffectView.front;
-
     effectsViewControllers = effectsViewControllers.add(newEffectView);
 
     // Inform the delegate
@@ -84,8 +82,6 @@ IannisEffectsManager {
     }??{
       newEffect.node.moveToHead(this.group);
     };
-
-    newEffect.front();
 
     effectsViewControllers = effectsViewControllers.insert(index, newEffect);
 

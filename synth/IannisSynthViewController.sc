@@ -17,6 +17,7 @@ IannisSynthViewController : CompositeView {
   <midiLearnModeEnabled = false,
   <isBypassed = false,
   bypassButton,
+  headerView,
   toolbarView, 
   synthNameLabel;
 
@@ -32,15 +33,13 @@ IannisSynthViewController : CompositeView {
       data = ();
       node = IannisNodeGroup();
       this.fixedWidth = 680;
-      this.minHeight = 550;
       this.layout = VLayout();
-      this.initToolbar();
+      this.initHeaderAndToolbar();
       mapView = IannisSynthMapPage(this);
       midiView = IannisSynthMIDIViewController(this);
 
       if (metadata[\type] == \effect) {
         Synth(synthDefName, target: node);
-        this.userCanClose = false;
       };
 
       this.parse();
@@ -52,59 +51,49 @@ IannisSynthViewController : CompositeView {
       node = IannisNodeGroup();
     };
 
+    this.userCanClose = false;
     this.onClose = {this.cleanUp()};
   }
 
-  initToolbar {
+  initHeaderAndToolbar {
     var learnButton = this.initMIDILearnModeButton();
     var panicButton = this.initPanicButton();
     var closeButton = this.initCloseButton();
-    var headerRow, toolbarRow;
     this.initBypassButton();
 
+    headerView = CompositeView();
     toolbarView = CompositeView();
-    toolbarView.fixedHeight = 90;
+    headerView.fixedHeight = 40;
+    toolbarView.fixedHeight = 60;
 
     synthNameLabel = StaticText();
     synthNameLabel.font = Font("Arial", 20);
 
-    presetsManagerController = IannisPresetsManagerController(this);
-
-    if (this.metadata[\type] == \synth) {
-      headerRow = HLayout(
-        bypassButton,
-        synthNameLabel, 
-        nil
-      );
-
-      toolbarRow = HLayout(
-        [nil, stretch: 5],
-        presetsManagerController,
-        [nil, stretch: 1],
-        learnButton,
-        panicButton
-      );
-    } {
-      headerRow = HLayout(
-        closeButton,
-        bypassButton,
-        synthNameLabel, 
-        nil
-      );
-
-      toolbarRow = HLayout(
-        [nil, stretch: 5],
-        presetsManagerController,
-        [nil, stretch: 1],
-        learnButton
-      );
+    // synth folding
+    synthNameLabel.mouseUpAction = {
+      this.toggleFolding();
     };
 
-    toolbarView.layout = VLayout(
-      headerRow,
-      toolbarRow
+    // Header
+    headerView.layout = HLayout(
+      // closeButton,
+      bypassButton,
+      synthNameLabel, 
+      nil
     );
 
+    // Toolbar
+    presetsManagerController = IannisPresetsManagerController(this);
+
+    toolbarView.layout = HLayout(
+      [nil, stretch: 5],
+      presetsManagerController,
+      [nil, stretch: 1],
+      learnButton
+    );
+
+    // adding to layout
+    this.layout.add(headerView);
     this.layout.add(toolbarView);
   }
 
@@ -170,6 +159,15 @@ IannisSynthViewController : CompositeView {
     this.layout.add(pagesView);
   }
 
+  toggleFolding {
+    toolbarView.visible = toolbarView.visible.not;
+    pagesView.visible = pagesView.visible.not;
+    // synthNameLabel.stringColor = [
+      // Color.black(), 
+      // Color.green(0.5)
+    // ][toolbarView.visible.asInteger];
+  }
+
   isBypassed_ {arg newValue;
     isBypassed = newValue;
 
@@ -197,7 +195,15 @@ IannisSynthViewController : CompositeView {
   }
 
   getPageViewAtIndex {arg index; 
-    ^this.pagesView.views[index].canvas;
+    var view;
+
+    if (IannisTabbedView.isScrollable) {
+      view = this.pagesView.views[index].canvas;
+    } {
+      view = this.pagesView.views[index];
+    };
+
+    ^view;
   }
 
   addGroupViewToPageAtIndex {arg groupView, index;
