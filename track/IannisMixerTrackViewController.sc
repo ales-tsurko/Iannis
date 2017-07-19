@@ -1,24 +1,6 @@
 IannisMixerTrackViewController : CompositeView {
-  var <trackView,
-  <effectsRackView;
-  
-  *new {arg name;
-    ^super.new.init(name);
-  }
-
-  init {arg aName;
-    trackView = IannisMixerTrackView(aName);
-
-    this.layout = HLayout(
-      trackView,
-      effectsRackView,
-      nil
-    );
-  }
-}
-
-IannisMixerTrackView : CompositeView {
   var instrumentPopup,
+  effectsRackView,
   nameLabel,
   gainLabel,
   gainFader,
@@ -39,6 +21,7 @@ IannisMixerTrackView : CompositeView {
     mixerTrack = IannisMixerTrack(aName);
 
     this.initInstrumentPopup();
+    this.initEffectsRackView();
     this.initGainLabel();
     this.initGainFader();
     this.initPeaksLabels();
@@ -64,6 +47,7 @@ IannisMixerTrackView : CompositeView {
     this.layout = VLayout(
       // Instruments Menu
       [instrumentPopup, align: \center],
+      [effectsRackView, align: \center],
       HLayout(
         [nil, stretch: 5],
         [~peaksLabelsLayout, stretch: 4],
@@ -92,8 +76,8 @@ IannisMixerTrackView : CompositeView {
       [nameLabel, align: \center]
     );
 
-    this.fixedWidth = 160;
-    this.fixedHeight = 385;
+    this.fixedWidth = 180;
+    this.fixedHeight = 535;
 
     this.onClose = {
       this.cleanUp();
@@ -108,11 +92,13 @@ IannisMixerTrackView : CompositeView {
     instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
 
     instrumentPopup.action = {arg popup;
-      var keys = IannisInstrumentsManager.availableInstrumentsDescs.keys;
-      var selectedKey = keys.asArray[popup.value];
-
-      mixerTrack.instrumentsManager.selectInstrument(selectedKey);
+      mixerTrack.instrumentsManager.selectInstrument(popup.value);
     };
+  }
+
+  initEffectsRackView {
+    effectsRackView = IannisEffectsRackView(mixerTrack);
+    effectsRackView.fixedHeight = 142;
   }
 
   initGainLabel {
@@ -280,7 +266,7 @@ IannisMixerTrackView : CompositeView {
 //
 
 IannisEffectsRackView : CompositeView {
-  var mixerTrack,
+  var <mixerTrack,
   label,
   addSlotButton,
   removeSlotButton,
@@ -339,13 +325,19 @@ IannisEffectsRackView : CompositeView {
     addSlotButton.states = [["+"]];
 
     addSlotButton.action = {arg button;
-      var newSlot = IannisEffectSlotView(this);
+      var newIndex = slots.size;
+      var newSlot = IannisEffectSlotView(this, newIndex);
+
       slots = slots.add(newSlot);
+      
       rackView.canvas.layout.insert(
         newSlot,
         slots.size-1,
         align: \center
       );
+
+      // model
+      mixerTrack.effectsManager.addEffect();
     };
   }
 
@@ -358,17 +350,27 @@ IannisEffectsRackView : CompositeView {
       var last = slots.last;
       last!?{
         last.close();
-      };
 
-      if (slots.size > 0) {
+        mixerTrack.effectsManager.removeEffectAtIndex(slots.size-1);
+
         slots.removeAt(slots.size-1);
-      }
+      };
     };
   }
 
   moveSlotToIndex {arg index, newIndex;
     rackView.canvas.layout.insert(slots[index], newIndex, align: \center);
+    
+    mixerTrack
+    .effectsManager
+    .moveEffectToIndex(index, newIndex);
+
     slots.move(index, newIndex);
+
+    // update indexes
+    slots.do({arg view, n;
+      view.index = n;
+    });
   }
 }
 
@@ -379,14 +381,16 @@ IannisEffectSlotView : UserView {
   editButton,
   effectsPopUp,
   dragHandler,
-  rackView;
+  rackView,
+  <>index;
 
-  *new {arg rackView;
-    ^super.new.init(rackView);
+  *new {arg rackView, index;
+    ^super.new.init(rackView, index);
   }
 
-  init {arg aRackView;
+  init {arg aRackView, anIndex;
     rackView = aRackView;
+    index = anIndex;
 
     this.initBypassButton();
     this.initEditButton();
@@ -410,6 +414,8 @@ IannisEffectSlotView : UserView {
 
     // Drag and drop
     this.initDragAndDrop();
+
+    // model
   }
 
   initBypassButton {
@@ -419,6 +425,14 @@ IannisEffectSlotView : UserView {
     bypassButton.states = [["B"], ["B", Color.white(), Color.red()]];
 
     bypassButton.action = {arg button;
+      var effectViewController = rackView
+      .mixerTrack
+      .effectsManager
+      .effectsViewControllers[this.index];
+
+      effectViewController!?{
+        effectViewController.isBypassed = button.value.asBoolean;
+      };
 
       // change handler color
       dragHandler!?{
@@ -435,15 +449,40 @@ IannisEffectSlotView : UserView {
     editButton.fixedWidth = 18;
     editButton.fixedHeight = 18;
     editButton.states = [["E"]];
+
+    editButton.action = {
+      var effectViewController = rackView
+      .mixerTrack
+      .effectsManager
+      .effectsViewControllers[this.index];
+
+      effectViewController!?{
+        effectViewController.front();
+      }
+    };
   }
 
   initEffectsPopUp {
     effectsPopUp = PopUpMenu();
-    effectsPopUp.items = ["None"].addAll(
+    effectsPopUp.items = ["LiveCode"].addAll(
       IannisEffectsManager.availableEffectsNames
     );
 
     effectsPopUp.action = {arg popup;
+      var effectName;
+
+      if (popup.value > 0) {
+        effectName = IannisEffectsManager
+        .availableEffectsDescs[popup.value-1].name
+      };
+
+      rackView
+      .mixerTrack
+      .effectsManager
+      .changeEffectAtIndex(
+        this.index,
+        effectName
+      );
     };
   }
 
@@ -499,9 +538,7 @@ IannisEffectSlotView : UserView {
     };
 
     this.receiveDragHandler = {arg view, x, y;
-      var currentIndex = rackView.slots.indexOf(View.currentDrag);
-      var newIndex = rackView.slots.indexOf(view);
-      rackView.moveSlotToIndex(currentIndex, newIndex);
+      rackView.moveSlotToIndex(View.currentDrag.index, view.index);
 
       view.drawingEnabled = false;
       view.refresh();
@@ -516,6 +553,7 @@ IannisEffectSlotView : UserView {
       Pen.lineTo(this.bounds.width@0);
       Pen.stroke; 
     };
+
     this.drawingEnabled = false;
   }
 }

@@ -26,25 +26,31 @@ IannisSynthViewController : CompositeView {
 
   init {arg aSynthDefName;
     synthDefName = aSynthDefName;
-    metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
-    data = ();
-    node = IannisNodeGroup();
-    this.fixedWidth = 680;
-    this.minHeight = 550;
-    this.layout = VLayout();
-    this.initToolbar();
-    mapView = IannisSynthMapPage(this);
-    midiView = IannisSynthMIDIViewController(this);
 
-    if (metadata[\type] == \effect) {
-      Synth(synthDefName, target: node);
-      this.userCanClose = false;
+    synthDefName!?{
+      metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
+      data = ();
+      node = IannisNodeGroup();
+      this.fixedWidth = 680;
+      this.minHeight = 550;
+      this.layout = VLayout();
+      this.initToolbar();
+      mapView = IannisSynthMapPage(this);
+      midiView = IannisSynthMIDIViewController(this);
+
+      if (metadata[\type] == \effect) {
+        Synth(synthDefName, target: node);
+        this.userCanClose = false;
+      };
+
+      this.parse();
+
+      this.pagesView.addPage("Map", mapView);
+      this.pagesView.addPage("MIDI", midiView);
+
+    }??{
+      node = IannisNodeGroup();
     };
-
-    this.parse();
-
-    this.pagesView.addPage("Map", mapView);
-    this.pagesView.addPage("MIDI", midiView);
 
     this.onClose = {this.cleanUp()};
   }

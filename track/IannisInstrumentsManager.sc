@@ -28,7 +28,7 @@ IannisInstrumentsManager {
     });
 
     availableInstrumentsDescs??{availableInstrumentsDescs = []};
-    availableInstrumentsDescs = synthDescs;
+    availableInstrumentsDescs = synthDescs.asArray;
   }
 
   *availableInstrumentsNames {
@@ -44,13 +44,14 @@ IannisInstrumentsManager {
     ^names;
   }
 
-  selectInstrument {arg instrumentName;
+  selectInstrument {arg index;
+
     currentInstrumentDesc!?{
       synthViewController.close();
     };
 
     currentInstrumentDesc = IannisInstrumentsManager
-    .availableInstrumentsDescs[instrumentName];
+    .availableInstrumentsDescs[index];
 
     currentInstrumentDesc!?{
       synthViewController = IannisSynthViewController(

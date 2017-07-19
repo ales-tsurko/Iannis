@@ -52,14 +52,9 @@ r = IannisSynthViewController('by-alestsurko-iannis-freeverb').front;
 r.node.moveAfter(t.node);
 
 // Track
-
-// rack
-r = IannisEffectsRackView().front();
-
-// track
 (
 t = IannisMixerTrackViewController().front();
-t.trackView.mixerTrack.instrumentsManager.synthViewController.front;
+t.mixerTrack.instrumentsManager.synthViewController.front;
 )
 
 t.pan = 0;

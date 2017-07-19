@@ -1,5 +1,5 @@
 IannisEffectsManager {
-  classvar <availableEffects;
+  classvar <availableEffectsDescs;
   var delegate,
   <effectsViewControllers,
   <group;
@@ -12,7 +12,7 @@ IannisEffectsManager {
     delegate = aDelegate;
     group = Group();
 
-    IannisEffectsManager.availableEffects??{
+    IannisEffectsManager.availableEffectsDescs??{
       IannisEffectsManager.fetchAvailableEffects();
     };
 
@@ -35,17 +35,17 @@ IannisEffectsManager {
       desc.metadata[\type] == \effect;
     });
 
-    availableEffects??{availableEffects = []};
-    availableEffects = synthDescs;
+    availableEffectsDescs??{availableEffectsDescs = []};
+    availableEffectsDescs = synthDescs.asArray;
   }
 
   *availableEffectsNames {
     var names = [];
-    IannisEffectsManager.availableEffects??{
+    IannisEffectsManager.availableEffectsDescs??{
       IannisEffectsManager.fetchAvailableEffects();
     };
 
-    IannisEffectsManager.availableEffects.do({arg desc;
+    IannisEffectsManager.availableEffectsDescs.do({arg desc;
       names = names.add(desc.metadata[\name]);
     });
 
