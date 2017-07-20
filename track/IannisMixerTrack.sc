@@ -53,14 +53,6 @@ IannisMixerTrack {
 
     // trigger gain
     this.gain = gainVal;
-
-    // stop synth
-    // instrumentsManager.synthViewController!?{
-      // instrumentsManager.synthViewController.node.run(isMute.not);
-    // };
-
-    // stop track controller
-    // node.run(isMute.not);
   }
 
   isSolo_ {arg newValue;

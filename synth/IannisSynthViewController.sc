@@ -16,6 +16,7 @@ IannisSynthViewController : CompositeView {
   <>selectedElementKey,
   <midiLearnModeEnabled = false,
   <isBypassed = false,
+  <>onBypass,
   bypassButton,
   headerView,
   toolbarView, 
@@ -168,7 +169,7 @@ IannisSynthViewController : CompositeView {
     pagesView.visible = pagesView.visible.not;
     // synthNameLabel.stringColor = [
       // Color.black(), 
-      // Color.green(0.5)
+      // Color.gray(0.5)
     // ][toolbarView.visible.asInteger];
   }
 
@@ -179,6 +180,10 @@ IannisSynthViewController : CompositeView {
 
     bypassButton!?{
       bypassButton.value = isBypassed.asInt;
+    };
+
+    onBypass!?{
+      onBypass.value(newValue);
     }
   }
 

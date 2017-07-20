@@ -339,6 +339,50 @@ IannisMixerTrackViewController : CompositeView {
 }
 
 
+//
+// View controllers rack
+//
+IannisViewControllersRack : ScrollView {
+  var <instrumentViewController,
+  <effectsViewControllers;
+
+  *new {
+    ^super.new.init()
+  }
+
+  init {
+    effectsViewControllers = [];
+
+    this.canvas = CompositeView();
+    this.initLayout();
+
+    this.fixedWidth = 685;
+  }
+
+  initLayout {
+    this.canvas.layout = VLayout(
+      instrumentViewController,
+      *effectsViewControllers
+    );
+    this.canvas.layout.add(nil);
+
+    this.canvas.layout.spacing = 0;
+    this.canvas.layout.margins = 0!4;
+  }
+
+  effectsViewControllers_ {arg newValue;
+    effectsViewControllers = newValue;
+
+    this.initLayout();
+  }
+
+  instrumentViewController_ {arg newValue;
+    instrumentViewController = newValue;
+
+    this.initLayout();
+  }
+}
+
 
 //
 // Effects Rack
@@ -545,6 +589,8 @@ IannisEffectSlotView : UserView {
         ][button.value];
       }
     };
+
+    this.bindBypassStateWithButton();
   }
 
   initEditButton {
@@ -592,7 +638,24 @@ IannisEffectSlotView : UserView {
 
       // update view controllers rack
       rackView.updateViewControllersRackEffects();
+
+      // bind bypass and slot's button
+      this.bindBypassStateWithButton();
     };
+  }
+
+  bindBypassStateWithButton {
+    ~viewController = rackView
+    .parent
+    .mixerTrack
+    .effectsManager
+    .effectsViewControllers[this.index];
+
+    ~viewController!?{
+      ~viewController.onBypass = {arg value;
+        bypassButton.value = value.asInteger;
+      };
+    }
   }
 
   initDragHandler {
@@ -667,46 +730,3 @@ IannisEffectSlotView : UserView {
   }
 }
 
-//
-// View controllers rack
-//
-IannisViewControllersRack : ScrollView {
-  var <instrumentViewController,
-  <effectsViewControllers;
-
-  *new {
-    ^super.new.init()
-  }
-
-  init {
-    effectsViewControllers = [];
-
-    this.canvas = CompositeView();
-    this.initLayout();
-
-    this.fixedWidth = 685;
-  }
-
-  initLayout {
-    this.canvas.layout = VLayout(
-      instrumentViewController,
-      *effectsViewControllers
-    );
-    this.canvas.layout.add(nil);
-
-    this.canvas.layout.spacing = 0;
-    this.canvas.layout.margins = 0!4;
-  }
-
-  effectsViewControllers_ {arg newValue;
-    effectsViewControllers = newValue;
-
-    this.initLayout();
-  }
-
-  instrumentViewController_ {arg newValue;
-    instrumentViewController = newValue;
-
-    this.initLayout();
-  }
-}
