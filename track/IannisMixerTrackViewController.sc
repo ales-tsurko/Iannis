@@ -12,6 +12,7 @@ IannisMixerTrackViewController : CompositeView {
   levelMeterUpdater,
   panLabel,
   panKnob,
+  toggleMIDIInputButton,
   muteButton,
   soloButton,
   <viewControllersRack,
@@ -25,6 +26,7 @@ IannisMixerTrackViewController : CompositeView {
     IannisTabbedView.isScrollable = false;
     mixerTrack = IannisMixerTrack(aName);
     viewControllersRack = IannisViewControllersRack();
+    viewControllersRack.visible = false;
 
     this.initToggleRackButton();
     this.initInstrumentPopup();
@@ -36,6 +38,7 @@ IannisMixerTrackViewController : CompositeView {
     this.initLevelMeters();
     this.initPanLabel();
     this.initPanKnob();
+    this.initToggleMIDIInputButton();
     this.initMuteButton();
     this.initSoloButton();
     this.initNameLabel();
@@ -80,6 +83,7 @@ IannisMixerTrackViewController : CompositeView {
       // Mute and Solo buttons
       HLayout(
         nil,
+        toggleMIDIInputButton,
         muteButton,
         soloButton,
         nil
@@ -94,7 +98,7 @@ IannisMixerTrackViewController : CompositeView {
     );
 
     // this.fixedWidth = 180;
-    this.minHeight = 600;
+    this.minHeight = 620;
 
     this.onClose = {
       this.cleanUp();
@@ -255,10 +259,39 @@ IannisMixerTrackViewController : CompositeView {
     panKnob.value = panSpec.unmap(mixerTrack.pan);
   }
 
+  initToggleMIDIInputButton {
+    toggleMIDIInputButton = Button();
+    toggleMIDIInputButton.fixedWidth = 23;
+    toggleMIDIInputButton.fixedHeight = 23;
+    toggleMIDIInputButton.states = [["🎹"], ["🎹", Color.black(), Color.green()]];
+
+    toggleMIDIInputButton.action = {arg button;
+      var newValue = button.value.asBoolean;
+
+      // toggle instrument input
+      mixerTrack
+      .instrumentsManager
+      .synthViewController
+      .midiView
+      .midiManager
+      .midiInputEnabled = newValue;
+
+      // toggle effects input
+      mixerTrack
+      .effectsManager
+      .effectsViewControllers.do({arg viewController;
+        viewController
+        .midiView
+        .midiManager
+        .midiInputEnabled = newValue;
+      });
+    }
+  }
+
   initMuteButton {
     muteButton = Button();
-    muteButton.fixedWidth = 18;
-    muteButton.fixedHeight = 18;
+    muteButton.fixedWidth = 23;
+    muteButton.fixedHeight = 23;
     muteButton.states = [
       ["M", Color.black, Color.white], 
       ["M", Color.white, Color.red]
@@ -273,8 +306,8 @@ IannisMixerTrackViewController : CompositeView {
 
   initSoloButton {
     soloButton = Button();
-    soloButton.fixedWidth = 18;
-    soloButton.fixedHeight = 18;
+    soloButton.fixedWidth = 23;
+    soloButton.fixedHeight = 23;
     soloButton.states = [
       ["S", Color.black, Color.white], 
       ["S", Color.black, Color.yellow]

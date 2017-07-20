@@ -82,7 +82,24 @@
   }
 
   didDisableMIDIInput {
+    this.midiManager.map[\noteOn].free();
+    this.midiManager.map[\noteOff].free();
+    this.midiManager.map[\sustainPedal].free();
+    this.midiManager.map[\bend].free();
+  }
 
+  didEnableMIDIInput {
+    // NoteON
+    this.initNoteOnMIDIFunc();
+
+    // NoteOFF
+    this.initNoteOffMIDIFunc();
+
+    // Sustain Pedal
+    this.initSustainPedalMIDIFunc();
+
+    // Pitch Bend
+    this.initPitchBendMIDIFunc();
   }
 
   didUpdateMIDIChannel {arg newValue;
@@ -90,23 +107,10 @@
   }
 
   didSelectNewDevice {arg device;
-    this.midiManager.map[\noteOn].free();
-    this.midiManager.map[\noteOff].free();
-    this.midiManager.map[\sustainPedal].free();
-    this.midiManager.map[\bend].free();
+    this.didDisableMIDIInput();
 
     if (this.midiManager.midiInputEnabled) {
-      // NoteON
-      this.initNoteOnMIDIFunc();
-
-      // NoteOFF
-      this.initNoteOffMIDIFunc();
-
-      // Sustain Pedal
-      this.initSustainPedalMIDIFunc();
-
-      // Pitch Bend
-      this.initPitchBendMIDIFunc();
+      this.didEnableMIDIInput();
     }
   }
 

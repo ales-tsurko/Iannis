@@ -92,6 +92,10 @@ IannisSynthViewController : CompositeView {
       learnButton
     );
 
+    if (metadata[\type] == \synth) {
+      toolbarView.layout.add(panicButton);
+    };
+
     // adding to layout
     this.layout.add(headerView);
     this.layout.add(toolbarView);

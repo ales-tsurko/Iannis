@@ -5,7 +5,7 @@ IannisMIDIManager {
   parentViewController,
   <selectedDevice,
   <selectedDisconnectedDevice,
-  <midiInputEnabled,
+  midiInputEnabled,
   <channel,
   learningFunc;
 
@@ -83,32 +83,35 @@ IannisMIDIManager {
   }
 
   selectedDevice_ {arg device;
-    device!?{selectedDevice = device};
-
-    // selectedDevice = device;
-    this.midiInputEnabled = device.notNil;
+    selectedDevice = device;
 
     delegate.didSelectNewDevice(device);
   }
 
   selectedDeviceIndex {
-    var index;
-
     selectedDevice!?{
-      index = IannisMIDIClient.sources.detectIndex({arg d;
+      var index = IannisMIDIClient.sources.detectIndex({arg d;
         d.uid == selectedDevice.uid;
       });
-    };
 
-    index!?{^(index + 1)}??{^0};
+      ^(index + 1);
+    }??{
+      ^0;
+    };
+  }
+
+  midiInputEnabled {
+    ^(midiInputEnabled && selectedDevice.notNil);
   }
 
   midiInputEnabled_ {arg newValue;
     midiInputEnabled = newValue;
 
-    if (midiInputEnabled.not) {
+    if (this.midiInputEnabled.not) {
       this.reset();
       delegate.didDisableMIDIInput();
+    } {
+      delegate.didEnableMIDIInput();
     }
   }
 
