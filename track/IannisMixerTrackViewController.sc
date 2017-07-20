@@ -645,14 +645,14 @@ IannisEffectSlotView : UserView {
   }
 
   bindBypassStateWithButton {
-    ~viewController = rackView
+    var viewController = rackView
     .parent
     .mixerTrack
     .effectsManager
     .effectsViewControllers[this.index];
 
-    ~viewController!?{
-      ~viewController.onBypass = {arg value;
+    viewController!?{
+      viewController.onBypass = {arg value;
         bypassButton.value = value.asInteger;
       };
     }

@@ -273,8 +273,8 @@ IannisSynthMapParameter : CompositeView {
   }
 
   evaluateCodeAction {arg code;
-    var preset = this.parentSynthPage
-    .parentSynthController
+    var parentSynthController = this.parentSynthPage.parentSynthController;
+    var preset = parentSynthController
     .presetsManagerController
     .presetsManager
     .currentPreset;
@@ -289,6 +289,10 @@ IannisSynthMapParameter : CompositeView {
     this.proxies.do({arg np; 
       np.source = compiled;
       np.set(\selfvalue, preset.values[key]);
+
+      if (parentSynthController.type == \effect) {
+        parentSynthController.node.set(key, np.bus.asMap);
+      }
     });
 
     // update selfvalue
@@ -407,8 +411,10 @@ IannisSynthMapParameter : CompositeView {
     proxy.bus!?{
       if (isOn) {
         var voice;
+        var parentSynthController = this.parentSynthPage.parentSynthController;
+        
         case
-        {this.parentSynthPage.type == \synth} {
+        {parentSynthController.type == \synth} {
           voice = this.parentSynthPage
           .parentSynthController
           .midiView
@@ -416,8 +422,8 @@ IannisSynthMapParameter : CompositeView {
           .voicesManager
           .getVoice(noteNumber);
         }
-        {this.parentSynthPage.type == \effect} {
-          voice = this.parentSynthPage.node;
+        {parentSynthController.type == \effect} {
+          voice = parentSynthController.node;
         };
 
         // set map to the voice

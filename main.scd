@@ -53,8 +53,6 @@ r.node.moveAfter(t.node);
 
 // Track
 t = IannisMixerTrackViewController().front();
-t.viewControllersRack.visible = true;
-t.viewControllersRack.fixedWidth = 685;
 
 
 
