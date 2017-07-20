@@ -34,7 +34,12 @@ IannisMixerTrack {
 
   gain_ {arg newValue;
     gain = newValue;
-    node.set(\gain, gain);
+
+    if (isMute) {
+      node.set(\gain, -inf);
+    } {
+      node.set(\gain, gain);
+    };
   }
 
   pan_ {arg newValue;
@@ -43,15 +48,19 @@ IannisMixerTrack {
   }
 
   isMute_ {arg newValue;
+    var gainVal = this.gain;
     isMute = newValue;
 
+    // trigger gain
+    this.gain = gainVal;
+
     // stop synth
-    instrumentsManager.synthViewController!?{
-      instrumentsManager.synthViewController.node.run(isMute.not);
-    };
+    // instrumentsManager.synthViewController!?{
+      // instrumentsManager.synthViewController.node.run(isMute.not);
+    // };
 
     // stop track controller
-    node.run(isMute.not);
+    // node.run(isMute.not);
   }
 
   isSolo_ {arg newValue;
