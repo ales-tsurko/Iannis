@@ -82,22 +82,10 @@ IannisSynthMapParameter : CompositeView {
           .presetsManagerController
           .presetsManager
           .currentPreset;
-          // get the source value
-          var val = preset.values[key];
-
-          // assign the source value
-          parentSynthController
-          .data[key][\updater]
-          .value(val);
 
           // clear the proxies
           this.proxiesGroup.free();
           this.proxies.do({arg np; np.free(0.1)});
-
-          // update parameters list
-          this.parentSynthPage.availableParameters = this.parentSynthPage.availableParameters.add(key);
-
-          this.parentSynthPage.parametersListView.items = this.parentSynthPage.availableParameters;
 
           // remove key from the map of the current preset
           preset.map[key] = nil;

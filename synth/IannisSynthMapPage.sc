@@ -1,8 +1,8 @@
 IannisSynthMapPage : CompositeView {
   var <parentSynthController,
-  <>availableParameters,
+  <availableParameters,
   parametersMenuButton,
-  <parametersListView, 
+  parametersListView, 
   <parameters,
   addParameterButton;
 
@@ -173,7 +173,27 @@ IannisSynthMapPage : CompositeView {
     }
   }
 
+  addParameterKeyToList {arg key;
+    availableParameters = availableParameters.add(key);
+    parametersListView.items = availableParameters;
+  }
+
   willCloseParameter {arg key;
+    // get the source value
+    var val = this.parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset
+    .values[key];
+
+    // free the parameter from map first
     parameters[key] = nil;
+
+    // now assign the source value
+    this.parentSynthController
+    .data[key][\updater]
+    .value(val);
+
+    this.addParameterKeyToList(key);
   }
 }
