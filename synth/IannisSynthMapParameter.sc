@@ -261,30 +261,37 @@ IannisSynthMapParameter : CompositeView {
   }
 
   evaluateCodeAction {arg code;
-    var parentSynthController = this.parentSynthPage.parentSynthController;
+    var parentSynthController = this.parentSynthPage
+    .parentSynthController;
     var preset = parentSynthController
     .presetsManagerController
     .presetsManager
     .currentPreset;
-    var compiled;
+    var compiled = code.compile();
+    var rout = Routine({
+      // update NodeProxy
+      this.proxies.do({arg np; 
+        np.source = compiled;
 
-    // create UI
-    this.parseCode(code);
+        Server.default.sync;
 
-    compiled = code.compile();
+        np.set(\selfvalue, preset.values[key]);
 
-    // update NodeProxy
-    this.proxies.do({arg np; 
-      np.source = compiled;
-      np.set(\selfvalue, preset.values[key]);
+        if (parentSynthController.type == \effect) {
+          parentSynthController.node.set(key, np.bus.asMap);
+        }
+      });
 
-      if (parentSynthController.type == \effect) {
-        parentSynthController.node.set(key, np.bus.asMap);
-      }
+      Server.default.sync();
+      
+      // update selfvalue
+      this.proxiesGroup.set(\selfvalue, preset.values[key]);
+
+      // create UI
+      this.parseCode(code);
     });
 
-    // update selfvalue
-    this.proxiesGroup.set(\selfvalue, preset.values[key]);
+    AppClock.play(rout);
   }
 
   evaluate {
@@ -353,11 +360,6 @@ IannisSynthMapParameter : CompositeView {
       textView.onLoadFinished = {arg tv;
         tv.setValue(code);
         this.evaluate();
-
-        // it seems, this actually never used.
-        // loading of the preset values done in
-        // the parameter UI creation method (makeParameterView)
-        this.loadPresetDataForUserDefinedUI(preset);
       };
     };
   }
@@ -366,8 +368,8 @@ IannisSynthMapParameter : CompositeView {
     preset.getMapUIValues(key)!?{
       var obj = preset.getMapUIValues(key);
 
-      obj.keysValuesDo({arg key, value;
-        var dataKey = (this.key++'.'++key).asSymbol;
+      obj.keysValuesDo({arg userKey, value;
+        var dataKey = (this.key++'.'++userKey).asSymbol;
         var parentSynthController = this.parentSynthPage
         .parentSynthController;
 
@@ -382,14 +384,13 @@ IannisSynthMapParameter : CompositeView {
   }
   
   didFinishParsing {
-    // var parentSynthController = this.parentSynthPage
-    // .parentSynthController;
-    // var preset = parentSynthController
-    // .presetsManagerController
-    // .presetsManager
-    // .currentPreset;
-    // parentSynthController.midiView.onLoadPreset(preset);
-    // preset.midiBindings().postln;
+    var preset = this.parentSynthPage
+    .parentSynthController
+    .presetsManagerController
+    .presetsManager
+    .currentPreset;
+
+    this.loadPresetDataForUserDefinedUI(preset);
   }
 
   // MIDI
@@ -580,7 +581,7 @@ IannisSynthMapParameter : CompositeView {
     ^view;
   }
 
-  makeParameterView {arg name, key, spec;
+  makeParameterView {arg name, userKey, spec;
     var view = CompositeView();
     var label = StaticText();
     var valueLabel = StaticText();
@@ -596,7 +597,7 @@ IannisSynthMapParameter : CompositeView {
     .presetsManager
     .selectedPreset;
     var previousColor;
-    var dataKey = (this.key++'.'++key).asSymbol;
+    var dataKey = (this.key++'.'++userKey).asSymbol;
     var parentSynthController = this.parentSynthPage
     .parentSynthController;
 
@@ -611,13 +612,13 @@ IannisSynthMapParameter : CompositeView {
     knob.action = {arg k;
       k.value!?{
         var newValue = spec.map(k.value);
-        proxiesGroup.set(key, newValue);
+        proxiesGroup.set(userKey, newValue);
 
         valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
 
         // update preset
         currentPreset!?{
-          currentPreset.setMapUIValueForKey(this.key, key, newValue);
+          currentPreset.setMapUIValueForKey(this.key, userKey, newValue);
         };
       };
     };
@@ -625,7 +626,7 @@ IannisSynthMapParameter : CompositeView {
     knob.valueAction = selectedPreset!?{
       var value; 
       selectedPreset.getMapUIValues(this.key)!?{
-        value = selectedPreset.getMapUIValues(this.key)[key];
+        value = selectedPreset.getMapUIValues(this.key)[userKey];
       }??{
         value = spec.default;
       };
