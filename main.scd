@@ -56,7 +56,6 @@ t = IannisMixerTrackViewController().front();
 
 
 
-
 g.do({arg synth;
   synth.release;
 });

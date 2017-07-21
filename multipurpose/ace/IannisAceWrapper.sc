@@ -55,15 +55,15 @@ IannisAceWrapper : WebView {
   }
 
   setValue {arg newValue;
-    var convertedString;
-
     newValue!?{
-      convertedString = newValue.replace("\n", "\\n").asSymbol.asCompileString;
+      var convertedString = newValue.asCompileString.replace("\n", "\\\\n");
+      this.evaluateJavaScript(
+        "var str ="++convertedString++".replace(/\\\\n\/g, \"\\n\");"
+        "editor.setValue(str);"
+      );
     }??{
-      convertedString = "";
+      this.evaluateJavaScript("editor.setValue(\"\");");
     };
-
-    this.evaluateJavaScript("editor.setValue("++convertedString++")");
   }
 
   // update the text, then calls the passed

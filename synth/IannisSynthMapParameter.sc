@@ -243,7 +243,7 @@ IannisSynthMapParameter : CompositeView {
         "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
         "*/\n"
         "\n"
-        "'selfvalue'.kr;"
+        "\\selfvalue.kr;"
       );
     };
 
