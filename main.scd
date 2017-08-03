@@ -41,15 +41,6 @@ TempoClock.default.tempo = 107/60;
 
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
-// Synth view controller
-(
-t = IannisSynthViewController('granulator').front;
-v = IannisSynthViewController('by-alestsurko-iannis-parameq').front;
-c = IannisSynthViewController('by-alestsurko-iannis-compander').front;
-r = IannisSynthViewController('by-alestsurko-iannis-freeverb').front;
-)
-r.node.moveAfter(t.node);
-
 // Track
 t = IannisMixerTrackViewController().front();
 

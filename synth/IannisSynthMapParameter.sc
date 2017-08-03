@@ -163,6 +163,16 @@ IannisSynthMapParameter : CompositeView {
         isOn = false;
       } {
         // on
+        if ((this
+          .parentSynthPage
+          .parentSynthController
+          .type == \effect) && (this.proxies[0].bus.notNil)) {
+          this.parentSynthPage.parentSynthController.node.set(
+            key,
+            this.proxies[0].bus.asMap
+          );
+        };
+
         isOn = true;
       };
 
@@ -270,17 +280,18 @@ IannisSynthMapParameter : CompositeView {
     var compiled = code.compile();
     var rout = Routine({
       // update NodeProxy
-      this.proxies.do({arg np; 
-        np.source = compiled;
 
-        Server.default.sync;
-
-        np.set(\selfvalue, preset.values[key]);
-
-        if (parentSynthController.type == \effect) {
-          parentSynthController.node.set(key, np.bus.asMap);
-        }
-      });
+      case 
+      {parentSynthController.type == \synth} {
+        this.proxies.do({arg np; 
+          np.source = compiled;
+          Server.default.sync;
+        });
+      }
+      {parentSynthController.type == \effect} {
+        this.proxies[0].source = compiled;
+        parentSynthController.node.set(key, this.proxies[0].bus.asMap);
+      };
 
       Server.default.sync();
       
@@ -289,6 +300,10 @@ IannisSynthMapParameter : CompositeView {
 
       // create UI
       this.parseCode(code);
+
+      Server.default.sync();
+
+      this.loadPresetDataToNode(preset);
     });
 
     AppClock.play(rout);
@@ -382,6 +397,20 @@ IannisSynthMapParameter : CompositeView {
       });
     };
   }
+
+  loadPresetDataToNode {arg preset;
+    preset.getMapUIValues(key)!?{
+      var obj = preset.getMapUIValues(key);
+
+      obj.keysValuesDo({arg userKey, value;
+        proxiesGroup.set(userKey, value);
+
+        if (this.parentSynthPage.parentSynthController.type == \effect) {
+          this.proxies[0].set(userKey, value);
+        }
+      });
+    }
+  }
   
   didFinishParsing {
     var preset = this.parentSynthPage
@@ -395,17 +424,25 @@ IannisSynthMapParameter : CompositeView {
 
   // MIDI
   onNoteOn {arg noteNumber, velocity;
-    var proxy = this.proxies[noteNumber];
+    var proxy;
+    var parentSynthController = this.parentSynthPage
+    .parentSynthController;
+    
+    case
+    {parentSynthController.type == \synth} {
+      proxy = this.proxies[noteNumber];
+    }
+    {parentSynthController.type == \effect} {
+      proxy = this.proxies[0];
+    };
 
     proxy.bus!?{
       if (isOn) {
         var voice;
-        var parentSynthController = this.parentSynthPage.parentSynthController;
         
         case
         {parentSynthController.type == \synth} {
-          voice = this.parentSynthPage
-          .parentSynthController
+          voice = parentSynthController
           .midiView
           .midiManager
           .voicesManager
