@@ -4,34 +4,32 @@ Quarks.install("~/Desktop/Iannis".standardizePath);
 Quarks.uninstall("Iannis");
 // ---------------------------------------------------------
 )
-
+s.quit();
 (
+  ~initSynthDescs = {arg dir, libName;
+    var path = PathName(dir);
+    path.filesDo({arg file;
+      if (file.extension == "scsyndef") {
+        SynthDescLib.getLib(libName).read(file);
+      }
+    });
+  };
+
   s.waitForBoot({
-    var pathToInnerSynthDefs = "~/Desktop/Iannis/inner_synthdefs".standardizePath;
     SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
     s.loadDirectory(SynthDef.synthDefDir);
 
-    // load inner synthdefs
-    s.loadDirectory(pathToInnerSynthDefs);
+    s.loadDirectory("~/Desktop/Iannis/inner_synthdefs".standardizePath);
 
     s.sync;
 
     SynthDescLib(\iannis_synth);
     // init synthdescs for iannis' synthdefs
-    PathName(SynthDef.synthDefDir).files.do({arg pathName;
-      if (pathName.extension == "scsyndef") {
-        SynthDescLib
-        .getLib(\iannis_synth)
-        .read(pathName.fullPath);
-      };
-    });
+    ~initSynthDescs.value(SynthDef.synthDefDir, \iannis_synth);
 
     // load iannis synthdesc lib into global lib
     SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
-
-    // survive CmdPeriod
-    TempoClock.default.permanent = true;
   });
 )
 
@@ -41,31 +39,14 @@ TempoClock.default.tempo = 107/60;
 
 IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
 
-// Track
+// Synth view controller
+(
+g = IannisNodeGroup();
+v = IannisSynthViewController(g, \granulator).front();
+)
+
+// mixer track
 t = IannisMixerTrackViewController().front();
-
-
-
-g.do({arg synth;
-  synth.release;
-});
-
-a = OSCFunc({arg msg;
-  msg[0].postln;
-}, '/g_queryTree.reply', g.server.addr).oneShot;
-a.clear();
-OSCFunc().freeAll
-g.server.sendMsg("/g_queryTree", g.nodeID);
-a.free
-
-p = ProxySpace(Server.default);
-
-p.put(0, {(2+2).postln});
-p.put(1, {SinOsc.ar*0.3!2});
-p[1].stop
-
-p.clear;
-p.pop;
 
 // Tabbed view
 
@@ -93,7 +74,3 @@ z.fixedWidth = 200;
 z.layout = HLayout(m);
 
 t.addPage("tab 2", z);
-
-
-
-
