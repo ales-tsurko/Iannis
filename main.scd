@@ -41,12 +41,15 @@ IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).fron
 
 // Synth view controller
 (
-g = IannisNodeGroup();
-v = IannisSynthViewController(g, \granulator).front();
+// g = IannisNodeGroup();
+// v = IannisSynthViewController(g, \granulator).front();
 )
 
 // mixer track
-t = IannisMixerTrackViewController().front();
+// t = IannisMixerTrackViewController().front();
+
+// mixer
+m = IannisMixerViewController().front();
 
 // Tabbed view
 
