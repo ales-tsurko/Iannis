@@ -389,6 +389,9 @@ IannisViewControllersRack : ScrollView {
     initLayout {
         if(isMaster) {
             instrumentViewController = FreqScopeView(this.canvas, Rect(0,0,511,300));
+            instrumentViewController.active = true;
+            instrumentViewController.freqMode = 1;
+            instrumentViewController.dbRange = 180;
         };
 
         this.canvas.layout = VLayout(
