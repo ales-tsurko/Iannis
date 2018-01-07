@@ -14,20 +14,24 @@ IannisRecorderController : CompositeView {
   isLoopCheckBox,
   quantizeBox,
   <directoryWatcher,
-  <recorder;
+  <recorder,
+  <outputBus,
+  <synthController;
 
-  *new {arg dir;
-    ^super.new.init(dir);
+  *new {arg dir, bus, synthController;
+    ^super.new.init(dir, bus, synthController);
   }
 
-  init {arg samplesDir;
+  init {arg samplesDir, aBus, synth;
     var inputBusLabel = StaticText.new;
     var quantizationLabel = StaticText.new;
     var maxDurationLabel = StaticText.new;
     directoryLabel = StaticText.new;
     directoryLabel.align = \left;
     recordingDir = samplesDir;
-    recorder = IannisRecorder(recordingDir, this);
+    outputBus = aBus;
+    synthController = synth;
+    recorder = IannisRecorder(recordingDir, this, outputBus);
 
     // choose directory
     chooseDirectoryButton = Button.new;

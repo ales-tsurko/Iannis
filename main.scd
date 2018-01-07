@@ -56,6 +56,7 @@ s.quit();
 
 // mixer
 m = IannisMixerViewController().front();
+m.children[1].canvas.children[2].mixerTrack.innerBus;
 
 // Tabbed view
 

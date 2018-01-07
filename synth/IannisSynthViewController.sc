@@ -520,7 +520,7 @@ IannisSynthViewController : CompositeView {
   }
 
   parseRecorderUI {arg key;
-    var newRecorder = IannisRecorderController("".resolveRelative);
+    var newRecorder = IannisRecorderController("".resolveRelative, outputBus, this);
     newRecorder.action = {arg recorder;
       this.updateNodeValue(key, recorder.value.bufnum);
 
