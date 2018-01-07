@@ -7,8 +7,9 @@
           if (this.parentSynthController.type == \synth) {
             var values = this.parentSynthController.node.getState.getPairs;
             var newVoice;
+            var outputBus = this.parentSynthController.outputBus;
 
-            values = values.addAll([\freq, num.midicps, \velocity, val]);
+            values = values.addAll([\freq, num.midicps, \velocity, val, \out, outputBus]);
 
             // add it to the voices array
             this.midiManager.voicesManager.noteOn(

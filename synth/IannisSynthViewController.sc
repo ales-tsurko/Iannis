@@ -7,6 +7,7 @@ IannisSynthViewController : CompositeView {
   <site,
   <pagesView, 
   <node, 
+  <outputBus,
   <metadata, 
   <presetsManagerController,
   <data,
@@ -22,12 +23,13 @@ IannisSynthViewController : CompositeView {
   toolbarView, 
   synthNameLabel;
 
-  *new {arg synthDefName;
-    ^super.new.init(synthDefName);
+  *new {arg synthDefName, outputBus;
+    ^super.new.init(synthDefName, outputBus);
   }
 
-  init {arg aSynthDefName;
+  init {arg aSynthDefName, anOutputBus;
     synthDefName = aSynthDefName;
+    outputBus = anOutputBus;
 
     synthDefName!?{
       metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
@@ -40,7 +42,7 @@ IannisSynthViewController : CompositeView {
       midiView = IannisSynthMIDIViewController(this);
 
       if (metadata[\type] == \effect) {
-        Synth(synthDefName, target: node);
+        Synth(synthDefName, [\in, outputBus, \out, outputBus], node);
       };
 
       this.parse();

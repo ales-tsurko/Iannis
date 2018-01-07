@@ -2,6 +2,7 @@ IannisMixerTrack {
   var <node,
   <>name,
   <bus,
+  <innerBus,
   <isSolo = false,
   <isMute = false,
   <instrumentsManager,
@@ -16,9 +17,11 @@ IannisMixerTrack {
   init {arg aName;
     name = aName?"New Track";
     bus = Bus.control(Server.default, 4);
+    innerBus = Bus.audio(Server.default, 2);
+    // postln(innerBus);
     node = Synth(
       "by.alestsurko.iannis.track.controller",
-      [\gain, 0, \pan, 0, \levelbus, bus.index]
+      [\gain, 0, \pan, 0, \inbus, innerBus, \outputbus, 0, \levelbus, bus]
     );
 
     instrumentsManager = IannisInstrumentsManager(this);

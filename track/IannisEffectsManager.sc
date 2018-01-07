@@ -53,7 +53,7 @@ IannisEffectsManager {
   }
 
   addEffect {arg effectName;
-    var newEffectView = IannisSynthViewController(effectName);
+    var newEffectView = IannisSynthViewController(effectName, delegate.innerBus);
 
     newEffectView.node.moveToTail(this.group);
 
@@ -74,7 +74,7 @@ IannisEffectsManager {
   }
 
   changeEffectAtIndex {arg index, effectName;
-    var newEffect = IannisSynthViewController(effectName);
+    var newEffect = IannisSynthViewController(effectName, delegate.innerBus);
     this.removeEffectAtIndex(index);
 
     effectsViewControllers[index-1]!?{

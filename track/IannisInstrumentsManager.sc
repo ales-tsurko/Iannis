@@ -55,7 +55,8 @@ IannisInstrumentsManager {
 
     currentInstrumentDesc!?{
       synthViewController = IannisSynthViewController(
-        currentInstrumentDesc.name
+        currentInstrumentDesc.name,
+        delegate.innerBus
       );
     };
 

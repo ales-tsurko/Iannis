@@ -12,11 +12,12 @@ IannisMixerViewController : ScrollView {
 
         numberOfChannels.do({
             var channel = IannisMixerTrackViewController();
-            channel.background = Color.rand(0.3, 0.9);
+            channel.background = Color.rand(0.77, 0.85);
             channels = channels.add(channel);
         });
 
         this.canvas = CompositeView();
         this.canvas.layout = HLayout(*channels);
+        this.canvas.layout.spacing = 0;
     }
 }

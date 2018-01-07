@@ -20,5 +20,5 @@ SynthDef("by.alestsurko.iannis.track.controller", {arg
   ]);
 
   // main output
-  ReplaceOut.ar(outbus, out);
+  Out.ar(outbus, out);
 }).writeDefFile(~innerSynthDefsPath);

@@ -810,6 +810,7 @@ metadata[\presets] = metadata[\presets].add(
 
 SynthDef("by-alestsurko-iannis-parameq", {arg 
   in = 0,
+  out = 0,
   lpFreq = 20000, lpQ = 2, lpBypass = 1,                                  // LP
   hpFreq = 20, hpQ = 2, hpBypass = 1,                                     // HP
   loShelfFreq = 120, loShelfQ = 2, loShelfGain = 0, loShelfBypass = 0,    // LoShelf
@@ -828,7 +829,7 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak2,
   peak3,
   peak4,
-  out;
+  output;
 
   source = In.ar(in, 2);
  
@@ -856,9 +857,9 @@ SynthDef("by-alestsurko-iannis-parameq", {arg
   peak4 = BPeakEQ.ar(peak3, peak4Freq, peak4Q.reciprocal, peak4Gain);
   peak4 = (peak3 * peak4Bypass) + (peak4 * (peak4Bypass < 0.5));
 
-  out = peak4;
+  output = peak4;
 
-  ReplaceOut.ar(0, out);
+  ReplaceOut.ar(out, output);
 }, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
 )
 
@@ -986,6 +987,7 @@ metadata[\presets] = [
 
 SynthDef("by-alestsurko-iannis-compander", {arg 
   in = 0,
+  out = 0,
 
   threshold = 0,
   belowRatio = 1, // below ratio
@@ -995,9 +997,9 @@ SynthDef("by-alestsurko-iannis-compander", {arg
   inputGain = 0,
   outputGain = 0; // in ms
 
-  var source, out;
+  var source, output;
   source = In.ar(in, 2) * inputGain.dbamp;
-  out = Compander.ar(source, source, 
+  output = Compander.ar(source, source, 
     threshold.dbamp, 
     belowRatio,
     1/aboveRatio,
@@ -1005,7 +1007,7 @@ SynthDef("by-alestsurko-iannis-compander", {arg
     release*0.001,
     outputGain.dbamp
   );
-  ReplaceOut.ar(0, out);
+  ReplaceOut.ar(out, output);
 }, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
 )
 
@@ -1089,14 +1091,15 @@ metadata[\presets] = [
 
 SynthDef("by-alestsurko-iannis-freeverb", {arg 
   in = 0,
+  out = 0,
 
   size = 0.1,
   damping = 0.5,
   mix = 0.5;
 
-  var source, out;
+  var source, output;
   source = In.ar(in, 2);
-  out = FreeVerb2.ar(
+  output = FreeVerb2.ar(
     source[0],
     source[1],
     mix,
@@ -1104,6 +1107,6 @@ SynthDef("by-alestsurko-iannis-freeverb", {arg
     damping
   );
 
-  ReplaceOut.ar(0, out);
+  ReplaceOut.ar(out, output);
 }, metadata: metadata).writeDefFile(SynthDef.synthDefDir);
 )
