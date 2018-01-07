@@ -1,87 +1,99 @@
 IannisMixerTrack {
-  var <node,
-  <>name,
-  <bus,
-  <innerBus,
-  <isSolo = false,
-  <isMute = false,
-  <instrumentsManager,
-  <effectsManager,
-  <gain = 0,
-  <pan = 0;
+    var <node,
+    <>name,
+    <bus,
+    <innerBus,
+    <isSolo = false,
+    <isMute = false,
+    <instrumentsManager,
+    <effectsManager,
+    <gain = 0,
+    <pan = 0,
+    <isMaster;
 
-  *new {arg name;
-    ^super.new.init(name);
-  }
+    *new {arg name, isMaster;
+        ^super.new.init(name, isMaster);
+    }
 
-  init {arg aName;
-    name = aName?"New Track";
-    bus = Bus.control(Server.default, 4);
-    innerBus = Bus.audio(Server.default, 2);
-    // postln(innerBus);
-    node = Synth(
-      "by.alestsurko.iannis.track.controller",
-      [\gain, 0, \pan, 0, \inbus, innerBus, \outputbus, 0, \levelbus, bus]
-    );
+    init {arg aName, isMas;
+        isMaster = isMas;
+        name = aName?"New Track";
+        bus = Bus.control(Server.default, 4);
+        innerBus = 0;
+        if(isMaster.not){innerBus = Bus.audio(Server.default, 2)};
+        // postln(innerBus);
 
-    instrumentsManager = IannisInstrumentsManager(this);
-    effectsManager = IannisEffectsManager(this);
+        if(isMaster){
+            node = Synth(
+                "by.alestsurko.iannis.track-master.controller",
+                [\gain, 0, \pan, 0, \inbus, 0, \levelbus, bus]
+            );
+        }{
+            node = Synth(
+                "by.alestsurko.iannis.track.controller",
+                [\gain, 0, \pan, 0, \inbus, innerBus, \outputbus, 0, \levelbus, bus]
+            );
+        };
 
-    effectsManager.group.moveBefore(this.node);
-  }
 
-  cleanUp {
-    instrumentsManager.cleanUp();
-    node.free();
-  }
+        if(isMaster.not){instrumentsManager = IannisInstrumentsManager(this)};
+        effectsManager = IannisEffectsManager(this);
 
-  gain_ {arg newValue;
-    gain = newValue;
+        effectsManager.group.moveBefore(this.node);
+    }
 
-    if (isMute) {
-      node.set(\gain, -inf);
-    } {
-      node.set(\gain, gain);
-    };
-  }
+    cleanUp {
+        if(isMaster.not){instrumentsManager.cleanUp()};
+        node.free();
+    }
 
-  pan_ {arg newValue;
-    pan = newValue;
-    node.set(\pan, pan);
-  }
+    gain_ {arg newValue;
+        gain = newValue;
 
-  isMute_ {arg newValue;
-    var gainVal = this.gain;
-    isMute = newValue;
+        if (isMute) {
+            node.set(\gain, -inf);
+        } {
+            node.set(\gain, gain);
+        };
+    }
 
-    // trigger gain
-    this.gain = gainVal;
-  }
+    pan_ {arg newValue;
+        pan = newValue;
+        node.set(\pan, pan);
+    }
 
-  isSolo_ {arg newValue;
-    isSolo = newValue;
-  }
+    isMute_ {arg newValue;
+        var gainVal = this.gain;
+        isMute = newValue;
+
+        // trigger gain
+        this.gain = gainVal;
+    }
+
+    isSolo_ {arg newValue;
+        isSolo = newValue;
+    }
 }
 
 // Instruments manager delegate
 + IannisMixerTrack {
-  didSelectInstrument {arg instrumentDesc, synthViewController;
-    this.effectsManager.group.moveAfter(synthViewController.node);
-    node.moveAfter(this.effectsManager.group);
-  }
+    didSelectInstrument {arg instrumentDesc, synthViewController;
+        this.effectsManager.group.moveAfter(synthViewController.node);
+        node.moveAfter(this.effectsManager.group);
+    }
 }
 
 // Effects manager delegate
 + IannisMixerTrack {
-  didAddEffect {arg effect;
-  }
+    didAddEffect {arg effect;
+    }
 
-  willRemoveEffectAtIndex {arg index, effectViewController;
-  }
+    willRemoveEffectAtIndex {arg index, effectViewController;
+    }
 
-  didChangeEffectAtIndex {arg index, effectViewController;
-  }
+    didChangeEffectAtIndex {arg index, effectViewController;
+    }
 
-  didMoveEffectToIndex {arg fromIndex, toIndex;
-  }
+    didMoveEffectToIndex {arg fromIndex, toIndex;
+    }
 }

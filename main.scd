@@ -57,11 +57,6 @@ s.quit();
 // mixer
 m = IannisMixerViewController().front();
 
-s.queryAllNodes;
-s.meter;
-s.options.numAudioBusChannels;
-
-
 // Tabbed view
 
 // l = StaticText();

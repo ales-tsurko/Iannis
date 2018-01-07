@@ -1,341 +1,365 @@
 // View controller
 IannisMixerTrackViewController : CompositeView {
-  var toggleRackButton,
-  instrumentPopup,
-  editInstrumentButton,
-  effectsRackView,
-  nameLabel,
-  gainLabel,
-  gainFader,
-  peaksLabels,
-  levelMeters,
-  levelMeterUpdater,
-  panLabel,
-  panKnob,
-  toggleMIDIInputButton,
-  muteButton,
-  soloButton,
-  <viewControllersRack,
-  <mixerTrack;
-  
-  *new {arg name;
-    ^super.new.init(name);
-  }
+    var toggleRackButton,
+    instrumentPopup,
+    editInstrumentButton,
+    effectsRackView,
+    nameLabel,
+    gainLabel,
+    gainFader,
+    peaksLabels,
+    levelMeters,
+    levelMeterUpdater,
+    panLabel,
+    panKnob,
+    toggleMIDIInputButton,
+    muteButton,
+    soloButton,
+    <viewControllersRack,
+    <mixerTrack,
+    <isMaster;
 
-  init {arg aName;
-    IannisTabbedView.isScrollable = false;
-    mixerTrack = IannisMixerTrack(aName);
-    viewControllersRack = IannisViewControllersRack();
-    viewControllersRack.visible = false;
+    *new {arg name, isMaster = false;
+        ^super.new.init(name, isMaster);
+    }
 
-    this.initToggleRackButton();
-    this.initInstrumentPopup();
-    this.initEditInstrumentButton();
-    this.initEffectsRackView();
-    this.initGainLabel();
-    this.initGainFader();
-    this.initPeaksLabels();
-    this.initLevelMeters();
-    this.initPanLabel();
-    this.initPanKnob();
-    this.initToggleMIDIInputButton();
-    this.initMuteButton();
-    this.initSoloButton();
-    this.initNameLabel();
+    init {arg aName, isMas;
+        isMaster = isMas;
 
-    ~levelMeterLayout = HLayout(
-      levelMeters[0],
-      levelMeters[1]
-    );
-    ~levelMeterLayout.spacing = 1;
+        IannisTabbedView.isScrollable = false;
+        mixerTrack = IannisMixerTrack(aName, isMaster);
+        viewControllersRack = IannisViewControllersRack(isMaster);
+        viewControllersRack.visible = false;
 
-    ~peaksLabelsLayout = HLayout(
-        peaksLabels[0],
-        peaksLabels[1],
-    );
-    ~peaksLabelsLayout.spacing = 1;
+        this.initToggleRackButton();
+        if(isMas.not) {
+            this.initInstrumentPopup();
+            this.initEditInstrumentButton();
+        };
+        this.initEffectsRackView();
+        this.initGainLabel();
+        this.initGainFader();
+        this.initPeaksLabels();
+        this.initLevelMeters();
+        this.initPanLabel();
+        this.initPanKnob();
+        if(isMas.not) {
+            this.initToggleMIDIInputButton();
+        };
+        this.initMuteButton();
+        if(isMas.not) {
+            this.initSoloButton();
+        };
+        this.initNameLabel();
 
-    ~trackLayout = VLayout(
-      [toggleRackButton, align: \center],
-      // Instruments Menu
-      // HLayout(
-        // nil,
-        // editInstrumentButton,
-        [instrumentPopup, align: \center],
-        // nil
-      // ),
-      [effectsRackView, align: \top],
-      HLayout(
-        [nil, stretch: 5],
-        [~peaksLabelsLayout, stretch: 4],
-        [nil, stretch: 2]
-      ),
-      HLayout(
-        nil,
-        [gainLabel, align: \topRight, stretch: 1],
-        gainFader,
-        ~levelMeterLayout,
-        [nil, stretch: 1]
-      ),
-      // Pan Knob
-      [panLabel, align: \bottom],
-      [panKnob, align: \bottom],
-      // Mute and Solo buttons
-      HLayout(
-        nil,
-        toggleMIDIInputButton,
-        muteButton,
-        soloButton,
-        nil
-      ),
-      // Track Name
-      [nameLabel, align: \center]
-    );
+        ~levelMeterLayout = HLayout(
+            levelMeters[0],
+            levelMeters[1]
+        );
+        ~levelMeterLayout.spacing = 1;
 
-    this.layout = HLayout(
-      ~trackLayout,
-      viewControllersRack
-    );
+        ~peaksLabelsLayout = HLayout(
+            peaksLabels[0],
+            peaksLabels[1],
+        );
+        ~peaksLabelsLayout.spacing = 1;
+        
+        ~headerElements = [];
+        if(isMaster){
+            ~headerElements = [
+                [toggleRackButton, align: \center],
+                [effectsRackView, align: \top]
+            ];
+        }{
+            ~headerElements = [
+                [toggleRackButton, align: \center],
+                // Instruments Menu
+                // HLayout(
+                // nil,
+                // editInstrumentButton,
+                [instrumentPopup, align: \center],
+                // nil
+                // ),
+                [effectsRackView, align: \top]
+            ];
+        };
 
-    // this.fixedWidth = 180;
-    this.minHeight = 620;
+        ~trackLayout = VLayout(
+            VLayout(*~headerElements),
+            HLayout(
+                [nil, stretch: 5],
+                [~peaksLabelsLayout, stretch: 4],
+                [nil, stretch: 2]
+            ),
+            HLayout(
+                nil,
+                [gainLabel, align: \topRight, stretch: 1],
+                gainFader,
+                ~levelMeterLayout,
+                [nil, stretch: 1]
+            ),
+            // Pan Knob
+            [panLabel, align: \bottom],
+            [panKnob, align: \bottom],
+            // Mute and Solo buttons
+            HLayout(
+                nil,
+                toggleMIDIInputButton,
+                muteButton,
+                soloButton,
+                nil
+            ),
+            // Track Name
+            [nameLabel, align: \center]
+        );
 
-    this.onClose = {
-      this.cleanUp();
-    };
-  }
+        this.layout = HLayout(
+            ~trackLayout,
+            viewControllersRack
+        );
 
-  initToggleRackButton {
-    toggleRackButton = Button();
-    toggleRackButton.fixedWidth = 130;
-    toggleRackButton.states = [["Edit"], ["Compact"]];
+        this.minHeight = 620;
 
-    toggleRackButton.action = {arg button;
-      viewControllersRack.visible = button.value.asBoolean;
-    };
-  }
+        this.onClose = {
+            this.cleanUp();
+        };
+    }
 
-  initInstrumentPopup {
-    instrumentPopup = PopUpMenu();
-    instrumentPopup.fixedWidth = 130;
+    initToggleRackButton {
+        toggleRackButton = Button();
+        toggleRackButton.fixedWidth = 130;
+        toggleRackButton.states = [["Edit"], ["Compact"]];
 
-    instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
+        toggleRackButton.action = {arg button;
+            viewControllersRack.visible = button.value.asBoolean;
+        };
+    }
 
-    instrumentPopup.action = {arg popup;
-      mixerTrack.instrumentsManager.selectInstrument(popup.value);
+    initInstrumentPopup {
+        instrumentPopup = PopUpMenu();
+        instrumentPopup.fixedWidth = 130;
 
-      // update view in rack
-      viewControllersRack.instrumentViewController = mixerTrack
-      .instrumentsManager
-      .synthViewController;
-    };
+        instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
 
-    instrumentPopup.valueAction = 0;
-  }
+        instrumentPopup.action = {arg popup;
+            mixerTrack.instrumentsManager.selectInstrument(popup.value);
 
-  initEditInstrumentButton {
-    editInstrumentButton = Button();
-    editInstrumentButton.fixedWidth = 18;
-    editInstrumentButton.fixedHeight = 18;
-    editInstrumentButton.states = [["E"]];
+            // update view in rack
+            viewControllersRack.instrumentViewController = mixerTrack
+            .instrumentsManager
+            .synthViewController;
+        };
 
-    editInstrumentButton.action = {
-      mixerTrack.instrumentsManager.synthViewController.front();
-    };
-  }
+        instrumentPopup.valueAction = 0;
+    }
 
-  initEffectsRackView {
-    effectsRackView = IannisEffectsRackView(this);
-    effectsRackView.minHeight = 120;
-  }
+    initEditInstrumentButton {
+        editInstrumentButton = Button();
+        editInstrumentButton.fixedWidth = 18;
+        editInstrumentButton.fixedHeight = 18;
+        editInstrumentButton.states = [["E"]];
 
-  initGainLabel {
-    var font = Font.default;
-    font.size = 10;
-    gainLabel = StaticText();
-    gainLabel.string = mixerTrack.gain.round(0.01);
-    gainLabel.font = font;
-  }
+        editInstrumentButton.action = {
+            mixerTrack.instrumentsManager.synthViewController.front();
+        };
+    }
 
-  initGainFader {
-    var gainSpec = ControlSpec(0.ampdb, 6, \db);
-    gainFader = Slider();
-    gainFader.fixedWidth = 25;
-    gainFader.minHeight = 200;
+    initEffectsRackView {
+        effectsRackView = IannisEffectsRackView(this);
+        effectsRackView.minHeight = 120;
+    }
 
-    gainFader.action = {arg slider;
-      mixerTrack.gain = gainSpec.map(slider.value);
+    initGainLabel {
+        var font = Font.default;
+        font.size = 10;
+        gainLabel = StaticText();
+        gainLabel.string = mixerTrack.gain.round(0.01);
+        gainLabel.font = font;
+    }
 
-      gainLabel.string = mixerTrack.gain.round(0.01);
-    };
+    initGainFader {
+        var gainSpec = ControlSpec(0.ampdb, 6, \db);
+        gainFader = Slider();
+        gainFader.fixedWidth = 25;
+        gainFader.minHeight = 200;
 
-    gainFader.value = gainSpec.unmap(mixerTrack.gain);
-  }
+        gainFader.action = {arg slider;
+            mixerTrack.gain = gainSpec.map(slider.value);
 
-  initPeaksLabels {
-    peaksLabels = nil!2;
+            gainLabel.string = mixerTrack.gain.round(0.01);
+        };
 
-    peaksLabels.do({arg item, n;
-      var font = Font.default;
-      font.size = 10;
-      peaksLabels[n] = StaticText();
-      peaksLabels[n].string = "-inf";
-      peaksLabels[n].font = font;
-    });
-  }
+        gainFader.value = gainSpec.unmap(mixerTrack.gain);
+    }
 
-  initLevelMeters {
-    levelMeters = nil!2;
+    initPeaksLabels {
+        peaksLabels = nil!2;
 
-    levelMeters.do({arg item, n;
-      var meter = LevelIndicator();
-      meter.fixedWidth = 12;
-      meter.minHeight = 200;
-      meter.warning = -3.dbamp;
-      meter.critical = -0.03.dbamp;
-      meter.drawsPeak = true;
-      meter.peakLevel = 0;
+        peaksLabels.do({arg item, n;
+            var font = Font.default;
+            font.size = 10;
+            peaksLabels[n] = StaticText();
+            peaksLabels[n].string = "-inf";
+            peaksLabels[n].font = font;
+        });
+    }
 
-      levelMeters[n] = meter;
-    });
+    initLevelMeters {
+        levelMeters = nil!2;
 
-    this.runLevelMeterUpdater();
-  }
+        levelMeters.do({arg item, n;
+            var meter = LevelIndicator();
+            meter.fixedWidth = 12;
+            meter.minHeight = 200;
+            meter.warning = -3.dbamp;
+            meter.critical = -0.03.dbamp;
+            meter.drawsPeak = true;
+            meter.peakLevel = 0;
 
-  runLevelMeterUpdater {
-    levelMeterUpdater??{
-      levelMeterUpdater = Routine({
-        loop {
-          var values = mixerTrack.bus.getnSynchronous(4);
-          values = values.abs;
+            levelMeters[n] = meter;
+        });
 
-          levelMeters.do({arg meter, n;
-              // assign values
-              meter.value = values[n];
+        this.runLevelMeterUpdater();
+    }
 
-              // asign peaks
-              meter.peakLevel = values[n+2];
-              // update peaks labels
-              peaksLabels[n].string = values[n+2].ampdb.round(0.1);
-          });
+    runLevelMeterUpdater {
+        levelMeterUpdater??{
+            levelMeterUpdater = Routine({
+                loop {
+                    var values = mixerTrack.bus.getnSynchronous(4);
+                    values = values.abs;
 
-          0.1.wait;
+                    levelMeters.do({arg meter, n;
+                        // assign values
+                        meter.value = values[n];
+
+                        // asign peaks
+                        meter.peakLevel = values[n+2];
+                        // update peaks labels
+                        peaksLabels[n].string = values[n+2].ampdb.round(0.1);
+                    });
+
+                    0.1.wait;
+                }
+            });
+        };
+
+        if (levelMeterUpdater.isPlaying.not) {
+            AppClock.play(levelMeterUpdater);
         }
-      });
-    };
-
-    if (levelMeterUpdater.isPlaying.not) {
-      AppClock.play(levelMeterUpdater);
     }
-  }
 
-  stopLevelMeterUpdater {
-    levelMeterUpdater.stop();
-    levelMeterUpdater.free();
-    levelMeterUpdater = nil;
-  }
-
-  initPanLabel {
-    var font = Font.default;
-    font.size = 10;
-    panLabel = StaticText();
-    panLabel.string = mixerTrack.pan.round(0.01);
-    panLabel.font = font;
-  }
-
-  initPanKnob {
-    var panSpec = ControlSpec(-1, 1);
-    panKnob = Knob();
-    panKnob.fixedWidth = 35;
-    panKnob.mode = \vert;
-    panKnob.centered = true;
-
-    panKnob.action = {arg knob;
-      mixerTrack.pan = panSpec.map(knob.value);
-
-      panLabel.string = mixerTrack.pan.round(0.01);
-    };
-
-    panKnob.value = panSpec.unmap(mixerTrack.pan);
-  }
-
-  initToggleMIDIInputButton {
-    toggleMIDIInputButton = Button();
-    toggleMIDIInputButton.fixedWidth = 23;
-    toggleMIDIInputButton.fixedHeight = 23;
-    toggleMIDIInputButton.states = [["🎹"], ["🎹", Color.black(), Color.green()]];
-
-    toggleMIDIInputButton.action = {arg button;
-      var newValue = button.value.asBoolean;
-
-      // toggle instrument input
-      mixerTrack
-      .instrumentsManager
-      .synthViewController
-      .midiView
-      .midiManager
-      .midiInputEnabled = newValue;
-
-      // toggle effects input
-      mixerTrack
-      .effectsManager
-      .effectsViewControllers.do({arg viewController;
-        viewController
-        .midiView
-        .midiManager
-        .midiInputEnabled = newValue;
-      });
+    stopLevelMeterUpdater {
+        levelMeterUpdater.stop();
+        levelMeterUpdater.free();
+        levelMeterUpdater = nil;
     }
-  }
 
-  initMuteButton {
-    muteButton = Button();
-    muteButton.fixedWidth = 23;
-    muteButton.fixedHeight = 23;
-    muteButton.states = [
-      ["M", Color.black, Color.white], 
-      ["M", Color.white, Color.red]
-    ];
+    initPanLabel {
+        var font = Font.default;
+        font.size = 10;
+        panLabel = StaticText();
+        panLabel.string = mixerTrack.pan.round(0.01);
+        panLabel.font = font;
+    }
 
-    muteButton.action = {arg button;
-      mixerTrack.isMute = button.value == 1;
-    };
+    initPanKnob {
+        var panSpec = ControlSpec(-1, 1);
+        panKnob = Knob();
+        panKnob.fixedWidth = 35;
+        panKnob.mode = \vert;
+        panKnob.centered = true;
 
-    muteButton.value = mixerTrack.isMute.asInt;
-  }
+        panKnob.action = {arg knob;
+            mixerTrack.pan = panSpec.map(knob.value);
 
-  initSoloButton {
-    soloButton = Button();
-    soloButton.fixedWidth = 23;
-    soloButton.fixedHeight = 23;
-    soloButton.states = [
-      ["S", Color.black, Color.white], 
-      ["S", Color.black, Color.yellow]
-    ];
+            panLabel.string = mixerTrack.pan.round(0.01);
+        };
 
-    soloButton.action = {arg button;
-      mixerTrack.isSolo = button.value == 1;
-    };
+        panKnob.value = panSpec.unmap(mixerTrack.pan);
+    }
 
-    soloButton.value = mixerTrack.isSolo.asInt;
-  }
+    initToggleMIDIInputButton {
+        toggleMIDIInputButton = Button();
+        toggleMIDIInputButton.fixedWidth = 23;
+        toggleMIDIInputButton.fixedHeight = 23;
+        toggleMIDIInputButton.states = [["🎹"], ["🎹", Color.black(), Color.green()]];
 
-  initNameLabel {
-    nameLabel = TextField();
-    nameLabel.fixedWidth = 130;
-    nameLabel.align = \center;
+        toggleMIDIInputButton.action = {arg button;
+            var newValue = button.value.asBoolean;
 
-    nameLabel.action = {arg tf;
-      mixerTrack.name = tf.value;
-    };
+            // toggle instrument input
+            mixerTrack
+            .instrumentsManager
+            .synthViewController
+            .midiView
+            .midiManager
+            .midiInputEnabled = newValue;
 
-    nameLabel.value = mixerTrack.name;
-  }
+            // toggle effects input
+            mixerTrack
+            .effectsManager
+            .effectsViewControllers.do({arg viewController;
+                viewController
+                .midiView
+                .midiManager
+                .midiInputEnabled = newValue;
+            });
+        }
+    }
 
-  cleanUp {
-    this.stopLevelMeterUpdater();
-    mixerTrack.cleanUp();
-  }
+    initMuteButton {
+        muteButton = Button();
+        muteButton.fixedWidth = 23;
+        muteButton.fixedHeight = 23;
+        muteButton.states = [
+            ["M", Color.black, Color.white], 
+            ["M", Color.white, Color.red]
+        ];
+
+        muteButton.action = {arg button;
+            mixerTrack.isMute = button.value == 1;
+        };
+
+        muteButton.value = mixerTrack.isMute.asInt;
+    }
+
+    initSoloButton {
+        soloButton = Button();
+        soloButton.fixedWidth = 23;
+        soloButton.fixedHeight = 23;
+        soloButton.states = [
+            ["S", Color.black, Color.white], 
+            ["S", Color.black, Color.yellow]
+        ];
+
+        soloButton.action = {arg button;
+            mixerTrack.isSolo = button.value == 1;
+        };
+
+        soloButton.value = mixerTrack.isSolo.asInt;
+    }
+
+    initNameLabel {
+        nameLabel = TextField();
+        nameLabel.fixedWidth = 130;
+        nameLabel.align = \center;
+        if(isMaster){nameLabel.enabled = false};
+
+        nameLabel.action = {arg tf;
+            mixerTrack.name = tf.value;
+        };
+
+        nameLabel.value = mixerTrack.name;
+    }
+
+    cleanUp {
+        this.stopLevelMeterUpdater();
+        if(isMaster){
+            this.viewControllersRack.instrumentViewController.kill();
+        };
+        mixerTrack.cleanUp();
+    }
 }
 
 
@@ -343,44 +367,53 @@ IannisMixerTrackViewController : CompositeView {
 // View controllers rack
 //
 IannisViewControllersRack : ScrollView {
-  var <instrumentViewController,
-  <effectsViewControllers;
+    var <instrumentViewController,
+    <effectsViewControllers,
+    <isMaster;
 
-  *new {
-    ^super.new.init()
-  }
+    *new {arg isMaster;
+        ^super.new.init(isMaster)
+    }
 
-  init {
-    effectsViewControllers = [];
+    init {arg isMas;
+        isMaster = isMas;
 
-    this.canvas = CompositeView();
-    this.initLayout();
+        effectsViewControllers = [];
 
-    this.fixedWidth = 685;
-  }
+        this.canvas = CompositeView();
+        this.initLayout();
 
-  initLayout {
-    this.canvas.layout = VLayout(
-      instrumentViewController,
-      *effectsViewControllers
-    );
-    this.canvas.layout.add(nil);
+        this.fixedWidth = 685;
+    }
 
-    this.canvas.layout.spacing = 0;
-    this.canvas.layout.margins = 0!4;
-  }
+    initLayout {
+        if(isMaster) {
+            instrumentViewController = FreqScopeView(this.canvas, Rect(0,0,511,300));
+        };
 
-  effectsViewControllers_ {arg newValue;
-    effectsViewControllers = newValue;
+        this.canvas.layout = VLayout(
+            instrumentViewController,
+            *effectsViewControllers
+        );
+        this.canvas.layout.add(nil);
 
-    this.initLayout();
-  }
+        this.canvas.layout.spacing = 0;
+        this.canvas.layout.margins = 0!4;
+    }
 
-  instrumentViewController_ {arg newValue;
-    instrumentViewController = newValue;
+    effectsViewControllers_ {arg newValue;
+        effectsViewControllers = newValue;
 
-    this.initLayout();
-  }
+        this.initLayout();
+    }
+
+    instrumentViewController_ {arg newValue;
+        if(isMaster.not) {
+            instrumentViewController = newValue;
+
+            this.initLayout();
+        }
+    }
 }
 
 
@@ -389,344 +422,344 @@ IannisViewControllersRack : ScrollView {
 //
 
 IannisEffectsRackView : CompositeView {
-  var <parent,
-  label,
-  addSlotButton,
-  removeSlotButton,
-  rackView,
-  <slots;
+    var <parent,
+    label,
+    addSlotButton,
+    removeSlotButton,
+    rackView,
+    <slots;
 
-  *new {arg parent;
-    ^super.new.init(parent);
-  }
+    *new {arg parent;
+        ^super.new.init(parent);
+    }
 
-  init {arg aParent;
-    parent = aParent;
-    slots = [];
-    label = StaticText();
-    label.string = "Effects";
+    init {arg aParent;
+        parent = aParent;
+        slots = [];
+        label = StaticText();
+        label.string = "Effects";
 
-    this.initRackView();
-    this.initAddSlotButton();
-    this.initRemoveSlotButton();
+        this.initRackView();
+        this.initAddSlotButton();
+        this.initRemoveSlotButton();
 
-    this.layout = VLayout(
-      [label, align: \top],
-      rackView,
-      HLayout(
-        nil,
-        addSlotButton,
-        removeSlotButton,
-        nil
-      ),
-    );
+        this.layout = VLayout(
+            [label, align: \top],
+            rackView,
+            HLayout(
+                nil,
+                addSlotButton,
+                removeSlotButton,
+                nil
+            ),
+        );
 
-    // Appearance
-    this.fixedWidth = 160;
-    this.layout.margins = 0!4;
-  }
+        // Appearance
+        this.fixedWidth = 160;
+        this.layout.margins = 0!4;
+    }
 
-  initRackView {
-    rackView = ScrollView();
-    rackView.hasHorizontalScroller = false;
-    rackView.hasBorder = false;
-    rackView.fixedWidth = 160;
-    rackView.canvas = CompositeView();
+    initRackView {
+        rackView = ScrollView();
+        rackView.hasHorizontalScroller = false;
+        rackView.hasBorder = false;
+        rackView.fixedWidth = 160;
+        rackView.canvas = CompositeView();
 
-    rackView.canvas.layout = VLayout(
-      nil
-    );
+        rackView.canvas.layout = VLayout(
+            nil
+        );
 
-    rackView.canvas.layout.spacing = 1;
-    rackView.canvas.layout.margins = 0!4;
+        rackView.canvas.layout.spacing = 1;
+        rackView.canvas.layout.margins = 0!4;
 
-  }
+    }
 
-  initAddSlotButton {
-    addSlotButton = Button();
-    addSlotButton.fixedWidth = 18;
-    addSlotButton.fixedHeight = 18;
-    addSlotButton.states = [["+"]];
+    initAddSlotButton {
+        addSlotButton = Button();
+        addSlotButton.fixedWidth = 18;
+        addSlotButton.fixedHeight = 18;
+        addSlotButton.states = [["+"]];
 
-    addSlotButton.action = {arg button;
-      var newIndex = slots.size;
-      var newSlot = IannisEffectSlotView(this, newIndex);
+        addSlotButton.action = {arg button;
+            var newIndex = slots.size;
+            var newSlot = IannisEffectSlotView(this, newIndex);
 
-      slots = slots.add(newSlot);
-      
-      rackView.canvas.layout.insert(
-        newSlot,
-        slots.size-1,
-        align: \center
-      );
+            slots = slots.add(newSlot);
 
-      // model
-      parent
-      .mixerTrack
-      .effectsManager
-      .addEffect();
+            rackView.canvas.layout.insert(
+                newSlot,
+                slots.size-1,
+                align: \center
+            );
 
-      // update view controllers rack
-      this.updateViewControllersRackEffects();
-    };
-  }
+            // model
+            parent
+            .mixerTrack
+            .effectsManager
+            .addEffect();
 
-  initRemoveSlotButton {
-    removeSlotButton = Button();
-    removeSlotButton.fixedWidth = 18;
-    removeSlotButton.fixedHeight = 18;
-    removeSlotButton.states = [["-"]];
-    removeSlotButton.action = {arg button;
-      var last = slots.last;
-      last!?{
-        last.close();
+            // update view controllers rack
+            this.updateViewControllersRackEffects();
+        };
+    }
+
+    initRemoveSlotButton {
+        removeSlotButton = Button();
+        removeSlotButton.fixedWidth = 18;
+        removeSlotButton.fixedHeight = 18;
+        removeSlotButton.states = [["-"]];
+        removeSlotButton.action = {arg button;
+            var last = slots.last;
+            last!?{
+                last.close();
+
+                parent
+                .mixerTrack
+                .effectsManager
+                .removeEffectAtIndex(slots.size-1);
+
+                slots.removeAt(slots.size-1);
+
+                // update view controllers rack
+                this.updateViewControllersRackEffects();
+            };
+        };
+    }
+
+    moveSlotToIndex {arg index, newIndex;
+        rackView.canvas.layout.insert(slots[index], newIndex, align: \center);
 
         parent
         .mixerTrack
         .effectsManager
-        .removeEffectAtIndex(slots.size-1);
+        .moveEffectToIndex(index, newIndex);
 
-        slots.removeAt(slots.size-1);
+        slots.move(index, newIndex);
+
+        // update indexes
+        slots.do({arg view, n;
+            view.index = n;
+        });
 
         // update view controllers rack
         this.updateViewControllersRackEffects();
-      };
-    };
-  }
+    }
 
-  moveSlotToIndex {arg index, newIndex;
-    rackView.canvas.layout.insert(slots[index], newIndex, align: \center);
-    
-    parent
-    .mixerTrack
-    .effectsManager
-    .moveEffectToIndex(index, newIndex);
-
-    slots.move(index, newIndex);
-
-    // update indexes
-    slots.do({arg view, n;
-      view.index = n;
-    });
-
-    // update view controllers rack
-    this.updateViewControllersRackEffects();
-  }
-
-  updateViewControllersRackEffects {
-    parent.viewControllersRack.effectsViewControllers = parent
-    .mixerTrack
-    .effectsManager
-    .effectsViewControllers;
-  }
+    updateViewControllersRackEffects {
+        parent.viewControllersRack.effectsViewControllers = parent
+        .mixerTrack
+        .effectsManager
+        .effectsViewControllers;
+    }
 }
 
 
 IannisEffectSlotView : UserView {
-  var bypassButton,
-  editButton,
-  effectsPopUp,
-  dragHandler,
-  rackView,
-  <>index;
+    var bypassButton,
+    editButton,
+    effectsPopUp,
+    dragHandler,
+    rackView,
+    <>index;
 
-  *new {arg rackView, index;
-    ^super.new.init(rackView, index);
-  }
-
-  init {arg aRackView, anIndex;
-    rackView = aRackView;
-    index = anIndex;
-
-    this.initBypassButton();
-    this.initEditButton();
-    this.initEffectsPopUp();
-    this.initDragHandler();
-
-    this.layout = HLayout(
-      bypassButton,
-      // editButton,
-      effectsPopUp,
-      nil,
-      dragHandler
-    );
-
-    // Appearance
-    this.layout.spacing = 3;
-    this.layout.margins = 2!4;
-    this.background = Color.gray(0.7);
-    this.fixedWidth = 130;
-    this.fixedHeight = 23;
-
-    // Drag and drop
-    this.initDragAndDrop();
-
-    // model
-  }
-
-  initBypassButton {
-    bypassButton = Button();
-    bypassButton.fixedWidth = 18;
-    bypassButton.fixedHeight = 18;
-    bypassButton.states = [["B"], ["B", Color.white(), Color.red()]];
-
-    bypassButton.action = {arg button;
-      var effectViewController = rackView
-      .parent
-      .mixerTrack
-      .effectsManager
-      .effectsViewControllers[this.index];
-
-      effectViewController!?{
-        effectViewController.isBypassed = button.value.asBoolean;
-      };
-
-      // change handler color
-      dragHandler!?{
-        dragHandler.stringColor = [
-          Color.green(), 
-          Color.blue()
-        ][button.value];
-      }
-    };
-
-    this.bindBypassStateWithButton();
-  }
-
-  initEditButton {
-    editButton = Button();
-    editButton.fixedWidth = 18;
-    editButton.fixedHeight = 18;
-    editButton.states = [["E"]];
-
-    editButton.action = {
-      var effectViewController = rackView
-      .parent
-      .mixerTrack
-      .effectsManager
-      .effectsViewControllers[this.index];
-
-      effectViewController!?{
-        effectViewController.front();
-      }
-    };
-  }
-
-  initEffectsPopUp {
-    effectsPopUp = PopUpMenu();
-    effectsPopUp.items = ["LiveCode"].addAll(
-      IannisEffectsManager.availableEffectsNames
-    );
-
-    effectsPopUp.action = {arg popup;
-      var effectName;
-
-      if (popup.value > 0) {
-        effectName = IannisEffectsManager
-        .availableEffectsDescs[popup.value-1].name
-      };
-
-      // update effect
-      rackView
-      .parent
-      .mixerTrack
-      .effectsManager
-      .changeEffectAtIndex(
-        this.index,
-        effectName
-      );
-
-      // update view controllers rack
-      rackView.updateViewControllersRackEffects();
-
-      // bind bypass and slot's button
-      this.bindBypassStateWithButton();
-    };
-  }
-
-  bindBypassStateWithButton {
-    var viewController = rackView
-    .parent
-    .mixerTrack
-    .effectsManager
-    .effectsViewControllers[this.index];
-
-    viewController!?{
-      viewController.onBypass = {arg value;
-        bypassButton.value = value.asInteger;
-      };
+    *new {arg rackView, index;
+        ^super.new.init(rackView, index);
     }
-  }
 
-  initDragHandler {
-    dragHandler = StaticText();
-    dragHandler.string = "≡";
-    dragHandler.stringColor = Color.green();
-    dragHandler.acceptsMouse = false;
-  }
+    init {arg aRackView, anIndex;
+        rackView = aRackView;
+        index = anIndex;
 
-  initDragAndDrop {
-    var isCleaned = true;
-    this.acceptsMouse = true;
-    this.initFocusIndicator();
+        this.initBypassButton();
+        this.initEditButton();
+        this.initEffectsPopUp();
+        this.initDragHandler();
 
-    this.mouseDownAction = {arg ciew, x, y;
-      this.beginDrag(x, y);
-    };
+        this.layout = HLayout(
+            bypassButton,
+            // editButton,
+            effectsPopUp,
+            nil,
+            dragHandler
+        );
 
-    this.beginDragAction = {arg view, x, y;
-      view.drawingEnabled = false;
-      view.refresh();
-      this.dragLabel = effectsPopUp.item?"Effect Slot";
-      this;
-    };
+        // Appearance
+        this.layout.spacing = 3;
+        this.layout.margins = 2!4;
+        this.background = Color.gray(0.7);
+        this.fixedWidth = 130;
+        this.fixedHeight = 23;
 
-    this.mouseLeaveAction = {
-      if (isCleaned.not) {
-        rackView.slots.do({arg slot;
-          slot.drawingEnabled = false;
-          slot.refresh();
-        });
+        // Drag and drop
+        this.initDragAndDrop();
 
-        isCleaned = true;
-      }
-    };
+        // model
+    }
 
-    this.canReceiveDragHandler = {arg view, x, y;
-      var canReceive = view != View.currentDrag;
-      view.drawingEnabled = canReceive;
-      view.refresh();
+    initBypassButton {
+        bypassButton = Button();
+        bypassButton.fixedWidth = 18;
+        bypassButton.fixedHeight = 18;
+        bypassButton.states = [["B"], ["B", Color.white(), Color.red()]];
 
-      rackView.slots.do({arg slot;
-        if (slot != view) {
-          slot.drawingEnabled = false;
-          slot.refresh();
+        bypassButton.action = {arg button;
+            var effectViewController = rackView
+            .parent
+            .mixerTrack
+            .effectsManager
+            .effectsViewControllers[this.index];
+
+            effectViewController!?{
+                effectViewController.isBypassed = button.value.asBoolean;
+            };
+
+            // change handler color
+            dragHandler!?{
+                dragHandler.stringColor = [
+                    Color.green(), 
+                    Color.blue()
+                ][button.value];
+            }
+        };
+
+        this.bindBypassStateWithButton();
+    }
+
+    initEditButton {
+        editButton = Button();
+        editButton.fixedWidth = 18;
+        editButton.fixedHeight = 18;
+        editButton.states = [["E"]];
+
+        editButton.action = {
+            var effectViewController = rackView
+            .parent
+            .mixerTrack
+            .effectsManager
+            .effectsViewControllers[this.index];
+
+            effectViewController!?{
+                effectViewController.front();
+            }
+        };
+    }
+
+    initEffectsPopUp {
+        effectsPopUp = PopUpMenu();
+        effectsPopUp.items = ["LiveCode"].addAll(
+            IannisEffectsManager.availableEffectsNames
+        );
+
+        effectsPopUp.action = {arg popup;
+            var effectName;
+
+            if (popup.value > 0) {
+                effectName = IannisEffectsManager
+                .availableEffectsDescs[popup.value-1].name
+            };
+
+            // update effect
+            rackView
+            .parent
+            .mixerTrack
+            .effectsManager
+            .changeEffectAtIndex(
+                this.index,
+                effectName
+            );
+
+            // update view controllers rack
+            rackView.updateViewControllersRackEffects();
+
+            // bind bypass and slot's button
+            this.bindBypassStateWithButton();
+        };
+    }
+
+    bindBypassStateWithButton {
+        var viewController = rackView
+        .parent
+        .mixerTrack
+        .effectsManager
+        .effectsViewControllers[this.index];
+
+        viewController!?{
+            viewController.onBypass = {arg value;
+                bypassButton.value = value.asInteger;
+            };
         }
-      });
+    }
 
-      isCleaned = false;
+    initDragHandler {
+        dragHandler = StaticText();
+        dragHandler.string = "≡";
+        dragHandler.stringColor = Color.green();
+        dragHandler.acceptsMouse = false;
+    }
 
-      canReceive;
-    };
+    initDragAndDrop {
+        var isCleaned = true;
+        this.acceptsMouse = true;
+        this.initFocusIndicator();
 
-    this.receiveDragHandler = {arg view, x, y;
-      rackView.moveSlotToIndex(View.currentDrag.index, view.index);
+        this.mouseDownAction = {arg ciew, x, y;
+            this.beginDrag(x, y);
+        };
 
-      view.drawingEnabled = false;
-      view.refresh();
-    };
-  }
+        this.beginDragAction = {arg view, x, y;
+            view.drawingEnabled = false;
+            view.refresh();
+            this.dragLabel = effectsPopUp.item?"Effect Slot";
+            this;
+        };
 
-  initFocusIndicator {
-    this.drawFunc = {arg view;
-      Pen.strokeColor = dragHandler.stringColor?Color.green();
-      Pen.width = 2;
-      Pen.moveTo(0@0);
-      Pen.lineTo(this.bounds.width@0);
-      Pen.stroke; 
-    };
+        this.mouseLeaveAction = {
+            if (isCleaned.not) {
+                rackView.slots.do({arg slot;
+                    slot.drawingEnabled = false;
+                    slot.refresh();
+                });
 
-    this.drawingEnabled = false;
-  }
+                isCleaned = true;
+            }
+        };
+
+        this.canReceiveDragHandler = {arg view, x, y;
+            var canReceive = view != View.currentDrag;
+            view.drawingEnabled = canReceive;
+            view.refresh();
+
+            rackView.slots.do({arg slot;
+                if (slot != view) {
+                    slot.drawingEnabled = false;
+                    slot.refresh();
+                }
+            });
+
+            isCleaned = false;
+
+            canReceive;
+        };
+
+        this.receiveDragHandler = {arg view, x, y;
+            rackView.moveSlotToIndex(View.currentDrag.index, view.index);
+
+            view.drawingEnabled = false;
+            view.refresh();
+        };
+    }
+
+    initFocusIndicator {
+        this.drawFunc = {arg view;
+            Pen.strokeColor = dragHandler.stringColor?Color.green();
+            Pen.width = 2;
+            Pen.moveTo(0@0);
+            Pen.lineTo(this.bounds.width@0);
+            Pen.stroke; 
+        };
+
+        this.drawingEnabled = false;
+    }
 }
 
