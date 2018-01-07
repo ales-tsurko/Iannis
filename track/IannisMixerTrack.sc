@@ -15,11 +15,11 @@ IannisMixerTrack {
         ^super.new.init(name, isMaster, innerBus);
     }
 
-    init {arg aName, isMas, bus;
+    init {arg aName, isMas, ibus;
         isMaster = isMas;
         name = aName?"New Track";
         bus = Bus.control(Server.default, 4);
-        innerBus = bus;
+        innerBus = ibus;
         // postln(innerBus);
 
         if(isMaster){

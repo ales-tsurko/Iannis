@@ -19,14 +19,18 @@ IannisMixerTrackViewController : CompositeView {
     <viewControllersRack,
     <mixerTrack,
     <isMaster,
-    <innerBus;
+    <innerBus,
+    <delegate,
+    <index;
 
-    *new {arg name, isMaster = false;
-        ^super.new.init(name, isMaster);
+    *new {arg name, isMaster = false, delegate, index;
+        ^super.new.init(name, isMaster, delegate, index);
     }
 
-    init {arg aName, isMas;
+    init {arg aName, isMas, del, n;
         isMaster = isMas;
+        delegate = del;
+        index = n;
 
         IannisTabbedView.isScrollable = false;
         innerBus = Bus(\audio, 0, 2, Server.default);
@@ -331,10 +335,17 @@ IannisMixerTrackViewController : CompositeView {
         ];
 
         muteButton.action = {arg button;
-            mixerTrack.isMute = button.value == 1;
+            var mute = button.value == 1;
+            mixerTrack.isMute = mute;
+            delegate.didToggleMuteAtChannel(this, mute);
         };
 
         muteButton.value = mixerTrack.isMute.asInt;
+    }
+
+    setMute {arg value;
+        muteButton.value = value.asInt;
+        mixerTrack.isMute = value;
     }
 
     initSoloButton {
@@ -347,10 +358,17 @@ IannisMixerTrackViewController : CompositeView {
         ];
 
         soloButton.action = {arg button;
-            mixerTrack.isSolo = button.value == 1;
+            var solo = button.value == 1;
+            mixerTrack.isSolo = solo;
+            delegate.didToggleSoloAtChannel(this, solo);
         };
 
         soloButton.value = mixerTrack.isSolo.asInt;
+    }
+    
+    setSolo {arg value;
+        soloButton.value = value.asInt;
+        mixerTrack.isSolo = value;
     }
 
     initNameLabel {

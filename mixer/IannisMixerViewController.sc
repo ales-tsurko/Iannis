@@ -1,20 +1,25 @@
 IannisMixerViewController : CompositeView {
     var channels, 
     numberOfChannels,
-    tracksStack;
+    tracksStack,
+    masterChannel,
+    soloedChannelsIndices,
+    mutedChannelsIndices;
 
     *new {arg numberOfChannels = 99;
         ^super.new.init(numberOfChannels);
     }
 
     init {arg numOfCh;
-        var masterChannel = IannisMixerTrackViewController("Master", true);
+        masterChannel = IannisMixerTrackViewController("Master", true, this, 0);
         numberOfChannels = numOfCh;
         channels = []!numberOfChannels;
+        soloedChannelsIndices = [];
+        mutedChannelsIndices = [];
 
         numberOfChannels.do({arg n;
             var name = "Track" + (n+1);
-            var channel = IannisMixerTrackViewController(name);
+            var channel = IannisMixerTrackViewController(name, false, this, n+1);
             channel.background = Color.rand(0.77, 0.85);
             channels = channels.add(channel);
         });
@@ -28,5 +33,69 @@ IannisMixerViewController : CompositeView {
             masterChannel,
             [tracksStack, stretch: 1]
         );
+    }
+
+    getChannelsAsArray{
+        var result = [masterChannel];
+        tracksStack.canvas.children.do({arg item;
+            result = result.add(item);
+        });
+        ^result;
+    }
+}
+
+// track view controller delegate methods
++ IannisMixerViewController {
+    didToggleMuteAtChannel{arg channel, isMute;
+        if((channel.index != 0) && (soloedChannelsIndices.size > 0)) {
+            if(isMute){this.unsoloChannel(channel);channel.setSolo(false)};
+            if(isMute.not){this.soloChannel(channel);channel.setSolo(true)};
+        };
+
+        if(soloedChannelsIndices.size < 1) {
+            if(isMute){
+                mutedChannelsIndices = mutedChannelsIndices.add(channel.index);
+            } {
+                mutedChannelsIndices.remove(channel.index);
+            };
+        }
+    }
+
+    didToggleSoloAtChannel{arg channel, isSolo;
+        if(isSolo){
+            this.soloChannel(channel);
+        } {
+            this.unsoloChannel(channel);
+        };
+    }
+
+    soloChannel {arg channel;
+        var tracks = this.getChannelsAsArray();
+        soloedChannelsIndices = soloedChannelsIndices.add(channel.index);
+        if(channel.mixerTrack.isMute) {channel.setMute(false)};
+        tracks.do({arg track;
+            if(track.index != 0 && soloedChannelsIndices.includes(track.index).not){
+                track.setMute(true);
+            }
+        });
+    }
+
+    unsoloChannel {arg channel;
+        soloedChannelsIndices.remove(channel.index);
+        if(soloedChannelsIndices.size > 0) {
+            channel.setMute(true);
+        } {
+            this.unsoloLastChannel();
+        };
+    }
+
+    unsoloLastChannel {
+        var tracks = this.getChannelsAsArray();
+        numberOfChannels.do({arg n;
+            var nonMasterTrackIndex = n+1;
+            if(mutedChannelsIndices.includes(nonMasterTrackIndex).not) {
+                tracks[nonMasterTrackIndex].setMute(false);
+            };
+        });
     }
 }
