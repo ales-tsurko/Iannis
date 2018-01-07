@@ -957,7 +957,7 @@ metadata[\ui][\pages][0][\groups][0] = (
         (
           key: \outputGain,
           name: "Output Gain (dB)",
-          spec: ControlSpec(-70, 24),
+          spec: ControlSpec(-70, 42),
           ui: (
             type: \vslider
           )

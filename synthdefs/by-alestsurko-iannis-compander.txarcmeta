@@ -242,11 +242,11 @@ p = [
 		'name',  o[75],  nil,  nil,  
 		nil,  nil,  'key',  'outputGain' ],  
 	// ControlSpec
-	71, [ minval: -70,  maxval: 24,  
+	71, [ minval: -70,  maxval: 42,  
 		warp: o[72],  step: 0.0,  
 		default: -70,  units: o[28],  
 		grid: nil,  clipLo: -70,  
-		clipHi: 24 ],  
+		clipHi: 42 ],  
 	// LinearWarp
 	72, [ spec: o[71] ],  
 	// Event
