@@ -1,6 +1,7 @@
 // View controller
 IannisMixerTrackViewController : CompositeView {
-    var toggleRackButton,
+    var busLabel,
+    toggleRackButton,
     instrumentPopup,
     editInstrumentButton,
     effectsRackView,
@@ -17,7 +18,8 @@ IannisMixerTrackViewController : CompositeView {
     soloButton,
     <viewControllersRack,
     <mixerTrack,
-    <isMaster;
+    <isMaster,
+    <innerBus;
 
     *new {arg name, isMaster = false;
         ^super.new.init(name, isMaster);
@@ -27,10 +29,13 @@ IannisMixerTrackViewController : CompositeView {
         isMaster = isMas;
 
         IannisTabbedView.isScrollable = false;
-        mixerTrack = IannisMixerTrack(aName, isMaster);
+        innerBus = Bus(\audio, 0, 2, Server.default);
+        if(isMaster.not){innerBus = Bus.audio(Server.default, 2)};
+        mixerTrack = IannisMixerTrack(aName, isMaster, innerBus);
         viewControllersRack = IannisViewControllersRack(isMaster);
         viewControllersRack.visible = false;
 
+        this.initBusLabel();
         this.initToggleRackButton();
         if(isMas.not) {
             this.initInstrumentPopup();
@@ -67,11 +72,13 @@ IannisMixerTrackViewController : CompositeView {
         ~headerElements = [];
         if(isMaster){
             ~headerElements = [
+                busLabel,
                 [toggleRackButton, align: \center],
                 [effectsRackView, align: \top]
             ];
         }{
             ~headerElements = [
+                busLabel,
                 [toggleRackButton, align: \center],
                 // Instruments Menu
                 // HLayout(
@@ -123,6 +130,12 @@ IannisMixerTrackViewController : CompositeView {
         this.onClose = {
             this.cleanUp();
         };
+    }
+
+    initBusLabel {
+        busLabel = StaticText();
+        busLabel.string = "Bus:" + innerBus.index;
+        busLabel.align = \center;
     }
 
     initToggleRackButton {

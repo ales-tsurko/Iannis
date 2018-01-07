@@ -11,16 +11,15 @@ IannisMixerTrack {
     <pan = 0,
     <isMaster;
 
-    *new {arg name, isMaster;
-        ^super.new.init(name, isMaster);
+    *new {arg name, isMaster, innerBus;
+        ^super.new.init(name, isMaster, innerBus);
     }
 
-    init {arg aName, isMas;
+    init {arg aName, isMas, bus;
         isMaster = isMas;
         name = aName?"New Track";
         bus = Bus.control(Server.default, 4);
-        innerBus = 0;
-        if(isMaster.not){innerBus = Bus.audio(Server.default, 2)};
+        innerBus = bus;
         // postln(innerBus);
 
         if(isMaster){
