@@ -32,6 +32,16 @@ IannisSynthViewController : CompositeView {
     outputBus = anOutputBus;
 
     synthDefName!?{
+        this.initSynthOrEffect()
+    }??{
+        this.initLiveCode()
+    };
+
+    this.userCanClose = false;
+    this.onClose = {this.cleanUp()};
+  }
+
+  initSynthOrEffect {
       metadata = SynthDescLib.getLib(\iannis_synth)[synthDefName.asSymbol].metadata;
       data = ();
       node = IannisNodeGroup();
@@ -49,59 +59,52 @@ IannisSynthViewController : CompositeView {
 
       this.pagesView.addPage("Map", mapView);
       this.pagesView.addPage("MIDI", midiView);
-
-    }??{
-      node = IannisNodeGroup();
-    };
-
-    this.userCanClose = false;
-    this.onClose = {this.cleanUp()};
   }
 
   initHeaderAndToolbar {
-    var learnButton = this.initMIDILearnModeButton();
-    var panicButton = this.initPanicButton();
-    var closeButton = this.initCloseButton();
-    this.initBypassButton();
+      var learnButton = this.initMIDILearnModeButton();
+      var panicButton = this.initPanicButton();
+      var closeButton = this.initCloseButton();
+      this.initBypassButton();
 
-    headerView = CompositeView();
-    toolbarView = CompositeView();
-    headerView.fixedHeight = 40;
-    toolbarView.fixedHeight = 60;
+      headerView = CompositeView();
+      toolbarView = CompositeView();
+      headerView.fixedHeight = 40;
+      toolbarView.fixedHeight = 60;
 
-    synthNameLabel = StaticText();
-    synthNameLabel.font = Font("Arial", 20);
+      synthNameLabel = StaticText();
+      synthNameLabel.font = Font("Arial", 20);
 
-    // synth folding
-    synthNameLabel.mouseUpAction = {
-      this.toggleFolding();
-    };
+      // synth folding
+      synthNameLabel.mouseUpAction = {
+          this.toggleFolding();
+      };
 
-    // Header
-    headerView.layout = HLayout(
-      // closeButton,
-      bypassButton,
-      synthNameLabel, 
-      nil
-    );
+      // Header
+      headerView.layout = HLayout(
+          // closeButton,
+          bypassButton,
+          synthNameLabel, 
+          nil
+      );
 
-    // Toolbar
-    presetsManagerController = IannisPresetsManagerController(this);
+      // Toolbar
+      presetsManagerController = IannisPresetsManagerController(this);
 
-    toolbarView.layout = HLayout(
-      [nil, stretch: 5],
-      presetsManagerController,
-      [nil, stretch: 1],
-      learnButton
-    );
+      toolbarView.layout = HLayout(
+          [nil, stretch: 5],
+          presetsManagerController,
+          [nil, stretch: 1],
+          learnButton
+      );
 
-    if (metadata[\type] == \synth) {
-      toolbarView.layout.add(panicButton);
-    };
+      if (metadata[\type] != \effect) {
+          toolbarView.layout.add(panicButton);
+      };
 
-    // adding to layout
-    this.layout.add(headerView);
-    this.layout.add(toolbarView);
+      // adding to layout
+      this.layout.add(headerView);
+      this.layout.add(toolbarView);
   }
 
   initCloseButton {
@@ -158,6 +161,68 @@ IannisSynthViewController : CompositeView {
     ^button;
   }
 
+  initLiveCode {
+      this.initLiveCodeMetadata();
+      data = ();
+      node = IannisNodeGroup();
+      this.fixedWidth = 680;
+      this.layout = VLayout();
+      this.initHeaderAndToolbar();
+      mapView = IannisSynthMapPage(this);
+      midiView = IannisSynthMIDIViewController(this);
+
+      this.parse();
+
+      this.pagesView.addPage("Map", mapView);
+      this.pagesView.addPage("MIDI", midiView);
+  }
+
+  initLiveCodeMetadata {
+      metadata = ();
+      metadata[\type] = \live_code;
+      metadata[\author] = "Ales Tsurko";
+      metadata[\name] = "LiveCode";
+      metadata[\description] = "Live code synth or effect.";
+      metadata[\id] = "by.alestsurko.iannis.livecode";
+      metadata[\site] = "http://alestsurko.by";
+
+      this.initLiveCodeMetadataUI();
+      this.initLiveCodeMetadataFactoryPresets();
+  }
+
+  initLiveCodeMetadataUI {
+      metadata[\ui] = (
+          pages: [
+              (
+                  name: "Editor",
+                  groups: [()]
+              )
+          ]
+      );
+  }
+
+  initLiveCodeMetadataFactoryPresets {
+      metadata[\presets] = [
+          (
+              name: "Default",
+              isFactory: true,
+              values: (
+                  default: 0
+              )
+          )
+      ];
+  }
+
+  addPage {arg name;
+    if (pagesView.isNil) {
+      this.initPagesView(name)
+    } {
+      var view = CompositeView();
+      view.layout = VLayout(nil);
+      this.pagesView.addPage(name, view);
+    };
+  }
+
   initPagesView {arg name;
     var view = CompositeView();
     view.layout = VLayout(nil);
@@ -193,16 +258,6 @@ IannisSynthViewController : CompositeView {
     midiView.cleanUp();
     mapView.cleanUp();
     node.free();
-  }
-
-  addPage {arg name;
-    if (pagesView.isNil) {
-      this.initPagesView(name)
-    } {
-      var view = CompositeView();
-      view.layout = VLayout(nil);
-      this.pagesView.addPage(name, view);
-    };
   }
 
   getPageViewAtIndex {arg index; 
@@ -377,6 +432,11 @@ IannisSynthViewController : CompositeView {
       var view = this.parseGroupParameter(parameter);
       newGroup.contentView.layout.add(view);
     });
+
+    if(this.metadata[\type] == \live_code) {
+        var liveCodeView = IannisLiveCodeEditor(this);
+        newGroup.contentView.layout.add(liveCodeView);
+    };
 
     this.addGroupViewToPageAtIndex(newGroup, pageIndex);
   }

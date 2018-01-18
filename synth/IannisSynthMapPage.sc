@@ -179,21 +179,21 @@ IannisSynthMapPage : CompositeView {
   }
 
   willCloseParameter {arg key;
-    // get the source value
-    var val = this.parentSynthController
-    .presetsManagerController
-    .presetsManager
-    .currentPreset
-    .values[key];
+      var data = this.parentSynthController
+      .data[key];
+      // get the source value
+      var val = this.parentSynthController
+      .presetsManagerController
+      .presetsManager
+      .currentPreset
+      .values[key];
 
-    // free the parameter from map first
-    parameters[key] = nil;
+      // free the parameter from map first
+      parameters[key] = nil;
 
-    // now assign the source value
-    this.parentSynthController
-    .data[key][\updater]
-    .value(val);
+      // now assign the source value
+      data!?{data[\updater].value(val)};
 
-    this.addParameterKeyToList(key);
+      this.addParameterKeyToList(key);
   }
 }

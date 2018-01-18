@@ -45,21 +45,44 @@ IannisInstrumentsManager {
   }
 
   selectInstrument {arg index;
+      if(index > -1) {
+          this.selectInstrumentAtIndex(index);
+      } {
+          this.selectLiveCodeInstrument();
 
-    currentInstrumentDesc!?{
-      synthViewController.close();
-    };
-
-    currentInstrumentDesc = IannisInstrumentsManager
-    .availableInstrumentsDescs[index];
-
-    currentInstrumentDesc!?{
-      synthViewController = IannisSynthViewController(
-        currentInstrumentDesc.name,
-        delegate.innerBus
-      );
-    };
+      };
 
     delegate.didSelectInstrument(currentInstrumentDesc, synthViewController);
+  }
+
+  selectInstrumentAtIndex {arg index;
+      currentInstrumentDesc!?{
+          synthViewController.close();
+      };
+
+      currentInstrumentDesc = IannisInstrumentsManager
+      .availableInstrumentsDescs[index];
+
+      currentInstrumentDesc!?{
+          synthViewController = IannisSynthViewController(
+              currentInstrumentDesc.name,
+              delegate.innerBus
+          );
+      };
+  }
+
+  selectLiveCodeInstrument {
+      currentInstrumentDesc!?{
+          synthViewController.close();
+      };
+
+      currentInstrumentDesc = ();
+
+      currentInstrumentDesc!?{
+          synthViewController = IannisSynthViewController(
+              nil,
+              delegate.innerBus
+          );
+      };
   }
 }

@@ -156,10 +156,12 @@ IannisMixerTrackViewController : CompositeView {
         instrumentPopup = PopUpMenu();
         instrumentPopup.fixedWidth = 130;
 
-        instrumentPopup.items = IannisInstrumentsManager.availableInstrumentsNames;
+        instrumentPopup.items = ["LiveCode"].addAll(
+            IannisInstrumentsManager.availableInstrumentsNames
+        );
 
         instrumentPopup.action = {arg popup;
-            mixerTrack.instrumentsManager.selectInstrument(popup.value);
+            mixerTrack.instrumentsManager.selectInstrument(popup.value-1);
 
             // update view in rack
             viewControllersRack.instrumentViewController = mixerTrack

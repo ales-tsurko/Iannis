@@ -9,8 +9,8 @@ s.quit();
     Server.local.options.blockSize = 64;
     Server.local.options.memSize = 2 ** 20;
 
-    s.options.numAudioBusChannels = 2048;
-    s.options.numControlBusChannels = 2048;
+    s.options.numAudioBusChannels = 8192;
+    s.options.numControlBusChannels = 8192;
 
     ~initSynthDescs = {arg dir, libName;
         var path = PathName(dir);
@@ -21,8 +21,9 @@ s.quit();
         });
     };
 
+    SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
+
     s.waitForBoot({
-        SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
         s.loadDirectory(SynthDef.synthDefDir);
 

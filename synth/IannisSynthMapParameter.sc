@@ -15,7 +15,11 @@ IannisSynthMapParameter : CompositeView {
   xFadeNumberBox,
   xFadeLabel;
   
-  *new {arg key, name, parentSynthPage;
+  *new {
+      ^super.new;
+  }
+
+  *new1 {arg key, name, parentSynthPage;
     ^super.new.init(key, name, parentSynthPage);
   }
 
@@ -76,8 +80,7 @@ IannisSynthMapParameter : CompositeView {
     closeButton.action = {arg but;
       if (but.value == 0) {
         this.showCloseAlert({
-          var parentSynthController = this.parentSynthPage
-          .parentSynthController;
+          var parentSynthController = this.getParentSynthController();
           var preset = parentSynthController
           .presetsManagerController
           .presetsManager
@@ -97,36 +100,41 @@ IannisSynthMapParameter : CompositeView {
     };
   }
 
+  getParentSynthController {
+      ^this.parentSynthPage.parentSynthController;
+  }
+
   initEditButton {
-    editButton = Button();
-    editButton.fixedWidth = 100;
-    editButton.states = [["Edit"], ["Compact"]];
+      editButton = Button();
+      editButton.fixedWidth = 100;
+      editButton.states = [["Edit"], ["Compact"]];
 
-    editButton.action = {arg but;
-      if (but.value == 0) {
-        textView.visible = false;
-        evaluateButton.visible = false;
-        xFadeLabel.visible = false;
-        xFadeNumberBox.visible = false;
-      } {
-        textView.visible = true;
-        evaluateButton.visible = true;
-        xFadeLabel.visible = true;
-        xFadeNumberBox.visible = true;
+      editButton.action = {arg but;
+          var preset = this.getParentSynthController()
+          .presetsManagerController
+          .presetsManager
+          .currentPreset;
+          if (but.value == 0) {
+              textView.visible = false;
+              evaluateButton.visible = false;
+              xFadeLabel.visible = false;
+              xFadeNumberBox.visible = false;
+          } {
+              textView.visible = true;
+              evaluateButton.visible = true;
+              xFadeLabel.visible = true;
+              xFadeNumberBox.visible = true;
+          };
+          // update preset value
+          preset!?{
+              preset.setMapMode(
+                  this.key,
+                  but.value
+              );
+          }
       };
-      // update preset value
-      this.parentSynthPage
-      .parentSynthController
-      .presetsManagerController
-      .presetsManager
-      .currentPreset
-      .setMapMode(
-        this.key,
-        but.value
-      );
-    };
 
-    editButton.doAction();
+      editButton.doAction();
   }
 
   initEvaluateButton {
@@ -148,8 +156,7 @@ IannisSynthMapParameter : CompositeView {
     onOffButton.states = [["On"], ["Off"]];
 
     onOffButton.action = {arg but;
-      var preset = this.parentSynthPage
-      .parentSynthController
+      var preset = this.getParentSynthController()
       .presetsManagerController
       .presetsManager
       .currentPreset;
@@ -158,20 +165,19 @@ IannisSynthMapParameter : CompositeView {
         // off
         // set real/fixed value
         var val = preset.values[key];
-        this.parentSynthPage.parentSynthController.node.set(key, val);
+        this.getParentSynthController().node.set(key, val);
 
         isOn = false;
       } {
         // on
         if ((this
-          .parentSynthPage
-          .parentSynthController
-          .type == \effect) && (this.proxies[0].bus.notNil)) {
-          this.parentSynthPage.parentSynthController.node.set(
-            key,
-            this.proxies[0].bus.asMap
-          );
-        };
+            .getParentSynthController()
+            .type == \effect) && (this.proxies[0].bus.notNil)) {
+                this.getParentSynthController().node.set(
+                    key,
+                    this.proxies[0].bus.asMap
+                );
+            };
 
         isOn = true;
       };
@@ -199,8 +205,7 @@ IannisSynthMapParameter : CompositeView {
       this.proxies.do({arg np; np.fadeTime = num.value});
       
       // update preset value
-      this.parentSynthPage
-      .parentSynthController
+      this.getParentSynthController()
       .presetsManagerController
       .presetsManager
       .currentPreset
@@ -217,8 +222,7 @@ IannisSynthMapParameter : CompositeView {
   }
 
   initTextView {
-    var preset = this.parentSynthPage
-        .parentSynthController
+    var preset = this.getParentSynthController()
         .presetsManagerController
         .presetsManager
         .currentPreset;
@@ -270,9 +274,14 @@ IannisSynthMapParameter : CompositeView {
     };
   }
 
+  evaluate {
+    textView.getValue({arg codeString;
+      this.evaluateCodeAction(codeString);
+    });
+  }
+
   evaluateCodeAction {arg code;
-    var parentSynthController = this.parentSynthPage
-    .parentSynthController;
+    var parentSynthController = this.getParentSynthController();
     var preset = parentSynthController
     .presetsManagerController
     .presetsManager
@@ -307,12 +316,6 @@ IannisSynthMapParameter : CompositeView {
     });
 
     AppClock.play(rout);
-  }
-
-  evaluate {
-    textView.getValue({arg codeString;
-      this.evaluateCodeAction(codeString);
-    });
   }
 
   showCloseAlert {arg okCallback;
@@ -385,13 +388,11 @@ IannisSynthMapParameter : CompositeView {
 
       obj.keysValuesDo({arg userKey, value;
         var dataKey = (this.key++'.'++userKey).asSymbol;
-        var parentSynthController = this.parentSynthPage
-        .parentSynthController;
+        var parentSynthController = this.getParentSynthController();
 
         parentSynthController
         .data[dataKey]!?{
-          this.parentSynthPage
-          .parentSynthController
+          this.getParentSynthController()
           .data[dataKey][\updater].value(value);
         };
       });
@@ -405,7 +406,7 @@ IannisSynthMapParameter : CompositeView {
       obj.keysValuesDo({arg userKey, value;
         proxiesGroup.set(userKey, value);
 
-        if (this.parentSynthPage.parentSynthController.type == \effect) {
+        if (this.getParentSynthController().type == \effect) {
           this.proxies[0].set(userKey, value);
         }
       });
@@ -413,8 +414,7 @@ IannisSynthMapParameter : CompositeView {
   }
   
   didFinishParsing {
-    var preset = this.parentSynthPage
-    .parentSynthController
+    var preset = this.getParentSynthController()
     .presetsManagerController
     .presetsManager
     .currentPreset;
@@ -425,8 +425,7 @@ IannisSynthMapParameter : CompositeView {
   // MIDI
   onNoteOn {arg noteNumber, velocity;
     var proxy;
-    var parentSynthController = this.parentSynthPage
-    .parentSynthController;
+    var parentSynthController = this.getParentSynthController();
     
     case
     {parentSynthController.type == \synth} {
@@ -532,8 +531,7 @@ IannisSynthMapParameter : CompositeView {
     var nameAndParamSplit = parameterStr.split($:);
     var fillData = {arg key, view, spec;
       var dataKey = (this.key++'.'++key).asSymbol;
-      var parentSynthController = this.parentSynthPage
-      .parentSynthController;
+      var parentSynthController = this.getParentSynthController();
       parentSynthController.data[dataKey]??{parentSynthController.data[dataKey] = ()};
       parentSynthController.data[dataKey][\view] = view;
       parentSynthController.data[dataKey][\spec] = spec;
@@ -623,20 +621,17 @@ IannisSynthMapParameter : CompositeView {
     var label = StaticText();
     var valueLabel = StaticText();
     var knob = Knob();
-    var currentPreset = this.parentSynthPage
-    .parentSynthController
+    var currentPreset = this.getParentSynthController()
     .presetsManagerController
     .presetsManager
     .currentPreset;
-    var selectedPreset = this.parentSynthPage
-    .parentSynthController
+    var selectedPreset = this.getParentSynthController()
     .presetsManagerController
     .presetsManager
     .selectedPreset;
     var previousColor;
     var dataKey = (this.key++'.'++userKey).asSymbol;
-    var parentSynthController = this.parentSynthPage
-    .parentSynthController;
+    var parentSynthController = this.getParentSynthController();
 
     label.string = name?"";
     label.align = \center;
