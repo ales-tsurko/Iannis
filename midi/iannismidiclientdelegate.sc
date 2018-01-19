@@ -25,6 +25,10 @@
           this.parentSynthController.mapView.parameters.do({arg map;
             map.onNoteOn(num, val);
           });
+
+          this.parentSynthController.liveCodeEditor!?{
+              this.parentSynthController.liveCodeEditor.onNoteOn(num, val);
+          }
         }
       }
     });
@@ -34,22 +38,28 @@
   }
 
   initNoteOffMIDIFunc {
-    this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
-      if (this.midiManager.selectedDevice.uid == src) {
-        if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
-          if (this.parentSynthController.type == \synth) {
-            this.midiManager.voicesManager.noteOff(num);
-          };
-          // call map parameter bindings
-          this.parentSynthController.mapView.parameters.do({arg map;
-            map.onNoteOff(num);
-          });
-        }
-      }
-    });
+      this.midiManager.map[\noteOff] = MIDIFunc.noteOff({arg val, num, chan, src;
+          if (this.midiManager.selectedDevice.uid == src) {
+              if ((this.midiManager.channel == 0) || (this.midiManager.channel == (chan+1))) {
 
-    // ignore CmdPeriod
-    this.midiManager.map[\noteOff].permanent = true;
+                  if (this.parentSynthController.type == \synth) {
+                      this.midiManager.voicesManager.noteOff(num);
+                  };
+
+                  // call map parameter bindings
+                  this.parentSynthController.mapView.parameters.do({arg map;
+                      map.onNoteOff(num);
+                  });
+
+                  this.parentSynthController.liveCodeEditor!?{
+                      this.parentSynthController.liveCodeEditor.onNoteOff(num);
+                  }
+              }
+          }
+      });
+
+      // ignore CmdPeriod
+      this.midiManager.map[\noteOff].permanent = true;
   }
 
   initSustainPedalMIDIFunc {

@@ -222,56 +222,55 @@ IannisSynthMapParameter : CompositeView {
   }
 
   initTextView {
-    var preset = this.getParentSynthController()
-        .presetsManagerController
-        .presetsManager
-        .currentPreset;
-    var updatePresetFunc = {arg tv;
-      tv.getValue({arg code;
-        preset.setMapCode(
-          this.key,
-          code
-        );
-      });
-    };
-    textView = IannisAceWrapper();
-    textView.fixedHeight = 170;
+      var preset = this.getParentSynthController()
+      .presetsManagerController
+      .presetsManager
+      .currentPreset;
+      var updatePresetFunc = {arg tv;
+          tv.getValue({arg code;
+              preset!?{
+                  preset.setMapCode(this.key, code);
+              }
+          });
+      };
+      textView = IannisAceWrapper();
+      textView.fixedHeight = 170;
 
-    textView.onLoadFinished = {arg wv;
-      wv.setValue(
-        "/*\n"
-        "Ctrl-R to evaluate the entire document.\n"
-        "Ctrl-` - switch between Vim/Normal mode.\n"
-        "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
-        "*/\n"
-        "\n"
-        "\\selfvalue.kr;"
-      );
-    };
+      textView.onLoadFinished = {arg wv;
+          wv.setValue(
+              "/*\n"
+              "Ctrl-R to evaluate the entire document.\n"
+              "Ctrl-` - switch between Vim/Normal mode.\n"
+              "Ctrl-Alt-H - view all the keyboard shortcuts.\n"
+              "*/\n"
+              "\n"
+              "\\selfvalue.kr;"
+          );
+      };
 
-    textView.onEvaluate = {arg code;
-      this.evaluateCodeAction(code);
-      // update preset value
-      updatePresetFunc.value(textView);
-    };
+      textView.onEvaluate = {arg code;
+          this.evaluateCodeAction(code);
+          // update preset value
+          updatePresetFunc.value(textView);
+      };
 
-    textView.onEvaluateSelection = {arg code;
-      code.interpretPrint;
-      // update preset value
-      updatePresetFunc.value(textView);
-    };
+      textView.onEvaluateSelection = {arg code;
+          code.interpretPrint;
+          // update preset value
+          updatePresetFunc.value(textView);
+      };
 
-    textView.onHardStop = {
-      ("hard stop").postln;
-    };
+      textView.onHardStop = {
+          ("hard stop").postln;
+      };
 
-    // update preset on focus changes
-    textView.focusGainedAction = {arg tv;
-      updatePresetFunc.value(tv);
-    };
-    textView.focusLostAction = {arg tv;
-      updatePresetFunc.value(tv);
-    };
+      // update preset on focus changes
+      textView.focusGainedAction = {arg tv;
+          updatePresetFunc.value(tv);
+      };
+      textView.focusLostAction = {arg tv;
+          updatePresetFunc.value(tv);
+      };
   }
 
   evaluate {

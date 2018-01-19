@@ -12,6 +12,7 @@ IannisSynthViewController : CompositeView {
   <presetsManagerController,
   <data,
   <synthDefName,
+  <liveCodeEditor,
   <mapView,
   <midiView,
   <>selectedElementKey,
@@ -436,6 +437,7 @@ IannisSynthViewController : CompositeView {
     if(this.metadata[\type] == \live_code) {
         var liveCodeView = IannisLiveCodeEditor(this);
         newGroup.contentView.layout.add(liveCodeView);
+        liveCodeEditor = liveCodeView;
     };
 
     this.addGroupViewToPageAtIndex(newGroup, pageIndex);

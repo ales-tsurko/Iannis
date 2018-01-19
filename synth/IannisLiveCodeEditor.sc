@@ -5,6 +5,7 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
 
     initLiveCode {arg parent;
         parentSynthPage = parent;
+        key = \default;
         isOn = true;
 
         this.initProxies();
@@ -36,6 +37,17 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
     initTextView {
         super.initTextView();
         textView.fixedHeight = 340;
+        textView.onLoadFinished = {arg wv;
+            wv.setValue(
+                "/*\n"
+                "<prow>\n"
+                "Amp: amp\n"
+                "*/\n"
+                "\n"
+                "var env = EnvGen.kr(Env.asr(0.01, 1, 2), gate: \\selfgate.kr);\n"
+                "env * SinOsc.ar(\\selfnote.kr, 0, \\amp.kr*0.1)!2;"
+            );
+        };
     }
 
     initEditButton {
@@ -59,4 +71,55 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         ^this.parentSynthPage;
     }
 
+    evaluateCodeAction {arg code;
+        var parentSynthController = this.getParentSynthController();
+        var preset = parentSynthController
+        .presetsManagerController
+        .presetsManager
+        .currentPreset;
+        var compiled = code.compile();
+        var rout = Routine({
+            // update NodeProxy
+
+            this.proxies.do({arg np; 
+                np.source = compiled;
+                np.stop();
+                // np.free();
+                // Server.default.sync;
+            });
+
+            Server.default.sync();
+
+            // create UI
+            this.parseCode(code);
+
+            Server.default.sync();
+
+            this.loadPresetDataToNode(preset);
+        });
+
+        AppClock.play(rout);
+    }
+
+    onNoteOn {arg noteNumber, velocity;
+        var proxy = this.proxies[noteNumber];
+        proxy.set(\selfnote, noteNumber.midicps);
+        proxy.set(\selfvelocity, velocity.linlin(0, 127, 0, 1));
+        proxy.set(\selfgate, 1);
+        this.playProxyAtIndex(noteNumber);
+    }
+
+    playProxyAtIndex {arg index;
+        var outputBus = this.getParentSynthController().outputBus.index;
+        var numOfChannels = 2;
+        var group = this.getParentSynthController().node;
+        this.proxies[index].play(outputBus, numOfChannels, group);
+    }
+
+    onNoteOff {arg noteNumber;
+        this.proxies[noteNumber].set(\selfgate, 0);
+        this.proxies[noteNumber].set(\selfvelocity, 0);
+    }
+
 }
+

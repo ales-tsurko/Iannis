@@ -21,19 +21,24 @@ s.quit();
         });
     };
 
-    SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
 
     s.waitForBoot({
-
+        SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
         s.loadDirectory(SynthDef.synthDefDir);
+
+        s.sync;
 
         s.loadDirectory("~/Desktop/Iannis/inner_synthdefs".standardizePath);
 
         s.sync;
 
         SynthDescLib(\iannis_synth);
+        
+        s.sync;
         // init synthdescs for iannis' synthdefs
         ~initSynthDescs.value(SynthDef.synthDefDir, \iannis_synth);
+
+        s.sync;
 
         // load iannis synthdesc lib into global lib
         SynthDescLib.getLib(\iannis_synth).synthDescs.do({|item| SynthDescLib.global.add(item)});
@@ -57,7 +62,7 @@ s.quit();
 
 // mixer
 m = IannisMixerViewController().front();
-m.children[1].canvas.children[2].mixerTrack.innerBus;
+m.children[1].canvas.children[1].mixerTrack.instrumentsManager.synthViewController.node;
 
 // Tabbed view
 
