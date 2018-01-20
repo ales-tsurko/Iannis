@@ -15,11 +15,7 @@ IannisSynthMapParameter : CompositeView {
   xFadeNumberBox,
   xFadeLabel;
   
-  *new {
-      ^super.new;
-  }
-
-  *new1 {arg key, name, parentSynthPage;
+  *new {arg key, name, parentSynthPage;
     ^super.new.init(key, name, parentSynthPage);
   }
 

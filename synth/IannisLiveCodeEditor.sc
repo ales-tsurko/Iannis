@@ -3,6 +3,8 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         ^super.new.initLiveCode(parent);
     }
 
+    init {arg aKey, aName, aDelegate;}
+
     initLiveCode {arg parent;
         parentSynthPage = parent;
         key = \default;
@@ -44,7 +46,7 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
                 "Amp: amp\n"
                 "*/\n"
                 "\n"
-                "var env = EnvGen.kr(Env.asr(0.01, 1, 2), gate: \\selfgate.kr);\n"
+                "var env = EnvGen.kr(Env.asr(0.01, 1, 2), gate: \\selfgate.kr, doneAction: 2);\n"
                 "env * SinOsc.ar(\\selfnote.kr, 0, \\amp.kr*0.1)!2;"
             );
         };
