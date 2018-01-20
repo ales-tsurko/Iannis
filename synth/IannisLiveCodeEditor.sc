@@ -20,8 +20,8 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         proxies = [];
         127.do({
             var proxy = NodeProxy();
-            proxies = proxies.add(proxy);
             proxy.group = proxiesGroup;
+            proxies = proxies.add(proxy);
         });
     }
 
@@ -79,13 +79,13 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         .currentPreset;
         var compiled = code.compile();
         var rout = Routine({
+            this.releaseAll();
             // update NodeProxy
+            this.proxies[0].source = compiled;
 
-            this.proxies.do({arg np; 
-                np.source = compiled;
-                np.stop();
-                // np.free();
-                // Server.default.sync;
+            (this.proxies.size-2).do({arg n; 
+                this.proxies[n+1] = this.proxies[0].copy;
+                this.proxies[n+1].release();
             });
 
             Server.default.sync();
@@ -99,6 +99,10 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         });
 
         AppClock.play(rout);
+    }
+
+    releaseAll {
+        this.proxies.do({arg proxy; proxy.release()});
     }
 
     onNoteOn {arg noteNumber, velocity;

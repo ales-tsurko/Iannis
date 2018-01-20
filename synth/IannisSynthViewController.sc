@@ -143,6 +143,7 @@ IannisSynthViewController : CompositeView {
     panicButton.action = {arg but;
       if (but.value == 0) {
         this.midiView.midiManager.reset();
+        this.liveCodeEditor!?{this.liveCodeEditor.releaseAll()};
       };
     };
 

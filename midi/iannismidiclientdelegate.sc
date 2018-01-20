@@ -21,14 +21,14 @@
 
           };
 
+          this.parentSynthController.liveCodeEditor!?{
+              this.parentSynthController.liveCodeEditor.onNoteOn(num, val);
+          };
+
           // call map parameter bindings
           this.parentSynthController.mapView.parameters.do({arg map;
             map.onNoteOn(num, val);
           });
-
-          this.parentSynthController.liveCodeEditor!?{
-              this.parentSynthController.liveCodeEditor.onNoteOn(num, val);
-          }
         }
       }
     });
@@ -46,14 +46,14 @@
                       this.midiManager.voicesManager.noteOff(num);
                   };
 
+                  this.parentSynthController.liveCodeEditor!?{
+                      this.parentSynthController.liveCodeEditor.onNoteOff(num);
+                  };
+
                   // call map parameter bindings
                   this.parentSynthController.mapView.parameters.do({arg map;
                       map.onNoteOff(num);
                   });
-
-                  this.parentSynthController.liveCodeEditor!?{
-                      this.parentSynthController.liveCodeEditor.onNoteOff(num);
-                  }
               }
           }
       });
