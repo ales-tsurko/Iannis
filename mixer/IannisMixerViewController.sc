@@ -76,7 +76,7 @@ IannisMixerViewController : CompositeView {
     }
 
     soloChannel {arg channel;
-        var tracks = [this.mixerTrack] ++ this.channels;
+        var tracks = [this.masterChannel] ++ this.channels;
         soloedChannelsIndices = soloedChannelsIndices.add(channel.index);
         if(channel.mixerTrack.isMute) {channel.setMute(false)};
         tracks.do({arg track;
@@ -96,7 +96,7 @@ IannisMixerViewController : CompositeView {
     }
 
     unsoloLastChannel {
-        var tracks = [this.mixerTrack] ++ this.channels;
+        var tracks = [this.masterChannel] ++ this.channels;
         numberOfChannels.do({arg n;
             var nonMasterTrackIndex = n+1;
             if(mutedChannelsIndices.includes(nonMasterTrackIndex).not) {
