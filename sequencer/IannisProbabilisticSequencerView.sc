@@ -1,24 +1,26 @@
 IannisProbabilisticSequencerView : CompositeView {
-  var <parametersContainerView, 
-  <parametersView,
-  eventControllers,
-  <availableParameters,
-  parametersListView,
-  userParametersViews,
-	<sequencer;
+    var <parametersContainerView, 
+    <parametersView,
+    eventControllers,
+    <availableParameters,
+    parametersListView,
+    userParametersViews,
+    <sequencer,
+    trackViewController;
 
-	*new {arg name, instrument, numberOfPitches = 4, numberOfRhythmicFigures = 2, patternLength = 8;
-		^super.new.init(name, instrument, numberOfPitches, numberOfRhythmicFigures, patternLength);
+	*new {arg name, instrument, descLib, trackViewController, numberOfPitches = 4, numberOfRhythmicFigures = 2, patternLength = 8;
+		^super.new.init(name, instrument, descLib, trackViewController, numberOfPitches, numberOfRhythmicFigures, patternLength);
 	}
 
-	init {arg name, instrument, numberOfPitches, numberOfRhythmicFigures, patternLength;
+	init {arg name, instrument, descLib, atrackViewController, numberOfPitches, numberOfRhythmicFigures, patternLength;
     var evenStepsViewBackground = Color.gray(0.79, 1), 
     oddStepsViewBackground = Color.gray(0.72, 1), 
     evenParametersViewBackground = Color.gray(0.925, 1), 
     oddParametersViewBackground = Color.gray(0.85, 1);
 
+    trackViewController = atrackViewController;
     // sequencer
-		sequencer = IannisProbabilisticSequencer(name, instrument, patternLength);
+		sequencer = IannisProbabilisticSequencer(name, instrument, trackViewController, patternLength);
 
     // parameters container
     parametersContainerView = ScrollView.new;
@@ -40,7 +42,7 @@ IannisProbabilisticSequencerView : CompositeView {
     // add synth parameters
     // TODO: загрузка всех синтов и эффектов уже должна быть сделана в другом окне,
     // здесь она для теста, чтобы параметры синта были доступны
-    ~paramsWithoutDefaults = SynthDescLib.getLib(\iannis_synth)[instrument.asSymbol].controlNames
+    ~paramsWithoutDefaults = SynthDescLib.getLib(descLib.asSymbol)[instrument.asSymbol].controlNames
     .select({arg item;
       (item != 'freq')
       .and(item != 'midinote')

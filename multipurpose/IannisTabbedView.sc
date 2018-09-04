@@ -37,7 +37,7 @@ IannisTabbedView : CompositeView {
 
     button.fixedHeight = 40;
     button.fixedWidth = 110;
-    button.background = Color.gray(0.6);
+    button.background = Color.gray(0.75);
     buttonLabel.string = name;
     button.layout = HLayout(nil, buttonLabel, nil);
 
@@ -80,7 +80,7 @@ IannisTabbedView : CompositeView {
   }
 
   highlightCurrentButton {
-    previousButton.background = Color.gray(0.6);
-    currentButton.background = Color.gray(0.75);
+    previousButton.background = Color.gray(0.75);
+    currentButton.background = Color.gray(0.6);
   }
 }

@@ -641,6 +641,10 @@ IannisSynthMapParameter : CompositeView {
         var newValue = spec.map(k.value);
         proxiesGroup.set(userKey, newValue);
 
+        if(this.getParentSynthController().type == \live_code) {
+            this.proxies.do({|proxy| proxy.set(userKey, newValue)});
+        };
+
         valueLabel.string = newValue.round(0.01).asString + (spec.units?"");
 
         // update preset
@@ -683,4 +687,5 @@ IannisSynthMapParameter : CompositeView {
 
     ^view;
   }
+
 }

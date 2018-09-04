@@ -170,12 +170,10 @@ IannisSynthViewController : CompositeView {
       this.fixedWidth = 680;
       this.layout = VLayout();
       this.initHeaderAndToolbar();
-      mapView = IannisSynthMapPage(this);
       midiView = IannisSynthMIDIViewController(this);
 
       this.parse();
 
-      this.pagesView.addPage("Map", mapView);
       this.pagesView.addPage("MIDI", midiView);
   }
 

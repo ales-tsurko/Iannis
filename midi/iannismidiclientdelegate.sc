@@ -26,9 +26,11 @@
           };
 
           // call map parameter bindings
-          this.parentSynthController.mapView.parameters.do({arg map;
-            map.onNoteOn(num, val);
-          });
+          this.parentSynthController.mapView!?{
+              this.parentSynthController.mapView.parameters.do({arg map;
+                  map.onNoteOn(num, val);
+              });
+          };
         }
       }
     });
@@ -51,9 +53,11 @@
                   };
 
                   // call map parameter bindings
-                  this.parentSynthController.mapView.parameters.do({arg map;
-                      map.onNoteOff(num);
-                  });
+                  this.parentSynthController.mapView!?{
+                      this.parentSynthController.mapView.parameters.do({arg map;
+                          map.onNoteOff(num);
+                      });
+                  };
               }
           }
       });

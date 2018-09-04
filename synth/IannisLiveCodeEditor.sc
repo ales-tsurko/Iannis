@@ -87,8 +87,9 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
 
             (this.proxies.size-2).do({arg n; 
                 this.proxies[n+1] = this.proxies[0].copy;
-                this.proxies[n+1].release();
             });
+
+            // this.releaseAll();
 
             Server.default.sync();
 
@@ -120,6 +121,8 @@ IannisLiveCodeEditor : IannisSynthMapParameter {
         var numOfChannels = 2;
         var group = this.getParentSynthController().node;
         this.proxies[index].play(outputBus, numOfChannels, group);
+
+        ("Num of synth:" + Server.default.numSynths).postln; 
     }
 
     onNoteOff {arg noteNumber;

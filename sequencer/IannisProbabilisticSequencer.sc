@@ -2,38 +2,50 @@ IannisProbabilisticSequencer {
   var <name, <synthName, <length, <seed, 
   <>root, <>scale, <time, <>timeAction, <playTimes,
   shuffle,
-  onFinishActions, addOnFinishAction, 
-  data;
+  onFinishActions, addOnFinishAction,
+  data,
+  trackViewController;
 
-  *new {arg name, synthName, length;
-    ^super.new.init(name, synthName, length);
+  *new {arg name, synthName, trackViewController, length;
+    ^super.new.init(name, synthName, trackViewController, length);
   }
 
-  init {arg sequencerName, correspondingSynthName, patternLength;
-    name = sequencerName;
-    synthName = correspondingSynthName;
-    length = patternLength;
-    time = 0;
-    this.playTimes = 0;
-    onFinishActions = [];
-    data = IdentityDictionary.new;
-    data[\mul] = IdentityDictionary.new;
-    data[\add] = IdentityDictionary.new;
-    data[\event] = IdentityDictionary.new;
+  init {arg sequencerName, correspondingSynthName, atrackViewController, patternLength;
+      name = sequencerName;
+      synthName = correspondingSynthName;
+      length = patternLength;
+      trackViewController = atrackViewController;
+      time = 0;
+      this.playTimes = 0;
+      onFinishActions = [];
+      data = IdentityDictionary.new;
+      data[\mul] = IdentityDictionary.new;
+      data[\add] = IdentityDictionary.new;
+      data[\event] = IdentityDictionary.new;
 
-    // shuffle is an array of two values: 
-    // a user value, represented by [0,1] range
-    // a real value, represented by a stream
-    shuffle = [0, Pseq([1,1],inf).asStream];
+      // shuffle is an array of two values: 
+      // a user value, represented by [0,1] range
+      // a real value, represented by a stream
+      shuffle = [0, Pseq([1,1],inf).asStream];
 
-    // define main pattern
-    Pbindef(name, 
-      \instrument, synthName, 
-      \root, Pfunc({root}, inf),
-      \scale, Pfunc({scale}, inf)
-    );
+      // define main pattern
+      Pbindef(name, 
+          \instrument, synthName, 
+          \root, Pfunc({root}, inf),
+          \scale, Pfunc({scale}, inf),
+          \group, this.getGroup(),
+          \out, this.getBus().index
+      );
 
-    this.regenerate();
+      this.regenerate();
+  }
+
+  getGroup {
+      ^trackViewController.mixerTrack.instrumentsManager.synthViewController.node;
+  }
+
+  getBus {
+      ^trackViewController.innerBus;
   }
 
   updateEvent {arg key, values, weights, numberOfSteps;

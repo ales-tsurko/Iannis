@@ -1,12 +1,12 @@
 IannisMixerViewController : CompositeView {
-    var channels, 
+    var <channels, 
     numberOfChannels,
     tracksStack,
-    masterChannel,
+    <masterChannel,
     soloedChannelsIndices,
     mutedChannelsIndices;
 
-    *new {arg numberOfChannels = 99;
+    *new {arg numberOfChannels = 16;
         ^super.new.init(numberOfChannels);
     }
 
@@ -19,7 +19,8 @@ IannisMixerViewController : CompositeView {
 
         numberOfChannels.do({arg n;
             var name = "Track" + (n+1);
-            var channel = IannisMixerTrackViewController(name, false, this, n+1);
+			var hasInstrumentChooser = not((n%numberOfChannels == 0).or(n%numberOfChannels == 1));
+            var channel = IannisMixerTrackViewController(name, false, this, n+1, hasInstrumentChooser);
             channel.background = Color.rand(0.77, 0.85);
             channels = channels.add(channel);
         });
@@ -33,15 +34,20 @@ IannisMixerViewController : CompositeView {
             masterChannel,
             [tracksStack, stretch: 1]
         );
+
+        // we transfered ownership of channels to HLayout
+        // so here we're returning it back
+        this.initChannelsArray();
     }
 
-    getChannelsAsArray{
-        var result = [masterChannel];
+    initChannelsArray {
+        var result = [];
         tracksStack.canvas.children.do({arg item;
             result = result.add(item);
         });
-        ^result;
+        channels = result;
     }
+
 }
 
 // track view controller delegate methods
@@ -70,7 +76,7 @@ IannisMixerViewController : CompositeView {
     }
 
     soloChannel {arg channel;
-        var tracks = this.getChannelsAsArray();
+        var tracks = [this.mixerTrack] ++ this.channels;
         soloedChannelsIndices = soloedChannelsIndices.add(channel.index);
         if(channel.mixerTrack.isMute) {channel.setMute(false)};
         tracks.do({arg track;
@@ -90,7 +96,7 @@ IannisMixerViewController : CompositeView {
     }
 
     unsoloLastChannel {
-        var tracks = this.getChannelsAsArray();
+        var tracks = [this.mixerTrack] ++ this.channels;
         numberOfChannels.do({arg n;
             var nonMasterTrackIndex = n+1;
             if(mutedChannelsIndices.includes(nonMasterTrackIndex).not) {

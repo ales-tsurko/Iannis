@@ -35,7 +35,13 @@
     });
 
     // update map view
-    this.parentController.mapView.onLoadPreset(preset);
+    this.parentController.mapView!?{
+        this.parentController.mapView.onLoadPreset(preset);
+    };
+
+    this.parentController.liveCodeEditor!?{
+        this.parentController.liveCodeEditor.onLoadPreset(preset);
+    };
 
     // update midi view
     this.parentController.midiView.onLoadPreset(preset);

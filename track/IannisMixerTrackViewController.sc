@@ -5,7 +5,7 @@ IannisMixerTrackViewController : CompositeView {
     instrumentPopup,
     editInstrumentButton,
     effectsRackView,
-    nameLabel,
+    <nameLabel,
     gainLabel,
     gainFader,
     peaksLabels,
@@ -21,22 +21,24 @@ IannisMixerTrackViewController : CompositeView {
     <isMaster,
     <innerBus,
     <delegate,
-    <index;
+    <index,
+    hasInstrumentChooser;
 
-    *new {arg name, isMaster = false, delegate, index;
-        ^super.new.init(name, isMaster, delegate, index);
+    *new {arg name, isMaster = false, delegate, index, hasInstrumentChooser = true;
+        ^super.new.init(name, isMaster, delegate, index, hasInstrumentChooser);
     }
 
-    init {arg aName, isMas, del, n;
+    init {arg aName, isMas, del, n, ahasInstrumentChooser;
         isMaster = isMas;
         delegate = del;
         index = n;
+        hasInstrumentChooser = ahasInstrumentChooser;
 
         IannisTabbedView.isScrollable = false;
         innerBus = Bus(\audio, 0, 2, Server.default);
         if(isMaster.not){innerBus = Bus.audio(Server.default, 2)};
         mixerTrack = IannisMixerTrack(aName, isMaster, innerBus);
-        viewControllersRack = IannisViewControllersRack(isMaster);
+        viewControllersRack = IannisViewControllersRack(isMaster, hasInstrumentChooser);
         viewControllersRack.visible = false;
 
         this.initBusLabel();
@@ -52,7 +54,7 @@ IannisMixerTrackViewController : CompositeView {
         this.initLevelMeters();
         this.initPanLabel();
         this.initPanKnob();
-        if(isMas.not) {
+        if(isMaster.not && hasInstrumentChooser) {
             this.initToggleMIDIInputButton();
         };
         this.initMuteButton();
@@ -81,19 +83,34 @@ IannisMixerTrackViewController : CompositeView {
                 [effectsRackView, align: \top]
             ];
         }{
-            ~headerElements = [
-                busLabel,
-                [toggleRackButton, align: \center],
-                // Instruments Menu
-                // HLayout(
-                // nil,
-                // editInstrumentButton,
-                [instrumentPopup, align: \center],
-                // nil
-                // ),
-                [effectsRackView, align: \top]
-            ];
-        };
+			if (hasInstrumentChooser) {
+				~headerElements = [
+					busLabel,
+					[toggleRackButton, align: \center],
+					// Instruments Menu
+					// HLayout(
+					// nil,
+					// editInstrumentButton,
+					[instrumentPopup, align: \center],
+					// nil
+					// ),
+					[effectsRackView, align: \top]
+				];
+
+			} {
+				~headerElements = [
+					busLabel,
+					[toggleRackButton, align: \center],
+					// Instruments Menu
+					// HLayout(
+					// nil,
+					// editInstrumentButton,
+					// nil
+					// ),
+					[effectsRackView, align: \top]
+				];
+			}
+		};
 
         ~trackLayout = VLayout(
             VLayout(*~headerElements),
@@ -185,7 +202,7 @@ IannisMixerTrackViewController : CompositeView {
 
     initEffectsRackView {
         effectsRackView = IannisEffectsRackView(this);
-        effectsRackView.minHeight = 120;
+        effectsRackView.fixedHeight = 120;
     }
 
     initGainLabel {
@@ -402,14 +419,16 @@ IannisMixerTrackViewController : CompositeView {
 IannisViewControllersRack : ScrollView {
     var <instrumentViewController,
     <effectsViewControllers,
-    <isMaster;
+    <isMaster,
+    hasInstrumentChooser;
 
-    *new {arg isMaster;
-        ^super.new.init(isMaster)
+    *new {arg isMaster, hasInstrumentChooser;
+        ^super.new.init(isMaster, hasInstrumentChooser)
     }
 
-    init {arg isMas;
+    init {arg isMas, ahasInstrumentChooser;
         isMaster = isMas;
+        hasInstrumentChooser = ahasInstrumentChooser;
 
         effectsViewControllers = [];
 
@@ -444,7 +463,7 @@ IannisViewControllersRack : ScrollView {
     }
 
     instrumentViewController_ {arg newValue;
-        if(isMaster.not) {
+        if(isMaster.not && hasInstrumentChooser) {
             instrumentViewController = newValue;
 
             this.initLayout();

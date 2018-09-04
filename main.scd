@@ -21,7 +21,6 @@ s.quit();
         });
     };
 
-
     s.waitForBoot({
         SynthDef.synthDefDir = "~/Desktop/Iannis/synthdefs".standardizePath;
         s.loadDirectory(SynthDef.synthDefDir);
@@ -33,7 +32,7 @@ s.quit();
         s.sync;
 
         SynthDescLib(\iannis_synth);
-        
+
         s.sync;
         // init synthdescs for iannis' synthdefs
         ~initSynthDescs.value(SynthDef.synthDefDir, \iannis_synth);
@@ -48,8 +47,7 @@ s.quit();
 
 // Sequencer
 // TempoClock.default.tempo = 107/60;
-
-// IannisProbabilisticSequencerView(\sequencer, \granulator, patternLength: 4).front;
+IannisProbabilisticSequencerView(\sequencer2, \granulatorII, \global, patternLength: 4).front;
 
 // Synth view controller
 (
@@ -68,25 +66,25 @@ m.children[1].canvas.children[1].mixerTrack.instrumentsManager.synthViewControll
 
 // l = StaticText();
 // l.string = "Hello";
-// 
+//
 // v = CompositeView();
 // v.fixedHeight = 300;
 // v.fixedWidth = 200;
-// 
+//
 // v.layout = HLayout(l);
-// 
+//
 // t = IannisTabbedView("tab", v);
-// 
+//
 // t.front();
 
 // adding a tab
 // m = StaticText();
 // m.string = "another tab 2";
-// 
+//
 // z = CompositeView();
 // z.fixedHeight = 300;
 // z.fixedWidth = 200;
-// 
+//
 // z.layout = HLayout(m);
-// 
+//
 // t.addPage("tab 2", z);
