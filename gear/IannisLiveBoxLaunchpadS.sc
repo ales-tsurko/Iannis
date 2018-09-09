@@ -11,15 +11,19 @@ IannisLiveBoxLaunchpadS {
     isCurrentLayoutDrumRack = true,
     currentPageIndex = 0,
     isModeStepSequencer = false,
-    isModeStepSequencerEdit = false;
+    isModeStepSequencerEdit = false,
+    pitchersBusses,
+    recordingDirectory;
 
-	*new {arg loggerTextFields, controlSynth;
-		^super.new.init(loggerTextFields, controlSynth);
+	*new {arg loggerTextFields, controlSynth, pitchersBusses, recordingDirectory;
+		^super.new.init(loggerTextFields, controlSynth, pitchersBusses, recordingDirectory);
 	}
 
-	init {arg aloggerTextFields, acontrolSynth;
+	init {arg aloggerTextFields, acontrolSynth, apitchersBusses, arecordingDirectory;
 		controlSynth = acontrolSynth;
 		loggerTextFields = aloggerTextFields;
+        pitchersBusses = apitchersBusses;
+        recordingDirectory = arecordingDirectory;
 
 		if (this.initDevice()) {
 			this.onDeviceInitSuccess();
@@ -56,6 +60,9 @@ IannisLiveBoxLaunchpadS {
             state[n].samplePlaybackDirection = 1; // 1 - forward, -1 - backward
             state[n].nnToggle = 0!128;
             state[n].isOctRandomised = [false,false]; // up,down
+            state[n].selectedPadToRecordInto = 0;
+            state[n].isRecording = false;
+            state[n].pitches = 1!128;
         });
     }
 
@@ -265,11 +272,14 @@ IannisLiveBoxLaunchpadS {
         state[1].isOctRandomised[direction] = state[1].isOctRandomised[direction].not;
     }
 
+    setRecordingDirectory {arg newValue;
+        recordingDirectory = newValue;
+    }
+
 	onDeviceInitSuccess {
         this.initControlsMap();
         this.initState();
         this.initMIDIFuncs();
-        ~lprecbutnum = Array.fill(128, 0);
         ~seqNoteDurs = [1/4, 1/8, 1/16, 1/32, 1/64] * 4;
         ~seqNoteDurCurrent = ~seqNoteDurs[2];
 
@@ -277,197 +287,198 @@ IannisLiveBoxLaunchpadS {
 
 // ---------------------------------------------------------------------------- SYNTH 1
 
-// MIDIFunc.noteOn({arg vel, note, ch, id;
-// 
-	// if((currentPageIndex == 0).and(state[0].isArm).and(
-		// ~lprecbutnum.includes(1) == false).and(note >= 36).and(note <= 99).and(
-			// (state[0].nnToggle.count({arg n; n == 1}) < 4).or(state[0].nnToggle[note] == 1)),
-// 
-		// {
-			// ~recFileName = ~recfolder +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
-			// ~predisk = Buffer.alloc(s, 65536, 1);
-			// ~predisk.write(~recFileName, "wav", "int16", 0, 0, true);
-			// ~recorder = Synth.tail(nil, "recorder", ["bufnum", ~predisk]);
-			// ~pitcher = Synth("pitchtector");
-			// midiOut.noteOn(0, note, 15);
-			// ~lprecbutnum[note] = 1;
-	// });
-// 
-	// if((currentPageIndex == 0).and(state[0].isArm), {
-		// ~lprecbutnum.do({arg item, i;
-			// if(item == 1, {
-				// Routine.run{
-					// ~samples1[i + 1] = Buffer.read(s, ~recFileName);
-					// state[0].nnToggle[i] = 1;
-					// c.pitcher.get({arg v; ~pitches1[i + 1] = v});
-					// s.wait;
-					// midiOut.noteOn(0, i + 36, 48);
-// 
-					// state[0].nnToggle.do({arg item, i;
-						// var sw = 0;
-						// if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
-							// ~buttsCatLPs1.do({arg cont, n;
-								// switch(sw,
-									// 0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
-									// 1, {~buttsCatLPs1[n].postln})});
-							// sw = 0});
-					// });
-					// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-					// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-// 
-					// ~lprecbutnum[i] = 0;
-					// ~recorder.free;
-					// ~pitcher.free;
-					// ~predisk.close;
-					// ~predisk.free;
-					// ~recFileName.free;
-				// };
-			// });
-		// });
-// 
-		// if(state[0].nnToggle.count({arg n; n == 1}) < 4, {
-// 
-			// if((note >= 36).and(note <= 51), {
-// 
-				// switch(state[0].nnToggle[note],
-					// 0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
-// 
-						// state[0].nnToggle.do({arg item, i;
-							// var sw = 0;
-							// if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
-								// ~buttsCatLPs1.do({arg cont, n;
-									// switch(sw,
-										// 0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
-										// 1, {~buttsCatLPs1[n].postln})});
-								// sw = 0});
-						// });
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-					// },
-					// 1, {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-			// });
-// 
-			// if((note >= 52).and(note <= 67), {
-				// switch(state[0].nnToggle[note],
-					// 0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
-						// state[0].nnToggle.do({arg item, i;
-							// var sw = 0;
-							// if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
-								// ~buttsCatLPs1.do({arg cont, n;
-									// switch(sw,
-										// 0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
-										// 1, {~buttsCatLPs1[n].postln});
-								// });
-								// sw = 0});
-						// });
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-					// },
-					// 1, {midiOut.noteOn(0, note, 17); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-			// });
-// 
-			// if((note >= 68).and(note <= 83), {
-				// switch(state[0].nnToggle[note],
-					// 0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
-						// state[0].nnToggle.do({arg item, i;
-							// var sw = 0;
-							// if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
-								// ~buttsCatLPs1.do({arg cont, n;
-									// switch(sw,
-										// 0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
-										// 1, {~buttsCatLPs1[n].postln})});
-								// sw = 0});
-						// });
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-					// },
-					// 1, {midiOut.noteOn(0, note, 1); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-			// });
-// 
-			// if((note >= 84).and(note <= 99), {
-				// switch(state[0].nnToggle[note],
-					// 0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
-						// state[0].nnToggle.do({arg item, i;
-							// var sw = 0;
-							// if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
-								// ~buttsCatLPs1.do({arg cont, n;
-									// switch(sw,
-										// 0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
-										// 1, {~buttsCatLPs1[n].postln})});
-								// sw = 0});
-						// });
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-					// },
-					// 1, {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-			// });
-			// },
-// 
-			// {
-				// if((note >= 36).and(note <= 51).and(state[0].nnToggle[note] == 1),
-					// {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-// 
-				// if((note >= 52).and(note <= 67).and(state[0].nnToggle[note] == 1),
-					// {midiOut.noteOn(0, note, 17); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-// 
-				// if((note >= 68).and(note <= 83).and(state[0].nnToggle[note] == 1),
-					// {midiOut.noteOn(0, note, 1); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-// 
-				// if((note >= 84).and(note <= 99).and(state[0].nnToggle[note] == 1),
-					// {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
-						// ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
-						// ~sampleNumber1 = ~buttsCatLPs1.as(Array);
-						// ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
-				// });
-		// });
-	// });
-// 
-	// controlSynth.set(\b1, ~samples1[~sampleNumber1[0]].bufnum);
-	// controlSynth.set(\b2, ~samples1[~sampleNumber1[1]].bufnum);
-	// controlSynth.set(\b3, ~samples1[~sampleNumber1[2]].bufnum);
-	// controlSynth.set(\b4, ~samples1[~sampleNumber1[3]].bufnum);
-// 
-	// controlSynth.set(\p1, ~pitches1[~sampleNumber1[0]]);
-	// controlSynth.set(\p2, ~pitches1[~sampleNumber1[1]]);
-	// controlSynth.set(\p3, ~pitches1[~sampleNumber1[2]]);
-	// controlSynth.set(\p4, ~pitches1[~sampleNumber1[3]]);
-// 
-	// if(~unpitched.includes(~sampleNumber1[0]), {controlSynth.set(\st1, 0)}, {controlSynth.set(\st1, 1)});
-	// if(~unpitched.includes(~sampleNumber1[1]), {controlSynth.set(\st2, 0)}, {controlSynth.set(\st2, 1)});
-	// if(~unpitched.includes(~sampleNumber1[2]), {controlSynth.set(\st3, 0)}, {controlSynth.set(\st3, 1)});
-	// if(~unpitched.includes(~sampleNumber1[3]), {controlSynth.set(\st4, 0)}, {controlSynth.set(\st4, 1)});
-// 
-	// // ~buttsCatLPs1.postln;
-	// // ~sampleNumber1.postln;
-        // }, srcID: deviceID);
+MIDIFunc.noteOn({arg vel, note, ch, id;
+    if((currentPageIndex == 0).and(state[0].isArm), {
+        var fileName, buffer, recorder, pitcher;
+        if ((state[0].isRecording.not).and(controlsMap.mainGridNNs.drumRackMode.includes(note)).and((state[0].nnToggle.count({arg n; n == 1}) < 4).or(state[0].nnToggle[note] == 1))) {
+            fileName = recordingDirectory +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
+            buffer = Buffer.alloc(Server.default, 65536, 1);
+            buffer.write(fileName, "wav", "int16", 0, 0, true);
+            recorder = Synth.tail(nil, "recorder", ["bufnum", buffer]);
+            pitcher = Synth("pitchtector");
+            midiOut.noteOn(0, note, 15);
+            state[0].isRecording = true;
+            state[0].selectedPadToRecordInto = note;
+        };
+
+        if (state[0].isRecording) {
+            fork {
+                var nn = state[0].selectedPadToRecordInto;
+                ~samples1[nn] = Buffer.read(Server.default, fileName);
+                state[0].nnToggle[nn] = 1;
+                pitchersBusses[0].get({arg v; state[0].pitches[nn] = v});
+
+                Server.default.wait;
+
+                midiOut.noteOn(0, nn, 48);
+
+                state[0].nnToggle.do({arg item, i;
+                    var sw = 0;
+                    if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
+                        ~buttsCatLPs1.do({arg cont, n;
+                            switch(sw,
+                                0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
+                                1, {~buttsCatLPs1[n].postln}
+                            );
+                        });
+                        sw = 0;
+                    });
+                });
+                ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+
+                state[0].isRecording = false;
+                recorder.free;
+                pitcher.free;
+                buffer.close;
+                buffer.free;
+                fileName.free;
+            };
+        };
+
+        if(state[0].nnToggle.count({arg n; n == 1}) < 4, {
+
+            if((note >= 36).and(note <= 51), {
+
+                switch(state[0].nnToggle[note],
+                    0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
+
+                        state[0].nnToggle.do({arg item, i;
+                            var sw = 0;
+                            if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
+                                ~buttsCatLPs1.do({arg cont, n;
+                                    switch(sw,
+                                        0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
+                                        1, {~buttsCatLPs1[n].postln})});
+                                sw = 0});
+                        });
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                    },
+                    1, {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+            });
+
+            if((note >= 52).and(note <= 67), {
+                switch(state[0].nnToggle[note],
+                    0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
+                        state[0].nnToggle.do({arg item, i;
+                            var sw = 0;
+                            if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
+                                ~buttsCatLPs1.do({arg cont, n;
+                                    switch(sw,
+                                        0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
+                                        1, {~buttsCatLPs1[n].postln});
+                                });
+                                sw = 0});
+                        });
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                    },
+                    1, {midiOut.noteOn(0, note, 17); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+            });
+
+            if((note >= 68).and(note <= 83), {
+                switch(state[0].nnToggle[note],
+                    0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
+                        state[0].nnToggle.do({arg item, i;
+                            var sw = 0;
+                            if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
+                                ~buttsCatLPs1.do({arg cont, n;
+                                    switch(sw,
+                                        0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
+                                        1, {~buttsCatLPs1[n].postln})});
+                                sw = 0});
+                        });
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                    },
+                    1, {midiOut.noteOn(0, note, 1); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+            });
+
+            if((note >= 84).and(note <= 99), {
+                switch(state[0].nnToggle[note],
+                    0, {midiOut.noteOn(0, note, 48); state[0].nnToggle[note] = 1;
+                        state[0].nnToggle.do({arg item, i;
+                            var sw = 0;
+                            if((item == 1).and(~buttsCatLPs1.includes(i + 1) == false), {
+                                ~buttsCatLPs1.do({arg cont, n;
+                                    switch(sw,
+                                        0, {if(cont == 0, {~buttsCatLPs1[n] = i + 1; sw = 1})},
+                                        1, {~buttsCatLPs1[n].postln})});
+                                sw = 0});
+                        });
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                    },
+                    1, {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+            });
+            },
+
+            {
+                if((note >= 36).and(note <= 51).and(state[0].nnToggle[note] == 1),
+                    {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+
+                if((note >= 52).and(note <= 67).and(state[0].nnToggle[note] == 1),
+                    {midiOut.noteOn(0, note, 17); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+
+                if((note >= 68).and(note <= 83).and(state[0].nnToggle[note] == 1),
+                    {midiOut.noteOn(0, note, 1); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+
+                if((note >= 84).and(note <= 99).and(state[0].nnToggle[note] == 1),
+                    {midiOut.noteOn(0, note, 16); state[0].nnToggle[note] = 0;
+                        ~buttsCatLPs1.do({arg item, i; if(state[0].nnToggle[item-1] == 0, {~buttsCatLPs1[i] = 0})});
+                        ~sampleNumber1 = ~buttsCatLPs1.as(Array);
+                        ~sampleNumber1.do{| item, i | if( item == 0) {~sampleNumber1.do{| a | if(a != 0) {~sampleNumber1[i] = a}}}};
+                });
+        });
+    });
+
+    controlSynth.set(\b1, ~samples1[~sampleNumber1[0]].bufnum);
+    controlSynth.set(\b2, ~samples1[~sampleNumber1[1]].bufnum);
+    controlSynth.set(\b3, ~samples1[~sampleNumber1[2]].bufnum);
+    controlSynth.set(\b4, ~samples1[~sampleNumber1[3]].bufnum);
+
+    controlSynth.set(\p1, state[0].pitches[~sampleNumber1[0]]);
+    controlSynth.set(\p2, state[0].pitches[~sampleNumber1[1]]);
+    controlSynth.set(\p3, state[0].pitches[~sampleNumber1[2]]);
+    controlSynth.set(\p4, state[0].pitches[~sampleNumber1[3]]);
+
+    if(~unpitched.includes(~sampleNumber1[0]), {controlSynth.set(\st1, 0)}, {controlSynth.set(\st1, 1)});
+    if(~unpitched.includes(~sampleNumber1[1]), {controlSynth.set(\st2, 0)}, {controlSynth.set(\st2, 1)});
+    if(~unpitched.includes(~sampleNumber1[2]), {controlSynth.set(\st3, 0)}, {controlSynth.set(\st3, 1)});
+    if(~unpitched.includes(~sampleNumber1[3]), {controlSynth.set(\st4, 0)}, {controlSynth.set(\st4, 1)});
+
+    // ~buttsCatLPs1.postln;
+    // ~sampleNumber1.postln;
+        }, srcID: deviceID);
 // 
 // ~lprecbutnum2 = Array.fill(128, 0);
 // 
@@ -479,9 +490,9 @@ IannisLiveBoxLaunchpadS {
 		// ~lprecbutnum2.do({arg item, i;
 			// if(item == 1, {
 				// Routine.run{
-					// ~samples2[i + 1] = Buffer.read(s, ~recFileName2);
+					// ~samples2[i + 1] = Buffer.read(Server.default, ~recFileName2);
 					// state[1].nnToggle[i] = 1;
-					// c.pitcher2.get({arg v; ~pitches2[i + 1] = v});
+					// pitchersBusses[1].get({arg v; state[1].pitches[i + 1] = v});
 					// s.wait;
 					// midiOut.noteOn(0, i + 36, 48);
 // 
@@ -638,8 +649,8 @@ IannisLiveBoxLaunchpadS {
 			// (state[1].nnToggle.count({arg n; n == 1}) < 4).or(state[1].nnToggle[note] == 1)),
 // 
 		// {
-			// ~recFileName2 = ~recfolder +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
-			// ~predisk2 = Buffer.alloc(s, 65536, 1);
+			// ~recFileName2 = recordingDirectory +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
+			// ~predisk2 = Buffer.alloc(Server.default, 65536, 1);
 			// ~predisk2.write(~recFileName2, "wav", "int16", 0, 0, true);
 			// ~recorder2 = Synth.tail(nil, "recorder", ["bufnum", ~predisk2]);
 			// ~pitcher2 = Synth("pitchtector2");
@@ -652,10 +663,10 @@ IannisLiveBoxLaunchpadS {
 	// controlSynth.set(\b7, ~samples2[~sampleNumber2[2]].bufnum);
 	// controlSynth.set(\b8, ~samples2[~sampleNumber2[3]].bufnum);
 // 
-	// controlSynth.set(\p5, ~pitches2[~sampleNumber2[0]]);
-	// controlSynth.set(\p6, ~pitches2[~sampleNumber2[1]]);
-	// controlSynth.set(\p7, ~pitches2[~sampleNumber2[2]]);
-	// controlSynth.set(\p8, ~pitches2[~sampleNumber2[3]]);
+	// controlSynth.set(\p5, state[1].pitches[~sampleNumber2[0]]);
+	// controlSynth.set(\p6, state[1].pitches[~sampleNumber2[1]]);
+	// controlSynth.set(\p7, state[1].pitches[~sampleNumber2[2]]);
+	// controlSynth.set(\p8, state[1].pitches[~sampleNumber2[3]]);
 // 
 	// if(~unpitched.includes(~sampleNumber2[0]), {controlSynth.set(\st5, 0)}, {controlSynth.set(\st5, 1)});
 	// if(~unpitched.includes(~sampleNumber2[1]), {controlSynth.set(\st6, 0)}, {controlSynth.set(\st6, 1)});
