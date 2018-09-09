@@ -30,6 +30,19 @@ IannisLiveBoxNanoKontrol {
 		};
 	}
 
+	initDevice {
+		var midiIn;
+		MIDIClient.init;
+		MIDIIn.connectAll;
+		midiIn = MIDIIn.findPort("nanoKONTROL", "SLIDER/KNOB");
+		if (midiIn.isNil) {
+			^false;
+		} {
+			deviceID = midiIn.uid;
+			^true;
+		};
+	}
+
 	onNanoKontrolInit {
 		ccsState = 0!127;
 		values = ();
@@ -145,9 +158,6 @@ IannisLiveBoxNanoKontrol {
 		midiFunc = MIDIFunc.cc({arg val, num, ch, id;
 			ccsState[num] = val;
 
-			//
-			// First synth
-			//
 			if (this.isCCButton(num)) {
 				if (mapping[num].key.notNil) {
 					this.onSwitchButtonForMapWithNum(mapping[num], num);
@@ -287,19 +297,6 @@ IannisLiveBoxNanoKontrol {
 		AppClock.sched(0.0, {
 			loggerTextFields[index].string = string;
 		});
-	}
-
-	initDevice {
-		var midiIn;
-		MIDIClient.init;
-		MIDIIn.connectAll;
-		midiIn = MIDIIn.findPort("nanoKONTROL", "SLIDER/KNOB");
-		if (midiIn.isNil) {
-			^false;
-		} {
-			deviceID = midiIn.uid;
-			^true;
-		};
 	}
 
 	free {
