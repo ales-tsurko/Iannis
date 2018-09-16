@@ -63,6 +63,11 @@ IannisLiveBoxLaunchpadS {
             state[n].isOctRandomised = [false,false]; // up,down
             state[n].selectedPadToRecordInto = nil;
             state[n].pitches = 1!128;
+            state[n].sequencer = ();
+            state[n].sequencer.totalNumberOfSteps = 120;
+            state[n].sequencer.numberOfSteps = 64;
+            state[n].sequencer.availableStepDurations = [1/4, 1/8, 1/16, 1/32, 1/64] * 4;
+            state[n].sequencer.selectedStepDuration = state[n].sequencer.availableStepDurations[2];
         });
     }
 
@@ -116,29 +121,19 @@ IannisLiveBoxLaunchpadS {
     initArmAnimations {
         animations.arm = Task({
             loop {
-                // midiOut.noteOn(0, 107, 15);
                 midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 15);
                 0.85.wait;
-                // midiOut.noteOn(0, 107, 16);
                 midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 16);
                 0.15.wait;
             };
         });
-
-        // animations[1].arm = Task({
-            // loop {
-                // midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 15);
-                // 0.85.wait;
-                // midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 16);
-                // 0.15.wait;
-            // };
-        // });
     }
 
     initMIDIFuncs {
         midiFuncs = [];
         midiFuncs = midiFuncs++[this.initArmMIDIFunc()];
         midiFuncs = midiFuncs++[this.initTopButtonsMIDIFunc()];
+        midiFuncs = midiFuncs++[this.initMainGridMIDIFunc()];
     }
 
     initArmMIDIFunc {
@@ -201,21 +196,12 @@ IannisLiveBoxLaunchpadS {
             };
         });
 
-        ~seqNoteDurs.do({arg i, n;
-            if (i == ~seqNoteDurCurrent) {midiOut.noteOn(0, 102 + n, 63)};
+        state[1].sequencer.availableStepDurations.do({arg i, n;
+            if (i == state[1].sequencer.selectedStepDuration) {midiOut.noteOn(0, 102 + n, 63)};
         });
         midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 16);
 
-        4.do({arg n;
-            4.do({arg i; 
-                var index = 8*n+i;
-
-                midiOut.noteOn(0, this.getNNForGridButtonAtIndex(index), 17);
-                midiOut.noteOn(0, this.getNNForGridButtonAtIndex(index+4), 16);
-                midiOut.noteOn(0, this.getNNForGridButtonAtIndex(index+32), 16);
-                midiOut.noteOn(0, this.getNNForGridButtonAtIndex(index+36), 1);
-            });
-        });
+        this.resetDrumRackGridLedsToDefault();
 
         state[currentPageIndex].activeNNs.do({arg n;
             midiOut.noteOn(0, n, 48);
@@ -227,6 +213,18 @@ IannisLiveBoxLaunchpadS {
         });
 
         this.setSamplePlaybackDirection(state[currentPageIndex].samplePlaybackDirection);
+    }
+
+    resetDrumRackGridLedsToDefault {
+        4.do({arg n;
+            4.do({arg i; 
+                var index = 8*n+i;
+                [0,4,32,36].do({arg a;
+                    var na = index + a;
+                    midiOut.noteOn(0, this.getNNForGridButtonAtIndex(na), this.getDefaultColorForDrumRackGridNN(na));
+                });
+            });
+        });
     }
 
     toggleArmForSynthIndex {arg index;
@@ -284,6 +282,84 @@ IannisLiveBoxLaunchpadS {
         recordingDirectory = newValue;
     }
 
+    initMainGridMIDIFunc {
+        var fileName = nil!2, buffer = nil!2, recorder = nil!2, pitcher = nil!2;
+
+        ^MIDIFunc.noteOn({arg vel, note, ch, id;
+            if (controlsMap.mainGridNNs.drumRackMode.includes(note)) {
+                if (state[currentPageIndex].isArm) {
+                    if ((state[currentPageIndex].selectedPadToRecordInto.isNil).and((state[currentPageIndex].activeNNs.size < 4).or(state[currentPageIndex].activeNNs.includes(note)))) {
+                        fileName[currentPageIndex] = recordingDirectory +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
+                        buffer[currentPageIndex] = Buffer.alloc(Server.default, 65536, 1);
+                        buffer[currentPageIndex].write(fileName[currentPageIndex], "wav", "int16", 0, 0, true);
+                        recorder[currentPageIndex] = Synth.tail(nil, "recorder", ["bufnum", buffer[currentPageIndex]]);
+                        pitcher[currentPageIndex] = Synth("pitchtector");
+                        midiOut.noteOn(0, note, 15);
+                        state[currentPageIndex].selectedPadToRecordInto = note;
+                    };
+                } {
+                    if (state[currentPageIndex].activeNNs.size < 4) {
+
+                        if (state[currentPageIndex].activeNNs.includes(note)) {
+                            var index = state[currentPageIndex].activeNNs.indexOf(note);
+                            state[currentPageIndex].activeNNs.removeAt(index);
+
+                            midiOut.noteOn(0, note, this.getDefaultColorForDrumRackGridNN(note));
+                        } {
+                            midiOut.noteOn(0, note, 48);
+                            state[currentPageIndex].activeNNs = state[currentPageIndex].activeNNs.add(note);
+                        };
+                    }
+                    {
+                        if(state[currentPageIndex].activeNNs.includes(note)) {
+                            var index = state[currentPageIndex].activeNNs.indexOf(note);
+                            state[currentPageIndex].activeNNs.removeAt(index);
+                            midiOut.noteOn(0, note, this.getDefaultColorForDrumRackGridNN(note));
+                        };
+                    };
+                };
+            };
+
+            fork {
+                if ((state[currentPageIndex].selectedPadToRecordInto.notNil).and(state[currentPageIndex].isArm.not)) {
+
+                    var nn = state[currentPageIndex].selectedPadToRecordInto;
+                    state[currentPageIndex].activeNNs = state[currentPageIndex].activeNNs.add(nn);
+                    ~samples[currentPageIndex][nn] = Buffer.read(Server.default, fileName[currentPageIndex]);
+                    pitchersBusses[currentPageIndex].get({arg v; state[currentPageIndex].pitches[nn] = v});
+
+                    Server.default.sync;
+
+                    midiOut.noteOn(0, nn, 48);
+
+                    state[currentPageIndex].selectedPadToRecordInto = nil;
+                    recorder[currentPageIndex].free;
+                    pitcher[currentPageIndex].free;
+                    buffer[currentPageIndex].close;
+                    buffer[currentPageIndex].free;
+                    fileName[currentPageIndex].free;
+
+                };
+
+                4.do({arg n;
+                    var sampleNumber = state[currentPageIndex].activeNNs.wrapAt(n)?0;
+                    var keyIndex = n+1+(4*currentPageIndex);
+                    var bufferKey = (\b++keyIndex).asSymbol;
+                    var pitcherKey = (\p++keyIndex).asSymbol;
+                    var st = (\st++keyIndex).asSymbol;
+
+                    controlSynth.set(bufferKey, ~samples[currentPageIndex][sampleNumber].bufnum);
+                    controlSynth.set(pitcherKey, state[currentPageIndex].pitches[sampleNumber]);
+                    if(this.isNNInUnpitchedCategory(sampleNumber), {controlSynth.set(st, 0)}, {controlSynth.set(st, 1)});
+                });
+            };
+        }, srcID: deviceID, argTemplate: { (isModeStepSequencer.not).and(isModeStepSequencerEdit.not) });
+    }
+
+    isNNInUnpitchedCategory {arg nn;
+        ^(33..48).includes(nn);
+    }
+
     getDefaultColorForDrumRackGridNN {arg nn;
         var color;
         case
@@ -300,381 +376,307 @@ IannisLiveBoxLaunchpadS {
         ^color;
     }
 
-    isNNInUnpitchedCategory {arg nn;
-        ^(33..48).includes(nn);
+    redrawDrumRackGrid {
+        midiOut.control(0, 0, 2);
+        isCurrentLayoutDrumRack = true;
+        midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(0), 30);
+        midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(1), 30);
+
+        if (state[1].isArm) {
+            animations.arm.play;
+            this.resetDrumRackGridLedsToDefault();
+            midiOut.noteOn(0, state[currentPageIndex].selectedPadToRecordInto, 15);
+            state[1].nnToggle.do({arg item;
+                if (item != state[currentPageIndex].selectedPadToRecordInto) {
+                    midiOut.noteOn(0, item, 48);
+                };
+            });
+        } {
+            animations.arm.stop;
+            midiOut.noteOn(0, this.getNNForRightFunctionButtonAtIndex(7), 16);
+            this.resetDrumRackGridLedsToDefault();
+            state[1].nnToggle.do({arg item;
+                midiOut.noteOn(0, item, 48);
+            });
+        };
+
+        isModeStepSequencer = false;
+        isModeStepSequencerEdit = false;
     }
 
 	onDeviceInitSuccess {
-        var fileName = nil!2, buffer = nil!2, recorder = nil!2, pitcher = nil!2;
-
         this.initControlsMap();
         this.initState();
         this.initAnimations();
         this.initMIDIFuncs();
-        ~seqNoteDurs = [1/4, 1/8, 1/16, 1/32, 1/64] * 4;
-        ~seqNoteDurCurrent = ~seqNoteDurs[2];
 
 
 
-MIDIFunc.noteOn({arg vel, note, ch, id;
-    if (controlsMap.mainGridNNs.drumRackMode.includes(note)) {
-        if (state[currentPageIndex].isArm) {
-            if ((state[currentPageIndex].selectedPadToRecordInto.isNil).and((state[currentPageIndex].activeNNs.size < 4).or(state[currentPageIndex].activeNNs.includes(note)))) {
-                fileName[currentPageIndex] = recordingDirectory +/+ ("Recording-" ++ thisThread.seconds.asString).replace(".", "-") ++ ".wav";
-                buffer[currentPageIndex] = Buffer.alloc(Server.default, 65536, 1);
-                buffer[currentPageIndex].write(fileName[currentPageIndex], "wav", "int16", 0, 0, true);
-                recorder[currentPageIndex] = Synth.tail(nil, "recorder", ["bufnum", buffer[currentPageIndex]]);
-                pitcher[currentPageIndex] = Synth("pitchtector");
-                midiOut.noteOn(0, note, 15);
-                state[currentPageIndex].selectedPadToRecordInto = note;
-            };
-        } {
-            if (state[currentPageIndex].activeNNs.size < 4) {
+        // ------------------------------------------------------------------------- SEQUENCER
 
-                if (state[currentPageIndex].activeNNs.includes(note)) {
-                    var index = state[currentPageIndex].activeNNs.indexOf(note);
-                    state[currentPageIndex].activeNNs.removeAt(index);
+        ~modebtns = Array.newClear(8).seriesFill(8, 16).collect({arg n; n + (0..7)}).flat;
+        ~sequence = Array.fill(127, 0);
+        ~seqRoutInternal = Array.newClear(127);
+        ~seqRoutInternalFiltered = ~seqRoutInternal.as(Array);
+        ~sequenceToSynth = Array.newClear(127);
+        ~seqCursor = (0..127);
+        ~seqCursorFiltered = ~seqCursor.as(Array);
+        ~routineStep = 0;
 
-                    midiOut.noteOn(0, note, this.getDefaultColorForDrumRackGridNN(note));
-                } {
-                    midiOut.noteOn(0, note, 48);
-                    state[currentPageIndex].activeNNs = state[currentPageIndex].activeNNs.add(note);
-                };
-            }
-            {
-                if(state[currentPageIndex].activeNNs.includes(note)) {
-                    var index = state[currentPageIndex].activeNNs.indexOf(note);
-                    state[currentPageIndex].activeNNs.removeAt(index);
-                    midiOut.noteOn(0, note, this.getDefaultColorForDrumRackGridNN(note));
-                };
-            };
-        };
-    };
+        ~seqLedFeedback = {
+            ~sequenceToSynth = ~sequence.as(Array);
+            ~modebtns.do({arg i, n;
+                if(~sequenceToSynth.size > (i - n), {~sequenceToSynth.removeAt(i - n)});
+            });
 
-    fork {
-        if ((state[currentPageIndex].selectedPadToRecordInto.notNil).and(state[currentPageIndex].isArm.not)) {
+            ~seqRoutInternalFiltered = ~seqRoutInternal.as(Array);
+            ~modebtns.do({arg i, n;
+                if(~seqRoutInternalFiltered.size > (i - n), {~seqRoutInternalFiltered.removeAt(i - n)});
+            });
 
-            var nn = state[currentPageIndex].selectedPadToRecordInto;
-            state[currentPageIndex].activeNNs = state[currentPageIndex].activeNNs.add(nn);
-            ~samples[currentPageIndex][nn] = Buffer.read(Server.default, fileName[currentPageIndex]);
-            pitchersBusses[currentPageIndex].get({arg v; state[currentPageIndex].pitches[nn] = v});
+            ~seqCursorFiltered = ~seqRoutInternal.as(Array);
+            ~seqCursorFiltered.do({arg i, n;
+                if(i.isNumber, {~seqCursorFiltered[n] = nil},
+                {~seqCursorFiltered[n] = n});
+            });
 
-            Server.default.sync;
-
-            midiOut.noteOn(0, nn, 48);
-
-            state[currentPageIndex].selectedPadToRecordInto = nil;
-            recorder[currentPageIndex].free;
-            pitcher[currentPageIndex].free;
-            buffer[currentPageIndex].close;
-            buffer[currentPageIndex].free;
-            fileName[currentPageIndex].free;
-
+            ~modebtns.do({arg i, n;
+                if(~seqCursorFiltered.size > (i - n), {~seqCursorFiltered.removeAt(i - n)});
+            });
         };
 
-        4.do({arg n;
-            var sampleNumber = state[currentPageIndex].activeNNs.wrapAt(n)?0;
-            var keyIndex = n+1+(4*currentPageIndex);
-            var bufferKey = (\b++keyIndex).asSymbol;
-            var pitcherKey = (\p++keyIndex).asSymbol;
-            var st = (\st++keyIndex).asSymbol;
+        ~seqLedFeedback.value;
 
-            controlSynth.set(bufferKey, ~samples[currentPageIndex][sampleNumber].bufnum);
-            controlSynth.set(pitcherKey, state[currentPageIndex].pitches[sampleNumber]);
-            if(this.isNNInUnpitchedCategory(sampleNumber), {controlSynth.set(st, 0)}, {controlSynth.set(st, 1)});
+        ~r1 = Routine.run({
+            loop{
+                ~sequenceToSynth.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).do({arg i, n;
+                    if(i == 1, {controlSynth.set(\trigger, 1000.rand)});
+                    ~routineStepExchange = n + 1;
+                    if((state[1].isOctRandomised[0]).and(state[1].isOctRandomised[1].not),
+                    {controlSynth.set(\roct2, [1, 2, 4].choose)});
+                    if((state[1].isOctRandomised[1]).and(state[1].isOctRandomised[0].not),
+                    {controlSynth.set(\roct2, [0.25, 0.5, 1].choose)});
+                    if((state[1].isOctRandomised[0]).and(state[1].isOctRandomised[1]),
+                    {controlSynth.set(\roct2, [0.25, 0.5, 1, 2, 4].choose)});
+
+                    state[1].sequencer.selectedStepDuration.wait;
+                });
+            };
         });
-    };
-}, srcID: deviceID, argTemplate: { (isModeStepSequencer.not).and(isModeStepSequencerEdit.not) });
 
-// // ------------------------------------------------------------------------- SEQUENCER
-// 
-// ~stepsNum = 120;
-// ~seqSize = 64;
-// ~modebtns = Array.newClear(8).seriesFill(8, 16).collect({arg n; n + (0..7)}).flat;
-// ~sequence = Array.fill(127, 0);
-// ~seqRoutInternal = Array.newClear(127);
-// ~seqRoutInternalFiltered = ~seqRoutInternal.as(Array);
-// ~sequenceToSynth = Array.newClear(127);
-// ~seqCursor = (0..127);
-// ~seqCursorFiltered = ~seqCursor.as(Array);
-// ~routineStep = 0;
-// ~ledDelay = 0;
-// 
-// ~seqLedFeedback = {
-	// ~sequenceToSynth = ~sequence.as(Array);
-	// ~modebtns.do({arg i, n;
-		// if(~sequenceToSynth.size > (i - n), {~sequenceToSynth.removeAt(i - n)});
-	// });
-// 
-	// ~seqRoutInternalFiltered = ~seqRoutInternal.as(Array);
-	// ~modebtns.do({arg i, n;
-		// if(~seqRoutInternalFiltered.size > (i - n), {~seqRoutInternalFiltered.removeAt(i - n)});
-	// });
-// 
-	// ~seqCursorFiltered = ~seqRoutInternal.as(Array);
-	// ~seqCursorFiltered.do({arg i, n;
-		// if(i.isNumber, {~seqCursorFiltered[n] = nil},
-			// {~seqCursorFiltered[n] = n});
-	// });
-// 
-	// ~modebtns.do({arg i, n;
-		// if(~seqCursorFiltered.size > (i - n), {~seqCursorFiltered.removeAt(i - n)});
-	// });
-// };
-// 
-// ~seqLedFeedback.value;
-// 
-// ~r1 = Routine.run({
-	// loop{
-		// ~sequenceToSynth.lace(~seqSize).rotate(~routineStep).do({arg i, n;
-			// if(i == 1, {controlSynth.set(\trigger, 1000.rand)});
-			// ~routineStepExchange = n + 1;
-			// if((state[1].isOctRandomised[0]).and(state[1].isOctRandomised[1].not),
-				// {controlSynth.set(\roct2, [1, 2, 4].choose)});
-			// if((state[1].isOctRandomised[1]).and(state[1].isOctRandomised[0].not),
-				// {controlSynth.set(\roct2, [0.25, 0.5, 1].choose)});
-			// if((state[1].isOctRandomised[0]).and(state[1].isOctRandomised[1]),
-				// {controlSynth.set(\roct2, [0.25, 0.5, 1, 2, 4].choose)});
-// 
-			// ~seqNoteDurCurrent.wait;
-		// });
-	// };
-// }, clock: t);
-// 
-// ~r2 = Routine.run({
-	// loop{
-		// ~seqRoutInternalFiltered.lace(~seqSize).rotate(~routineStep).do({arg i, n;
-			// if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 27)});
-			// ~seqNoteDurCurrent.wait;
-		// });
-	// };
-// }, clock: t);
-// 
-// ~r3 = Routine.run({
-	// loop{
-		// var note = ~seqRoutInternalFiltered.lace(~seqSize).rotate(~routineStep).wrapAt(-1);
-// 
-		// if((note.isNumber).and(isModeStepSequencer).and(~modebtns.includes(note) == false).and(currentPageIndex == 1),
-			// {midiOut.noteOn(0, note, 60)});
-// 
-		// ~seqRoutInternalFiltered.lace(~seqSize).rotate(~routineStep).do({arg i, n;
-// 
-			// ~seqNoteDurCurrent.wait;
-			// if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 60)});
-		// });
-	// };
-// }, clock: t);
-// 
-// ~r4 = Routine.run({
-	// loop{
-		// ~seqCursorFiltered.lace(~seqSize).rotate(~routineStep).do({arg i, n;
-			// if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 58)});
-			// ~seqNoteDurCurrent.wait;
-		// });
-	// };
-// }, clock: t);
-// 
-// ~r5 = Routine.run({
-	// loop{
-		// var note = ~seqCursorFiltered.lace(~seqSize).rotate(~routineStep).wrapAt(-1);
-// 
-		// if((note.isNumber).and(isModeStepSequencer).and(~modebtns.includes(note) == false).and(currentPageIndex == 1),
-			// {midiOut.noteOn(0, note, 16)});
-// 
-		// ~seqCursorFiltered.lace(~seqSize).rotate(~routineStep).do({arg i, n;
-			// ~seqNoteDurCurrent.wait;
-			// if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 16)});
-		// });
-	// };
-// }, clock: t);
-// 
-// MIDIFunc.noteOn({arg vel, note, ch, id;
-// 
-	// Routine.run({
-		// if((currentPageIndex == 1).and(
-			// (
-				// (note == 8).and(isModeStepSequencer)
-                // ).or(
-                // (note == 24).and(isModeStepSequencerEdit)
-			// )).and(isCurrentLayoutDrumRack.not), {
-				// midiOut.control(0, 0, 2); isCurrentLayoutDrumRack = true;
-				// midiOut.noteOn(0, 100, 30);
-				// midiOut.noteOn(0, 101, 30);
-// 
-				// if(state[1].isArm.not, {
-					// animations.arm.stop;
-					// midiOut.noteOn(0, 107, 16);
-					// (52..67).do({arg n; midiOut.noteOn(0, n, 17)});
-					// (84..99).do({arg n; midiOut.noteOn(0, n, 16)});
-					// (36..51).do({arg n; midiOut.noteOn(0, n, 16)});
-					// (68..83).do({arg n; midiOut.noteOn(0, n, 1)});
-					// state[1].nnToggle.do({arg item, i;
-						// if(item == 1, {midiOut.noteOn(0, i + 36, 48)});
-					// });
-				// });
-// 
-				// if(state[1].isArm, {
-					// animations.arm.play;
-					// (52..67).do({arg n; midiOut.noteOn(0, n, 17)});
-					// (84..99).do({arg n; midiOut.noteOn(0, n, 16)});
-					// (36..51).do({arg n; midiOut.noteOn(0, n, 16)});
-					// (68..83).do({arg n; midiOut.noteOn(0, n, 1)});
-					// ~lprecbutnum2.do({arg item, i;
-						// if(item == 1, {midiOut.noteOn(0, i + 36, 15)});
-					// });
-					// state[1].nnToggle.do({arg item, i;
-						// if((item == 1).and(~lprecbutnum2[i] != 1), {midiOut.noteOn(0, i + 36, 48)});
-					// });
-				// });
-// 
-				// isModeStepSequencer = false;
-				// isModeStepSequencerEdit = false;});
-// 
-                // if((currentPageIndex == 1).and(
-                    // isCurrentLayoutDrumRack.not).and(isModeStepSequencer).and(
-				// ~modebtns.includes(note) == false).and(note < ~stepsNum), {
-				// var flash;
-// 
-				// flash = Routine.run({
-					// loop{
-						// if((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer), {
-							// midiOut.noteOn(0, note, 60);
-						// });
-						// 0.1.wait;
-						// if((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer), {
-							// midiOut.noteOn(0, note, 16);
-						// });
-						// 0.1.wait;
-					// };
-				// });
-// 
-				// ~ledDelay = ~ledDelay + ~seqNoteDurCurrent;
-// 
-				// Routine({
-					// ~ledDelay.wait;
-// 
-					// Routine({
-						// switch(~sequence[note],
-							// 0, {~sequence[note] = 1; ~seqRoutInternal[note] = note;
-								// if((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer), {
-									// midiOut.noteOn(0, note, 60)});
-							// },
-							// 1, {~sequence[note] = 0; ~seqRoutInternal[note] = nil;
-								// if((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer), {
-									// midiOut.noteOn(0, note, 16)});
-						// });
-// 
-						// ~routineStep = ~routineStep - ~routineStepExchange;
-// 
-						// ~r1.reset; ~r2.reset; ~r3.reset; ~r4.reset; ~r5.reset; flash.stop;
-// 
-						// ~seqLedFeedback.value;
-						// ~ledDelay = ~ledDelay - ~seqNoteDurCurrent;
-					// }).play(t, ~seqNoteDurCurrent);
-				// }).play(t);
-		// });
-// 
-		// s.wait;
-// 
-        // if((currentPageIndex == 1).and( 
-            // ((note == 100).and(isCurrentLayoutDrumRack)).or(
-                // (note == 8).and(isCurrentLayoutDrumRack.not)))	, {
-// 
-				// midiOut.control(0, 0, 1); isCurrentLayoutDrumRack = false;
-				// midiOut.noteOn(0, 8, 63); isModeStepSequencer = true;
-				// midiOut.noteOn(0, 24, 30); isModeStepSequencerEdit = false;
-// 
-				// ~stepsNum.do({arg n;
-					// if(~modebtns.includes(n) == false, {
-						// midiOut.noteOn(0, n, 16)});
-				// });
-// 
-				// if((~stepsNum != 120).and(~stepsNum != 0), {
-					// (~stepsNum..120).do({arg n;
-						// if(~modebtns.includes(n) == false, {
-							// midiOut.noteOn(0, n, 0);
-						// });
-					// });
-				// });
-// 
-				// ~sequence.lace(~stepsNum).do({arg i, n; if(i == 1, {midiOut.noteOn(0, n, 60)})});
-// 
-				// ~seqLedFeedback.value;
-		// });
-// 
-	// });
-// 
-	// Routine.run({
-// 
-// if((currentPageIndex == 1).and(
-// ~modebtns.includes(note) == false).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencerEdit), {
-				// ~stepsNum = note + 1;
-// 
-				// ~stepsNum.do({arg n;
-					// if(~modebtns.includes(n) == false, {
-						// midiOut.noteOn(0, n, 16);
-					// });
-				// });
-// 
-				// if((~stepsNum != 120).and(~stepsNum != 0), {
-					// (~stepsNum..120).do({arg n;
-						// if(~modebtns.includes(n) == false, {
-							// midiOut.noteOn(0, n, 0);
-						// });
-					// });
-				// });
-// 
-				// ~seqSize = (((~stepsNum.roundUp(8) / 2) - 4) + ((~stepsNum - 1)%8 + 1)).asInteger;
-// 
-				// ~r1.reset; ~r2.reset; ~r3.reset; ~r4.reset; ~r5.reset; ~stepCounter.reset;
-// 
-				// ("Steps number changed to: " + ~seqSize.asString).postln;
-		// });
-// 
-		// s.wait;
-// 
-		// if((currentPageIndex == 1).and(
-			// ((note == 24).and(isCurrentLayoutDrumRack.not)).or((note == 101).and(isCurrentLayoutDrumRack.not))), {
-				// midiOut.control(0, 0, 1); isCurrentLayoutDrumRack = false;
-				// isModeStepSequencerEdit = true; midiOut.noteOn(0, 24, 63);
-				// isModeStepSequencer = false; midiOut.noteOn(0, 8, 30);
-				// ~stepsNum.do({arg n;
-					// if(~modebtns.includes(n) == false, {
-						// midiOut.noteOn(0, n, 16);
-					// });
-				// });
-// 
-				// if((~stepsNum != 120).and(~stepsNum != 0), {
-					// (~stepsNum..120).do({arg n;
-						// if(~modebtns.includes(n) == false, {
-							// midiOut.noteOn(0, n, 0);
-						// });
-					// });
-				// });
-		// });
-	// });
-// 
-	// // Durations
-    // if((
-    // (currentPageIndex == 0).or(currentPageIndex == 1)
-		// ).and(isCurrentLayoutDrumRack).and((102..106).includes(note)), {
-			// midiOut.noteOn(0, note, 63);
-			// (102..106).do({arg i, n;
-				// if(note == i, {~seqNoteDurCurrent = ~seqNoteDurs[n]},
-					// {midiOut.noteOn(0, i, 29)});
-			// });
-	// });
-// 
-// if((
-// (isModeStepSequencer).or(isModeStepSequencerEdit)
-		// ).and(isCurrentLayoutDrumRack.not).and([40, 56, 72, 88, 104].includes(note)), {
-			// midiOut.noteOn(0, note, 63);
-			// [40, 56, 72, 88, 104].do({arg i, n;
-				// if(note == i, {~seqNoteDurCurrent = ~seqNoteDurs[n]},
-					// {midiOut.noteOn(0, i, 29)});
-			// });
-	// });
-        // }, srcID: deviceID);
+        ~r2 = Routine.run({
+            loop{
+                ~seqRoutInternalFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).do({arg i, n;
+                    if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 27)});
+                    state[1].sequencer.selectedStepDuration.wait;
+                });
+            };
+        });
+
+        ~r3 = Routine.run({
+            loop{
+                var note = ~seqRoutInternalFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).wrapAt(-1);
+
+                if((note.isNumber).and(isModeStepSequencer).and(~modebtns.includes(note) == false).and(currentPageIndex == 1),
+                {midiOut.noteOn(0, note, 60)});
+
+                ~seqRoutInternalFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).do({arg i, n;
+
+                    state[1].sequencer.selectedStepDuration.wait;
+                    if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 60)});
+                });
+            };
+        });
+
+        ~r4 = Routine.run({
+            loop{
+                ~seqCursorFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).do({arg i, n;
+                    if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 58)});
+                    state[1].sequencer.selectedStepDuration.wait;
+                });
+            };
+        });
+
+        ~r5 = Routine.run({
+            loop{
+                var note = ~seqCursorFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).wrapAt(-1);
+
+                if((note.isNumber).and(isModeStepSequencer).and(~modebtns.includes(note) == false).and(currentPageIndex == 1),
+                {midiOut.noteOn(0, note, 16)});
+
+                ~seqCursorFiltered.lace(state[1].sequencer.numberOfSteps).rotate(~routineStep).do({arg i, n;
+                    state[1].sequencer.selectedStepDuration.wait;
+                    if((i.isNumber).and(isModeStepSequencer).and(currentPageIndex == 1), {midiOut.noteOn(0, i, 16)});
+                });
+            };
+        });
+
+        MIDIFunc.noteOn({arg vel, note, ch, id;
+            if (currentPageIndex == 1) {
+                fork {
+                    if (isCurrentLayoutDrumRack.not) {
+                        if (((this.getNNForRightFunctionButtonAtIndex(0) == note).and(isModeStepSequencer)).or(
+                            (this.getNNForRightFunctionButtonAtIndex(1) == note).and(isModeStepSequencerEdit))) {
+                                this.redrawDrumRackGrid();
+                        };
+
+                        if ((isModeStepSequencer).and(~modebtns.includes(note) == false).and(note < state[1].sequencer.totalNumberOfSteps)) {
+                            var flash;
+
+                            flash = Routine.run({
+                                loop{
+                                    if ((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer)) {
+                                        midiOut.noteOn(0, note, 60);
+                                    };
+
+                                    0.1.wait;
+
+                                    if ((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer)) {
+                                        midiOut.noteOn(0, note, 16);
+                                    };
+
+                                    0.1.wait;
+                                };
+                            });
+
+                            Routine({
+                                state[1].sequencer.selectedStepDuration.wait;
+
+                                Routine({
+                                    switch(~sequence[note],
+                                    0, {
+                                        ~sequence[note] = 1;
+                                        ~seqRoutInternal[note] = note;
+                                        if ((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer)) {
+                                            midiOut.noteOn(0, note, 60);
+                                        };
+                                    },
+                                    1, {
+                                        ~sequence[note] = 0;
+                                        ~seqRoutInternal[note] = nil;
+                                        if ((currentPageIndex == 1).and(isCurrentLayoutDrumRack.not).and(isModeStepSequencer)) {
+                                            midiOut.noteOn(0, note, 16);
+                                        };
+                                    });
+
+                                    ~routineStep = ~routineStep - ~routineStepExchange;
+
+                                    ~r1.reset; 
+                                    ~r2.reset;
+                                    ~r3.reset; 
+                                    ~r4.reset; 
+                                    ~r5.reset;
+                                    flash.stop;
+
+                                    ~seqLedFeedback.value;
+                                }).play(quant: state[1].sequencer.selectedStepDuration);
+                            }).play;
+                        };
+                    };
+
+                    Server.default.wait;
+
+                    if (((note == 100).and(isCurrentLayoutDrumRack)).or((note == 8).and(isCurrentLayoutDrumRack.not))) {
+                        midiOut.control(0, 0, 1); isCurrentLayoutDrumRack = false;
+                        midiOut.noteOn(0, 8, 63); isModeStepSequencer = true;
+                        midiOut.noteOn(0, 24, 30); isModeStepSequencerEdit = false;
+
+                        state[1].sequencer.totalNumberOfSteps.do({arg n;
+                            if(~modebtns.includes(n) == false, {
+                                midiOut.noteOn(0, n, 16)});
+                            });
+
+                            if((state[1].sequencer.totalNumberOfSteps != 120).and(state[1].sequencer.totalNumberOfSteps != 0), {
+                                (state[1].sequencer.totalNumberOfSteps..120).do({arg n;
+                                    if(~modebtns.includes(n) == false, {
+                                        midiOut.noteOn(0, n, 0);
+                                    });
+                                });
+                            });
+
+                            ~sequence.lace(state[1].sequencer.totalNumberOfSteps).do({arg i, n; if(i == 1, {midiOut.noteOn(0, n, 60)})});
+
+                            ~seqLedFeedback.value;
+                        };
+
+                    };
+
+                    Routine.run({
+                        if (isCurrentLayoutDrumRack.not) {
+                            if ((~modebtns.includes(note) == false).and(isModeStepSequencerEdit)) {
+                                state[1].sequencer.totalNumberOfSteps = note + 1;
+
+                                state[1].sequencer.totalNumberOfSteps.do({arg n;
+                                    if(~modebtns.includes(n) == false, {
+                                        midiOut.noteOn(0, n, 16);
+                                    });
+                                });
+
+                                if((state[1].sequencer.totalNumberOfSteps != 120).and(state[1].sequencer.totalNumberOfSteps != 0), {
+                                    (state[1].sequencer.totalNumberOfSteps..120).do({arg n;
+                                        if(~modebtns.includes(n) == false, {
+                                            midiOut.noteOn(0, n, 0);
+                                        });
+                                    });
+                                });
+
+                                state[1].sequencer.numberOfSteps = (((state[1].sequencer.totalNumberOfSteps.roundUp(8) / 2) - 4) + ((state[1].sequencer.totalNumberOfSteps - 1)%8 + 1)).asInteger;
+
+                                ~r1.reset; ~r2.reset; ~r3.reset; ~r4.reset; ~r5.reset; ~stepCounter.reset;
+
+                                ("Steps number changed to: " + state[1].sequencer.numberOfSteps.asString).postln;
+                            };
+
+                            Server.default.wait;
+
+                            if ((note == 24).or(note == 101)) {
+                                midiOut.control(0, 0, 1);
+                                isCurrentLayoutDrumRack = false;
+                                isModeStepSequencerEdit = true;
+                                midiOut.noteOn(0, 24, 63);
+                                isModeStepSequencer = false;
+                                midiOut.noteOn(0, 8, 30);
+                                state[1].sequencer.totalNumberOfSteps.do({arg n;
+                                    if(~modebtns.includes(n) == false, {
+                                        midiOut.noteOn(0, n, 16);
+                                    });
+                                });
+
+                                if((state[1].sequencer.totalNumberOfSteps != 120).and(state[1].sequencer.totalNumberOfSteps != 0), {
+                                    (state[1].sequencer.totalNumberOfSteps..120).do({arg n;
+                                        if(~modebtns.includes(n) == false, {
+                                            midiOut.noteOn(0, n, 0);
+                                        });
+                                    });
+                                });
+                            };
+                        }; 
+                    });
+                };
+
+                // Durations
+                if((isCurrentLayoutDrumRack).and((102..106).includes(note))) {
+                    midiOut.noteOn(0, note, 63);
+                    (102..106).do({arg i, n;
+                        if (note == i) {
+                            state[1].sequencer.selectedStepDuration = state[1].sequencer.availableStepDurations[n]
+                        } {
+                            midiOut.noteOn(0, i, 29);
+                        };
+                    });
+                };
+
+                if(((isModeStepSequencer).or(isModeStepSequencerEdit)).and(isCurrentLayoutDrumRack.not).and([40, 56, 72, 88, 104].includes(note)), {
+                    midiOut.noteOn(0, note, 63);
+                    [40, 56, 72, 88, 104].do({arg i, n;
+                        if (note == i) {
+                            state[1].sequencer.selectedStepDuration = state[1].sequencer.availableStepDurations[n];
+                        } {
+                            midiOut.noteOn(0, i, 29);
+                        };
+                    });
+                });
+            }, srcID: deviceID);
 	}
 
 	initLoggerTextFields {
