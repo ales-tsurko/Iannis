@@ -57,12 +57,12 @@ IannisAceWrapper : WebView {
   setValue {arg newValue;
     newValue!?{
       var convertedString = newValue.asCompileString.replace("\n", "\\\\n");
-      this.evaluateJavaScript(
+      this.runJavaScript(
         "var str ="++convertedString++".replace(/\\\\n\/g, \"\\n\");"
         "editor.setValue(str);"
       );
     }??{
-      this.evaluateJavaScript("editor.setValue(\"\");");
+      this.runJavaScript("editor.setValue(\"\");");
     };
   }
 
@@ -71,7 +71,7 @@ IannisAceWrapper : WebView {
   getValue {arg callback;
     AppClock.play(
       Routine({
-        this.evaluateJavaScript("console.log(\"<-!get_value_triggered!->\"+editor.getValue())");
+        this.runJavaScript("console.log(\"<-!get_value_triggered!->\"+editor.getValue())");
         condition.hang();
         callback!?{callback.value(text)};
       });
@@ -82,7 +82,7 @@ IannisAceWrapper : WebView {
   evaluate {arg callback;
     AppClock.play(
       Routine({
-        this.evaluateJavaScript("console.log(\"<-!code_evaluation_triggered!->\"+editor.getValue())");
+        this.runJavaScript("console.log(\"<-!code_evaluation_triggered!->\"+editor.getValue())");
         condition.hang();
         callback!?{callback.value()};
       });
@@ -103,7 +103,7 @@ IannisAceWrapper : WebView {
           console.log(\"<-!selection_evaluation_triggered!->\"+currentLineText);
         }";
 
-        this.evaluateJavaScript(jsString);
+        this.runJavaScript(jsString);
 
         condition.hang();
         callback!?{callback.value()};
@@ -115,7 +115,7 @@ IannisAceWrapper : WebView {
   hardStop {arg callback;
     AppClock.play(
       Routine({
-        this.evaluateJavaScript("console.log(\"<-!hard_stop_triggered!->\")");
+        this.runJavaScript("console.log(\"<-!hard_stop_triggered!->\")");
         condition.hang();
         callback!?{callback.value()};
       })

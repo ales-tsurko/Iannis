@@ -359,11 +359,11 @@ IannisMixerTrackViewController : CompositeView {
             delegate.didToggleMuteAtChannel(this, mute);
         };
 
-        muteButton.value = mixerTrack.isMute.asInt;
+        muteButton.value = mixerTrack.isMute.asInteger;
     }
 
     setMute {arg value;
-        muteButton.value = value.asInt;
+        muteButton.value = value.asInteger;
         mixerTrack.isMute = value;
     }
 
@@ -382,11 +382,11 @@ IannisMixerTrackViewController : CompositeView {
             delegate.didToggleSoloAtChannel(this, solo);
         };
 
-        soloButton.value = mixerTrack.isSolo.asInt;
+        soloButton.value = mixerTrack.isSolo.asInteger;
     }
     
     setSolo {arg value;
-        soloButton.value = value.asInt;
+        soloButton.value = value.asInteger;
         mixerTrack.isSolo = value;
     }
 
